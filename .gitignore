@@ -1,0 +1,5 @@
+# Git Ignore for Theory of Structures Mastery Lab
+*.ps1
+extracted_*.txt
+.DS_Store
+Thumbs.db

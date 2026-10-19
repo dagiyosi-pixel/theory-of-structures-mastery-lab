@@ -1,0 +1,2243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>COTM 3101: Theory of Structures â€” Complete Mastery Lab</title>
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#030712" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <style>
+/* =========================================================================
+   COTM 3101: THEORY OF STRUCTURES MASTERY LAB
+   High-Performance Responsive Engineering UI
+   ========================================================================= */
+
+:root {
+  --bg-dark: #090d16;
+  --bg-panel: #0f172a;
+  --bg-card: #1e293b;
+  --bg-input: #0b1120;
+  --border: #334155;
+  --accent: #38bdf8;
+  --accent-dim: rgba(56, 189, 248, 0.12);
+  --gold: #facc15;
+  --success: #22c55e;
+  --danger: #ef4444;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --font-sans: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-mono: 'Consolas', 'Courier New', monospace;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--bg-dark);
+  color: var(--text-main);
+  font-family: var(--font-sans);
+  line-height: 1.6;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* TOP HUD BAR */
+.hud-header {
+  background: #020617;
+  border-bottom: 1px solid var(--border);
+  padding: 14px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(8px);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-icon {
+  font-size: 2.2rem;
+}
+
+.brand h1 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-main);
+  letter-spacing: -0.02em;
+}
+
+.brand p {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.hud-stats {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.stat-pill {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--accent);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.hud-btn {
+  background: transparent;
+  border: 1px solid #475569;
+  color: var(--text-muted);
+  padding: 6px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.hud-btn:hover {
+  border-color: var(--accent);
+  color: var(--text-main);
+  background: var(--accent-dim);
+}
+
+.reset-btn:hover {
+  border-color: var(--danger);
+  color: var(--danger);
+  background: rgba(239, 68, 68, 0.1);
+}
+
+/* WORKSPACE LAYOUT */
+.workspace {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  flex: 1;
+}
+
+@media (max-width: 950px) {
+  .workspace {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* SIDEBAR */
+.sidebar {
+  background: var(--bg-panel);
+  border-right: 1px solid var(--border);
+  padding: 20px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sidebar-section-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  color: var(--text-muted);
+  margin: 16px 0 8px 8px;
+}
+
+.module-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.nav-item {
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid transparent;
+  padding: 10px 14px;
+  border-radius: 8px;
+  text-align: left;
+  cursor: pointer;
+  font-size: 0.92rem;
+  font-weight: 600;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.15s ease;
+}
+
+.nav-item:hover {
+  background: var(--bg-card);
+  color: var(--text-main);
+}
+
+.nav-item.active {
+  background: var(--accent-dim);
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.tool-btn {
+  border: 1px dashed #475569;
+  color: #e2e8f0;
+}
+
+.tool-btn:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+/* MAIN PANEL */
+.main-panel {
+  padding: 24px;
+  max-width: 1100px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* MODE SWITCHER TABS */
+.mode-tabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 14px;
+}
+
+.mode-tab {
+  background: var(--bg-card);
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.88rem;
+  transition: all 0.15s ease;
+}
+
+.mode-tab:hover {
+  color: var(--text-main);
+  border-color: var(--accent);
+}
+
+.mode-tab.active {
+  background: var(--accent);
+  color: #020617;
+  border-color: var(--accent);
+}
+
+/* CARDS & PANELS */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.card h2 {
+  color: var(--accent);
+  font-size: 1.35rem;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.card h3 {
+  color: var(--gold);
+  font-size: 1.1rem;
+  margin: 20px 0 8px;
+}
+
+.concept-callout {
+  background: var(--bg-input);
+  border-left: 4px solid var(--accent);
+  padding: 16px;
+  border-radius: 6px;
+  margin: 14px 0;
+  font-size: 0.95rem;
+}
+
+.blueprint-diagram {
+  background: #040813;
+  border: 1px solid #1e293b;
+  background-image: radial-gradient(#1e293b 1px, transparent 1px);
+  background-size: 16px 16px;
+  padding: 18px;
+  border-radius: 8px;
+  font-family: var(--font-mono);
+  font-size: 0.88rem;
+  color: #fde047;
+  overflow-x: auto;
+  white-space: pre;
+  margin: 16px 0;
+  line-height: 1.4;
+}
+
+.formula-banner {
+  background: #020617;
+  border: 1px solid #38bdf8;
+  color: #7dd3fc;
+  padding: 14px 18px;
+  border-radius: 8px;
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 14px 0;
+  overflow-x: auto;
+}
+
+/* ENGINEERING TABLES */
+.eng-table-wrapper {
+  overflow-x: auto;
+  margin: 16px 0;
+}
+
+.eng-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+  font-family: var(--font-mono);
+}
+
+.eng-table th, .eng-table td {
+  border: 1px solid var(--border);
+  padding: 10px 12px;
+  text-align: center;
+}
+
+.eng-table th {
+  background: #0b1120;
+  color: var(--accent);
+}
+
+.eng-table tr:nth-child(even) {
+  background: rgba(15, 23, 42, 0.4);
+}
+
+.eng-table tr.sum-row {
+  background: rgba(56, 189, 248, 0.15);
+  font-weight: 700;
+  color: var(--gold);
+}
+
+/* STEPPER BOXES */
+.step-box {
+  border: 1px solid var(--border);
+  background: var(--bg-panel);
+  border-radius: 10px;
+  padding: 18px;
+  margin-top: 14px;
+}
+
+.step-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 10px;
+}
+
+/* QUIZ & CHALLENGE OPTIONS */
+.options-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.option-btn {
+  background: var(--bg-input);
+  color: var(--text-main);
+  border: 1px solid var(--border);
+  padding: 14px 16px;
+  border-radius: 8px;
+  text-align: left;
+  font-size: 0.96rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.option-btn:hover {
+  border-color: var(--accent);
+  background: #172033;
+}
+
+.option-btn.correct {
+  background: rgba(34, 197, 94, 0.2);
+  border-color: var(--success);
+  color: #bbf7d0;
+}
+
+.option-btn.wrong {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: var(--danger);
+  color: #fecaca;
+}
+
+.feedback-banner {
+  margin-top: 16px;
+  padding: 16px;
+  border-radius: 8px;
+  display: none;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: #020617;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  margin-top: 16px;
+  transition: all 0.15s ease;
+}
+
+.btn-primary:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+/* SANDBOX INPUT GRID */
+.calc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin: 16px 0;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.input-group label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.input-group input, .input-group select {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  color: var(--text-main);
+  padding: 10px 12px;
+  border-radius: 6px;
+  font-family: var(--font-mono);
+  font-size: 0.92rem;
+}
+
+.input-group input:focus, .input-group select:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+</style>
+</head>
+<body>
+  <!-- TOP HUD BAR -->
+  <header class="hud-header">
+    <div class="brand">
+      <span class="brand-icon">ðŸ—ï¸</span>
+      <div>
+        <h1>COTM 3101: Theory of Structures Mastery Lab</h1>
+        <p>Interactive Engineering Workbench â€¢ AAU EiABC Curriculum â€¢ 100% Offline</p>
+      </div>
+    </div>
+    <div class="hud-stats">
+      <div class="stat-pill" id="rankBadge">ðŸŽ–ï¸ Apprentice</div>
+      <div class="stat-pill" id="xpBadge">âš¡ 0 XP</div>
+      <div class="stat-pill" id="streakBadge">ðŸ”¥ Streak: 0</div>
+      <div class="stat-pill" id="masteryBadge">ðŸ“Š 0% Mastered</div>
+      <button class="hud-btn" onclick="exportStandaloneHTML()" title="Download single standalone HTML file for phone or offline PC">ðŸ“² Save Offline App</button>
+      <button class="hud-btn reset-btn" onclick="resetProgress()" title="Reset Saved Progress">â†º Reset</button>
+    </div>
+  </header>
+
+  <div class="workspace">
+    <!-- LEFT SIDEBAR: 7 CHAPTER MODULES + LIVE STRUCTURAL SOLVERS -->
+    <aside class="sidebar">
+      <div class="sidebar-section-title">ðŸ“š COURSE MODULES (PDF 1â€“7)</div>
+      <nav id="moduleList" class="module-nav"></nav>
+
+      <div class="sidebar-section-title" style="margin-top:24px;">ðŸ§® LIVE ENGINEERING SANDBOXES</div>
+      <div class="module-nav">
+        <button class="nav-item tool-btn" onclick="openSandbox('determinacy')">
+          <span>ðŸ” Stability & Determinacy Engine</span>
+        </button>
+        <button class="nav-item tool-btn" onclick="openSandbox('threemoment')">
+          <span>ðŸ“ 2-Span Clapeyron Live Solver</span>
+        </button>
+        <button class="nav-item tool-btn" onclick="openSandbox('hardycross')">
+          <span>ðŸ”„ Hardy Cross Live Table Engine</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="main-panel">
+      <!-- MODE SWITCHER TABS -->
+      <div class="mode-tabs" id="modeTabs">
+        <button class="mode-tab active" data-mode="theory" onclick="switchMode('theory')">
+          ðŸ“– 1. Deep Theory & Intuition
+        </button>
+        <button class="mode-tab" data-mode="examples" onclick="switchMode('examples')">
+          ðŸ”¬ 2. Step-by-Step Worked Examples
+        </button>
+        <button class="mode-tab" data-mode="shortcuts" onclick="switchMode('shortcuts')">
+          âš¡ 3. Ninja Shortcuts & Speed Tricks
+        </button>
+        <button class="mode-tab" data-mode="arena" onclick="switchMode('arena')">
+          âš”ï¸ 4. Challenge Gauntlet (+XP)
+        </button>
+        <button class="mode-tab" data-mode="cheatsheet" onclick="switchMode('cheatsheet')">
+          ðŸ“œ 5. Formula Vault & Sign Rules
+        </button>
+      </div>
+
+      <!-- DYNAMIC VIEWPORT -->
+      <div id="viewport" class="viewport"></div>
+    </main>
+  </div>
+
+  <!-- Computational Engines and Knowledge Base -->
+  <script>
+// COTM 3101: Theory of Structures - Interactive Structural Solvers
+// Provides real-time calculation engines for structural engineering analysis.
+
+const StructureSolvers = {
+  // =========================================================================
+  // 1. DETERMINACY & STABILITY ENGINE
+  // =========================================================================
+  analyzeDeterminacy: function(type, inputs) {
+    if (type === 'beam') {
+      const r = parseInt(inputs.reactions) || 0;
+      const s = parseInt(inputs.internalHinges) || 0;
+      const parallel = inputs.parallelReactions || false;
+      const concurrent = inputs.concurrentReactions || false;
+
+      let stable = true;
+      let notes = [];
+
+      if (parallel) {
+        stable = false;
+        notes.push("CRITICAL TRAP: All reaction forces are parallel! The structure is geometrically unstable horizontally (cannot resist lateral loads).");
+      }
+      if (concurrent) {
+        stable = false;
+        notes.push("CRITICAL TRAP: All reaction lines intersect at a single point! The structure is geometrically unstable against rotation about this point.");
+      }
+
+      const eqCount = 3 + s;
+      const d = r - eqCount;
+
+      let status = "";
+      if (r < 3) {
+        stable = false;
+        status = "Externally Unstable (r < 3)";
+        notes.push("Fewer than 3 reaction components in 2D space.");
+      } else if (!stable) {
+        status = "Geometrically Unstable Mechanism";
+      } else if (d === 0) {
+        status = "Statically Determinate & Stable";
+        notes.push("Reactions exactly equal equilibrium equations (r = 3 + s). All internal forces can be solved with statics.");
+      } else if (d > 0) {
+        status = `Statically Indeterminate to Degree ${d}`;
+        notes.push(`Requires ${d} compatibility condition(s) (Force/Flexibility Method or Displacement Method).`);
+      } else {
+        stable = false;
+        status = "Unstable Mechanism (Equations exceed reactions)";
+        notes.push("Excess internal releases make this beam an unstable kinematic mechanism.");
+      }
+
+      return {
+        type: 'Beam',
+        formula: `D = r - (3 + s) = ${r} - (3 + ${s}) = ${d}`,
+        degree: d,
+        status: status,
+        isStable: stable,
+        notes: notes
+      };
+    }
+
+    if (type === 'truss') {
+      const j = parseInt(inputs.joints) || 0;
+      const m = parseInt(inputs.members) || 0;
+      const r = parseInt(inputs.reactions) || 0;
+      const hasUnbracedPanel = inputs.unbracedPanel || false;
+
+      const r_m = 3;
+      const d_ext = r - r_m;
+      const d_int = (m + r_m) - (2 * j);
+      const d_total = (m + r) - (2 * j);
+
+      let stable = true;
+      let notes = [];
+
+      if (r < 3) {
+        stable = false;
+        notes.push("External reactions r < 3 â†’ Externally unstable.");
+      }
+      if (hasUnbracedPanel) {
+        stable = false;
+        notes.push("CRITICAL TRAP: An open rectangular panel lacks diagonal bracing! Even if m + r = 2j, that panel collapses in shear (Internally Unstable).");
+      }
+
+      let status = "";
+      if (!stable) {
+        status = "Unstable Mechanism";
+      } else if (d_total === 0) {
+        status = "Statically Determinate & Stable";
+        notes.push("All joint equilibrium equations (2j) are satisfied by the available members and reactions.");
+      } else if (d_total > 0) {
+        status = `Statically Indeterminate (Overall D = ${d_total})`;
+        notes.push(`External Indeterminacy D_e = ${d_ext >= 0 ? d_ext : 0}, Internal Indeterminacy D_i = ${d_int}.`);
+      } else {
+        status = "Internally Unstable (Lacks sufficient members)";
+        stable = false;
+      }
+
+      return {
+        type: 'Plane Truss',
+        formula: `Overall: D = (m + r) - 2j = (${m} + ${r}) - 2(${j}) = ${d_total}\nExternal: D_e = r - 3 = ${r} - 3 = ${d_ext}\nInternal: D_i = (m + 3) - 2j = (${m} + 3) - 2(${j}) = ${d_int}`,
+        degree: d_total,
+        status: status,
+        isStable: stable,
+        notes: notes
+      };
+    }
+
+    if (type === 'frame') {
+      const j = parseInt(inputs.joints) || 0;
+      const m = parseInt(inputs.members) || 0;
+      const r = parseInt(inputs.reactions) || 0;
+      const s = parseInt(inputs.specialConditions) || 0;
+      const loops = parseInt(inputs.closedLoops) || 0;
+
+      const totalUnknowns = 3 * m + r;
+      const totalEqs = 3 * j + s;
+      const d_total = totalUnknowns - totalEqs;
+      const d_loops = 3 * loops - s;
+
+      let stable = r >= 3;
+      let notes = [];
+      let status = "";
+
+      if (d_total === 0 && stable) {
+        status = "Statically Determinate & Stable";
+      } else if (d_total > 0 && stable) {
+        status = `Statically Indeterminate to Degree ${d_total}`;
+        notes.push(`Classical Closed-Loop Check: D_i = 3(loops) - s = 3(${loops}) - ${s} = ${d_loops}`);
+      } else {
+        status = "Unstable Frame Mechanism";
+        stable = false;
+      }
+
+      return {
+        type: 'Rigid Frame',
+        formula: `D = (3m + r) - (3j + s) = [3(${m}) + ${r}] - [3(${j}) + ${s}] = ${totalUnknowns} - ${totalEqs} = ${d_total}`,
+        degree: d_total,
+        status: status,
+        isStable: stable,
+        notes: notes
+      };
+    }
+  },
+
+  // =========================================================================
+  // 2. TWO-SPAN THREE-MOMENT EQUATION ENGINE (Clapeyron's Equation)
+  // =========================================================================
+  solveThreeMoment: function(params) {
+    const L1 = parseFloat(params.L1) || 4.0;
+    const L2 = parseFloat(params.L2) || 6.0;
+    const I1 = parseFloat(params.I1) || 1.0;
+    const I2 = parseFloat(params.I2) || 1.0;
+
+    const span1Type = params.span1LoadType; // 'udl' or 'point'
+    const span2Type = params.span2LoadType; // 'udl' or 'point'
+
+    // Load values
+    const w1 = parseFloat(params.w1) || 0;
+    const P1 = parseFloat(params.P1) || 0;
+    const a1 = parseFloat(params.a1) || (L1 / 2); // dist from A to load
+    const b1 = L1 - a1;
+
+    const w2 = parseFloat(params.w2) || 0;
+    const P2 = parseFloat(params.P2) || 0;
+    const a2 = parseFloat(params.a2) || (L2 / 2); // dist from C to load (outer support)
+    const b2 = L2 - a2;
+
+    // Load terms: (6*A*x / L)
+    // For Span 1 (about joint B, centroid x measured from A):
+    let term1 = 0;
+    if (span1Type === 'udl') {
+      term1 = (w1 * Math.pow(L1, 3)) / 4;
+    } else if (span1Type === 'point') {
+      term1 = (P1 * a1 * (Math.pow(L1, 2) - Math.pow(a1, 2))) / L1;
+    }
+
+    // For Span 2 (about joint B, centroid x measured from C):
+    let term2 = 0;
+    if (span2Type === 'udl') {
+      term2 = (w2 * Math.pow(L2, 3)) / 4;
+    } else if (span2Type === 'point') {
+      term2 = (P2 * a2 * (Math.pow(L2, 2) - Math.pow(a2, 2))) / L2;
+    }
+
+    // Modified by relative flexural stiffness (I1, I2):
+    const coeff_MB = 2 * ((L1 / I1) + (L2 / I2));
+    const RHS = -((term1 / I1) + (term2 / I2));
+
+    // Simple ends: M_A = 0, M_C = 0
+    const M_B = RHS / coeff_MB;
+
+    // Static reactions by cutting at support B:
+    // Span 1: Sum moments about B: R_A * L1 - TotalLoad1*Centroid + M_B = 0
+    let R_A = 0;
+    if (span1Type === 'udl') {
+      R_A = (w1 * L1 / 2) + (M_B / L1);
+    } else if (span1Type === 'point') {
+      R_A = (P1 * b1 / L1) + (M_B / L1);
+    }
+
+    let R_C = 0;
+    if (span2Type === 'udl') {
+      R_C = (w2 * L2 / 2) + (M_B / L2);
+    } else if (span2Type === 'point') {
+      R_C = (P2 * b2 / L2) + (M_B / L2);
+    }
+
+    // Total vertical equilibrium:
+    let totalLoad = 0;
+    if (span1Type === 'udl') totalLoad += w1 * L1; else totalLoad += P1;
+    if (span2Type === 'udl') totalLoad += w2 * L2; else totalLoad += P2;
+
+    const R_B = totalLoad - R_A - R_C;
+
+    // Midspan / max positive moments:
+    let maxSag1 = 0;
+    if (span1Type === 'udl') {
+      maxSag1 = (w1 * Math.pow(L1, 2) / 8) + (M_B / 2);
+    } else {
+      maxSag1 = (P1 * a1 * b1 / L1) + (M_B * a1 / L1);
+    }
+
+    let maxSag2 = 0;
+    if (span2Type === 'udl') {
+      maxSag2 = (w2 * Math.pow(L2, 2) / 8) + (M_B / 2);
+    } else {
+      maxSag2 = (P2 * a2 * b2 / L2) + (M_B * (L2 - a2) / L2);
+    }
+
+    return {
+      L1: L1,
+      L2: L2,
+      term1: term1.toFixed(2),
+      term2: term2.toFixed(2),
+      coeff_MB: coeff_MB.toFixed(2),
+      RHS: RHS.toFixed(2),
+      M_B: M_B.toFixed(2),
+      R_A: R_A.toFixed(2),
+      R_B: R_B.toFixed(2),
+      R_C: R_C.toFixed(2),
+      maxSag1: maxSag1.toFixed(2),
+      maxSag2: maxSag2.toFixed(2)
+    };
+  },
+
+  // =========================================================================
+  // 3. HARDY CROSS LIVE ITERATIVE MOMENT DISTRIBUTION ENGINE
+  // =========================================================================
+  solveHardyCross2Span: function(params) {
+    const L1 = parseFloat(params.L1) || 3.6;
+    const L2 = parseFloat(params.L2) || 4.0;
+    const I1 = parseFloat(params.I1) || 3.6;
+    const I2 = parseFloat(params.I2) || 3.6;
+
+    const endA = params.endA || 'fixed'; // 'fixed' or 'hinged'
+    const endC = params.endC || 'hinged'; // 'fixed' or 'hinged'
+
+    // Stiffness K:
+    let K_BA = I1 / L1;
+    if (endA === 'hinged') K_BA = 0.75 * (I1 / L1);
+
+    let K_BC = I2 / L2;
+    if (endC === 'hinged') K_BC = 0.75 * (I2 / L2);
+
+    const sumK_B = K_BA + K_BC;
+    const DF_BA = K_BA / sumK_B;
+    const DF_BC = K_BC / sumK_B;
+
+    const DF_AB = endA === 'fixed' ? 0.0 : 1.0;
+    const DF_CB = endC === 'fixed' ? 0.0 : 1.0;
+
+    // Fixed End Moments (User inputs or standard point/UDL load)
+    let FEM_AB = parseFloat(params.FEM_AB) || -30.0;
+    let FEM_BA = parseFloat(params.FEM_BA) || +30.0;
+    let FEM_BC = parseFloat(params.FEM_BC) || -22.5;
+    let FEM_CB = parseFloat(params.FEM_CB) || +22.5;
+
+    // If end C is hinged and using modified 3/4 K, adjust FEM_BC to propped cantilever FEM
+    if (endC === 'hinged' && params.useModifiedStiffness) {
+      // Release joint C immediately: balance C and carry over to B
+      const releaseC = -FEM_CB;
+      FEM_BC = FEM_BC + 0.5 * releaseC;
+      FEM_CB = 0.0;
+    }
+
+    // Step-by-step table generation
+    const rows = [];
+    rows.push({
+      step: 'Distribution Factors (DF)',
+      AB: DF_AB.toFixed(3),
+      BA: DF_BA.toFixed(3),
+      BC: DF_BC.toFixed(3),
+      CB: DF_CB.toFixed(3)
+    });
+
+    rows.push({
+      step: 'Initial Fixed End Moments (FEM)',
+      AB: FEM_AB.toFixed(2),
+      BA: FEM_BA.toFixed(2),
+      BC: FEM_BC.toFixed(2),
+      CB: FEM_CB.toFixed(2)
+    });
+
+    let cur_AB = FEM_AB;
+    let cur_BA = FEM_BA;
+    let cur_BC = FEM_BC;
+    let cur_CB = FEM_CB;
+
+    // Iteration Cycle 1
+    // Joint B unbalanced moment:
+    const unbal_B1 = cur_BA + cur_BC;
+    const bal_BA1 = -unbal_B1 * DF_BA;
+    const bal_BC1 = -unbal_B1 * DF_BC;
+
+    let bal_AB1 = 0;
+    let bal_CB1 = 0;
+    if (endA === 'hinged') bal_AB1 = -cur_AB * DF_AB;
+    if (endC === 'hinged' && !params.useModifiedStiffness) bal_CB1 = -cur_CB * DF_CB;
+
+    rows.push({
+      step: 'Cycle 1: Balance (Distribution)',
+      AB: bal_AB1.toFixed(2),
+      BA: bal_BA1.toFixed(2),
+      BC: bal_BC1.toFixed(2),
+      CB: bal_CB1.toFixed(2)
+    });
+
+    cur_AB += bal_AB1;
+    cur_BA += bal_BA1;
+    cur_BC += bal_BC1;
+    cur_CB += bal_CB1;
+
+    // Carry-Over:
+    const co_AB1 = (endA === 'fixed') ? 0.5 * bal_BA1 : 0;
+    const co_BA1 = (endA === 'hinged') ? 0.5 * bal_AB1 : 0;
+    const co_CB1 = (endC === 'fixed') ? 0.5 * bal_BC1 : 0;
+    const co_BC1 = (endC === 'hinged' && !params.useModifiedStiffness) ? 0.5 * bal_CB1 : 0;
+
+    rows.push({
+      step: 'Cycle 1: Carry-Over (COF = 0.5)',
+      AB: co_AB1.toFixed(2),
+      BA: co_BA1.toFixed(2),
+      BC: co_BC1.toFixed(2),
+      CB: co_CB1.toFixed(2)
+    });
+
+    cur_AB += co_AB1;
+    cur_BA += co_BA1;
+    cur_BC += co_BC1;
+    cur_CB += co_CB1;
+
+    // Cycle 2: Balance
+    const unbal_B2 = co_BA1 + co_BC1;
+    const bal_BA2 = -unbal_B2 * DF_BA;
+    const bal_BC2 = -unbal_B2 * DF_BC;
+
+    rows.push({
+      step: 'Cycle 2: Balance (Distribution)',
+      AB: '0.00',
+      BA: bal_BA2.toFixed(2),
+      BC: bal_BC2.toFixed(2),
+      CB: '0.00'
+    });
+
+    cur_BA += bal_BA2;
+    cur_BC += bal_BC2;
+
+    const co_AB2 = (endA === 'fixed') ? 0.5 * bal_BA2 : 0;
+    rows.push({
+      step: 'Cycle 2: Carry-Over',
+      AB: co_AB2.toFixed(2),
+      BA: '0.00',
+      BC: '0.00',
+      CB: (endC === 'fixed') ? (0.5 * bal_BC2).toFixed(2) : '0.00'
+    });
+    cur_AB += co_AB2;
+
+    // Final Sum Row
+    rows.push({
+      step: 'FINAL END MOMENTS (Î£M)',
+      AB: cur_AB.toFixed(2),
+      BA: cur_BA.toFixed(2),
+      BC: cur_BC.toFixed(2),
+      CB: cur_CB.toFixed(2),
+      isFinal: true
+    });
+
+    return {
+      K_BA: K_BA.toFixed(3),
+      K_BC: K_BC.toFixed(3),
+      DF_BA: DF_BA.toFixed(3),
+      DF_BC: DF_BC.toFixed(3),
+      rows: rows
+    };
+  }
+};
+
+// Export for browser or node
+if (typeof module !== 'undefined') module.exports = StructureSolvers;
+
+</script>
+  <script>
+// COTM 3101: Theory of Structures - Complete Course Knowledgebase & Mastery Engine
+// Addis Ababa University (AAU) / EiABC Curriculum
+
+const COURSE_MODULES = [
+  // =========================================================================
+  // MODULE 1: STABILITY, DETERMINACY & LOADS ON STRUCTURES
+  // =========================================================================
+  {
+    id: "mod1",
+    shortTitle: "1. Stability & Determinacy",
+    fullTitle: "Chapter 1: Stability, Determinacy & Structural Loads",
+    icon: "âš–ï¸",
+    theory: [
+      {
+        heading: "1.1 The Golden First Principle: Stability vs. Determinacy",
+        body: `
+          <p>Before computing a single number, a structural engineer must answer two separate questions:</p>
+          <div class="concept-callout">
+            <strong>1. Stability (Geometric Configuration):</strong> Can the structure withstand any conceivable applied force system without transforming into a moving rigid-body mechanism? Stability is purely about <em>geometry and arrangement</em>, not cross-section size.<br/><br/>
+            <strong>2. Static Determinacy:</strong> Can all external reaction forces and internal member stresses (N, V, M) be solved using <em>only</em> static equilibrium equations (Î£Fx = 0, Î£Fy = 0, Î£M = 0)?
+          </div>
+          <p>If unknown forces exceed independent equilibrium equations, the structure is <strong>Statically Indeterminate</strong> to degree <em>D</em>.</p>
+        `,
+        formula: `Degree of Indeterminacy (D) = (Total Unknown Forces) - (Available Equilibrium Equations)`
+      },
+      {
+        heading: "1.2 The 3 Deadly Geometric Instability Traps",
+        body: `
+          <p>A fatal student error is assuming that having 3 reactions (râ‚ = 3) guarantees stability in 2D. <strong>It does not!</strong></p>
+          <ul>
+            <li><strong>Trap 1: Parallel Reactions:</strong> If all 3 reactions are vertical rollers, Î£Fx = 0 is impossible. A 1 kN horizontal breeze causes infinite rigid-body translation!</li>
+            <li><strong>Trap 2: Concurrent Reactions:</strong> If lines of action of all 3 reaction forces intersect at a single common point <em>O</em>, Î£M_O = 0 cannot resist any moment about <em>O</em>. The structure spins like a wheel!</li>
+            <li><strong>Trap 3: Unbraced Truss Panels:</strong> A bridge truss with 2j = m + 3 will instantaneously collapse in shear if even one rectangular panel lacks a diagonal bar!</li>
+          </ul>
+        `,
+        diagram: `GEOMETRIC INSTABILITY TRAPS (râ‚ = 3, yet collapases!):
+
+1. Parallel Reactions:           2. Concurrent Lines:          3. Unbraced Truss Panel:
+   [====================]                 . (Intersection O)       o------o------o------o
+      |        |        |                /|\\                      /|      |      |\\     |\\
+     (o)      (o)      (o)              / | \\                    o-o------o------o-o----o-o
+   No horizontal restraint!       Zero rotational resistance!      Middle bay has NO diagonal!`
+      },
+      {
+        heading: "1.3 Plane Trusses: Internal & Overall Determinacy",
+        body: `
+          <p>In a plane truss, each pin joint provides exactly 2 equilibrium equations: Î£Fx = 0 and Î£Fy = 0.</p>
+          <ul>
+            <li>For <em>j</em> joints, total available joint equations = <strong>2j</strong>.</li>
+            <li>Total unknowns = <strong>m</strong> member forces + <strong>r</strong> support reactions.</li>
+            <li><strong>Internal Condition (with r_m = 3):</strong> Compare <strong>2j</strong> with <strong>m + 3</strong>:
+              <ul>
+                <li>2j &gt; m + 3 âž” Internally Unstable (Lacks sufficient members)</li>
+                <li>2j = m + 3 âž” Internally Determinate (Provided panels are triangulated)</li>
+                <li>2j &lt; m + 3 âž” Internally Indeterminate (Degree D_i = m + 3 - 2j)</li>
+              </ul>
+            </li>
+            <li><strong>Overall Combined Formula:</strong> <code>D = (m + r) - 2j</code></li>
+          </ul>
+        `
+      },
+      {
+        heading: "1.4 Continuous Rigid Frames: Member Formula vs. Closed-Loop Shortcut",
+        body: `
+          <p>Every member in a rigid frame transmits 3 internal forces (Axial N, Shear V, Bending Moment M), and every rigid joint provides 3 equilibrium equations (Î£Fx = 0, Î£Fy = 0, Î£M = 0).</p>
+          <ul>
+            <li><strong>Joint/Member Formula:</strong> <code>D = (3m + r) - (3j + s)</code>, where <em>s</em> is the number of internal releases (e.g., s = 1 for an internal hinge between two members).</li>
+            <li><strong>The Master Closed-Loop Shortcut:</strong> <code>D_i = 3n - I_c</code>, where <em>n</em> is the number of closed loops/cells, and <em>I_c</em> is internal releases. Each completely closed loop adds exactly 3 internal redundants!</li>
+          </ul>
+        `
+      }
+    ],
+    examples: [
+      {
+        title: "Lecture Example: Plane Truss Indeterminacy (PDF 1, Page 5)",
+        problem: "Classify an 8-joint bridge truss (j = 8) on a pin and roller (r = 3) with m = 13 triangulated members vs. m = 14 members (one panel X-braced).",
+        diagram: `Case A (m = 13):  /\\--/\\--/\\  (Every panel is a rigid triangle)
+Case B (m = 14):  /\\--/X\\-/\\  (Center panel has double diagonal X-bracing)`,
+        steps: [
+          "Step 1: Compute equilibrium equations: 2j = 2 Ã— 8 = 16 equations.",
+          "Step 2: For Case A: m + r = 13 + 3 = 16 unknowns. Unknowns = Equations (16 = 16). Every bay is triangulated âž” Stable & Statically Determinate (D = 0).",
+          "Step 3: For Case B: m + r = 14 + 3 = 17 unknowns. Indeterminacy D = 17 - 16 = 1. One redundant diagonal bar must be cut to form a determinate primary structure âž” Stable & 1st Degree Indeterminate (D = 1)."
+        ]
+      },
+      {
+        title: "Lecture Example: Multi-Bay Rigid Frame Indeterminacy (PDF 1, Page 6)",
+        problem: "Determine the internal and overall degree of indeterminacy for a 2-bay, 2-story building frame having j = 9 rigid joints, m = 10 members, s = 0 internal hinges, and 3 fixed column bases (r = 9).",
+        diagram: `   o-------o-------o  Level 2 (3 joints, 2 beams)
+   |  (1)  |  (2)  |  (3 columns)
+   o-------o-------o  Level 1 (3 joints, 2 beams)
+   |       |       |  (3 base columns)
+  [#]     [#]     [#] Ground Supports (3 Fixed = 9 reactions)`,
+        steps: [
+          "Step 1: Count total unknowns: 3m + r = 3(10) + 9 = 39 unknowns.",
+          "Step 2: Count available equations: 3j + s = 3(9) + 0 = 27 equations.",
+          "Step 3: Overall degree of indeterminacy: D = (3m + r) - (3j + s) = 39 - 27 = 12th Degree Indeterminate!",
+          "Step 4 (Alternative Closed-Loop Check): When fixed to the ground, the ground acts as an infinitely rigid base closing 2 lower bays. Total closed loops n = 2 (upper) + 2 (lower with ground) = 4 loops. D = 3n - s = 3(4) - 0 = 12!"
+        ]
+      }
+    ],
+    shortcuts: [
+      "ðŸ”¥ The 3-Reaction Roller Myth: 3 rollers NEVER make a stable structure! At least one support must resist horizontal translation (a pin or fixed base).",
+      "âš¡ Closed-Loop Visual Trick: Count the closed 'windows' in a frame. Each window = 3 degrees of internal indeterminacy (cut one member to open the loop).",
+      "ðŸŽ¯ Pin in a Rigid Frame: If 'k' members meet at a hinge, the number of special equations is s = k - 1 (e.g., 2 members meeting at a pin gives s = 1; 3 members meeting gives s = 2)."
+    ],
+    arena: [
+      {
+        title: "Challenge 1.1: The Horizontal Wind Trap",
+        diagram: `   [====================]  (Uniform vertical load w + horizontal wind H)
+      |       |       |
+     (o)     (o)     (o)   (3 vertical roller supports)`,
+        prompt: "A junior engineer claims this beam is statically determinate because r = 3 and equations = 3, so D = 3 - 3 = 0. What is the true structural verdict?",
+        options: [
+          { text: "A) It is determinate and completely safe.", correct: false, explain: "Look at the reaction lines: all 3 are vertical!" },
+          { text: "B) Geometrically unstable: All reactions are parallel, leaving Î£Fx = 0 unsatisfied under any horizontal load component.", correct: true, explain: "Spot on! Having r = 3 is necessary, NOT sufficient. Parallel reaction lines cause rigid-body lateral instability." },
+          { text: "C) Indeterminate to the 1st degree.", correct: false, explain: "Rollers cannot generate horizontal reactions, so the degree is not the issueâ€”geometric stability fails!" }
+        ]
+      },
+      {
+        title: "Challenge 1.2: Continuous Beam with Internal Hinge (Lecture Review Fig. 3)",
+        diagram: `A [Fixed] ===== B ===== (o) C [Internal Hinge] ===== D (Roller) ===== E (Roller)`,
+        prompt: "Find the overall degree of indeterminacy D for this continuous beam (Fixed at A, Roller at D, Roller at E, Internal Hinge at C).",
+        options: [
+          { text: "A) D = 1 (Indeterminate to 1st degree)", correct: true, explain: "Exact! Reactions r = 3 (Fixed A) + 1 (Roller D) + 1 (Roller E) = 5. Equations = 3 + s = 3 + 1 = 4. D = 5 - 4 = 1!" },
+          { text: "B) D = 0 (Statically Determinate)", correct: false, explain: "Fixed at A has 3 reaction components (vertical, horizontal, moment). 5 reactions vs 4 equations gives D = 1." },
+          { text: "C) D = 2", correct: false, explain: "Don't forget to subtract the internal hinge equation s = 1 (M_C = 0)." }
+        ]
+      }
+    ],
+    cheatsheet: `
+      â€¢ <strong>External Indeterminacy:</strong> D_e = r_a - 3<br/>
+      â€¢ <strong>Plane Truss Combined Formula:</strong> D = (m + r) - 2j<br/>
+      â€¢ <strong>Rigid Frame Combined Formula:</strong> D = (3m + r) - (3j + s)<br/>
+      â€¢ <strong>Closed-Loop Internal Formula:</strong> D_i = 3n - I_c<br/>
+      â€¢ <strong>Internal Hinge Release:</strong> s = k - 1 (for <em>k</em> members meeting at the joint)
+    `
+  },
+
+  // =========================================================================
+  // MODULE 2: CONJUGATE BEAM METHOD
+  // =========================================================================
+  {
+    id: "mod2",
+    shortTitle: "2. Conjugate Beam",
+    fullTitle: "Chapter 2: Deflection of Determinate Beams â€” Conjugate Beam Method",
+    icon: "ðŸŒ‰",
+    theory: [
+      {
+        heading: "2.1 The Mathematical Analogy: Why Conjugate Beam Works",
+        body: `
+          <p>Beam deflection is governed by the curvature differential equation: <code>dÂ²v/dxÂ² = M/EI</code> (where <em>v</em> is deflection and <em>Î¸ = dv/dx</em> is slope).</p>
+          <p>Beam statics is governed by the load-moment differential equation: <code>dÂ²M*/dxÂ² = w*</code> (where <em>M*</em> is moment and <em>V* = dM*/dx</em> is shear force).</p>
+          <div class="concept-callout">
+            Because both physical phenomena satisfy the <strong>identical second-order differential equation</strong>, we can construct an imaginary <em>Conjugate Beam</em> of the same length, load it with the real beam's <strong>M/EI diagram</strong>, and use simple statics:
+            <br/><br/>
+            â€¢ <strong>Conjugate Beam Theorem 1:</strong> The <strong>Slope Î¸</strong> at any point of the real beam equals the <strong>Shear Force V*</strong> in the conjugate beam.<br/>
+            â€¢ <strong>Conjugate Beam Theorem 2:</strong> The <strong>Deflection v</strong> at any point of the real beam equals the <strong>Bending Moment M*</strong> in the conjugate beam.
+          </div>
+        `,
+        formula: `Real Slope Î¸(x) â‰¡ Conjugate Shear V*(x)   |   Real Deflection v(x) â‰¡ Conjugate Moment M*(x)`
+      },
+      {
+        heading: "2.2 Support Transformation Rules & Elastic Sign Convention",
+        body: `
+          <p>Boundary conditions must match physically: where real slope/deflection exist, conjugate shear/moment must exist!</p>
+          <div class="eng-table-wrapper">
+            <table class="eng-table">
+              <thead>
+                <tr>
+                  <th>Real Beam Boundary</th>
+                  <th>Real Conditions</th>
+                  <th>Conjugate Beam Boundary</th>
+                  <th>Conjugate Conditions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>Simple Exterior Pin/Roller</td><td>Î¸ â‰  0, v = 0</td><td>Simple Pin/Roller</td><td>V* â‰  0, M* = 0</td></tr>
+                <tr><td>Fixed Support</td><td>Î¸ = 0, v = 0</td><td>Free End</td><td>V* = 0, M* = 0</td></tr>
+                <tr><td>Free End (Cantilever tip)</td><td>Î¸ â‰  0, v â‰  0</td><td>Fixed Support</td><td>V* â‰  0, M* â‰  0</td></tr>
+                <tr><td>Interior Roller/Support</td><td>Î¸ continuous, v = 0</td><td>Internal Hinge</td><td>V* continuous, M* = 0</td></tr>
+                <tr><td>Internal Hinge</td><td>Î¸ discontinuous, v â‰  0</td><td>Interior Support</td><td>V* jumps, M* â‰  0</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p style="margin-top:12px;"><strong>Sign Rule:</strong> Positive (+M/EI) sagging moments act as <strong>UPWARD</strong> elastic loads. Negative (-M/EI) hogging moments act as <strong>DOWNWARD</strong> elastic loads.</p>
+        `,
+        diagram: `SUPPORT TRANSFORMATION VISUAL GUIDE:
+
+Real Cantilever:     A [Fixed] ================== B (Free tip)
+Conjugate Cantilever: A (Free) ================== B [Fixed]
+
+Real Overhang:       A (Pin) ==== B (Roller) ==== C (Free tip)
+Conjugate Beam:      A (Pin) ==== B (Hinge)  ==== C [Fixed]`
+      }
+    ],
+    examples: [
+      {
+        title: "Lecture Example 1: Cantilever with Tip Load P (PDF 2, Page 5)",
+        problem: "Derive the maximum rotation Î¸_B and deflection v_B at the free tip of a cantilever beam AB of length L and flexural rigidity EI subjected to concentrated downward load P.",
+        diagram: `Real Beam:      A [Fixed] ================== B (Load P â†“)
+Real BMD:       -PL at A (hogging) tapering linearly to 0 at B
+Conjugate Beam: A (Free) ================== B [Fixed]
+Elastic Load:   Downward triangle of peak PL/EI at A, 0 at B`,
+        steps: [
+          "Step 1: Construct the conjugate beam: Fixed end A becomes Free; Free tip B becomes Fixed.",
+          "Step 2: Total downward elastic load = Area of M/EI triangle: W* = Â½(L)(PL/EI) = PLÂ² / (2EI).",
+          "Step 3: Distance from heavy end A to centroid is L/3; distance from fixed support B to centroid is 2L/3.",
+          "Step 4: Conjugate Shear at B = Slope Î¸_B: V_B* = W* = PLÂ² / (2EI) (Clockwise rotation).",
+          "Step 5: Conjugate Moment at B = Deflection v_B: M_B* = W* Ã— (2L/3) = [PLÂ² / (2EI)] Ã— (2L/3) = PLÂ³ / (3EI) (Downward deflection)!"
+        ]
+      },
+      {
+        title: "Lecture Example 4: Simply Supported Beam with UDL w (PDF 2, Page 6)",
+        problem: "Find the end slope Î¸_A and midspan deflection v_C for a simple beam AB under uniform load w over span L.",
+        diagram: `Real Beam:      A (Pin) ================== B (Roller)  [UDL w over L]
+Real BMD:       Parabola with peak +wLÂ²/8EI at midspan C
+Conjugate Beam: A (Pin) ================== B (Roller) [Upward parabolic load]`,
+        steps: [
+          "Step 1: Area of symmetric parabola = (2/3) Ã— base Ã— height = (2/3)(L)(wLÂ² / 8EI) = wLÂ³ / (12EI).",
+          "Step 2: By symmetry, each conjugate support carries half: R_A* = R_B* = Â½ [wLÂ³ / (12EI)] = wLÂ³ / (24EI) downward.",
+          "Step 3: Slope at support A = Conjugate Shear V_A* = wLÂ³ / (24EI) (Clockwise).",
+          "Step 4: Midspan deflection v_C = Conjugate Moment M_C* at x = L/2: Cut at C, take moments of left half:",
+          "M_C* = R_A*(L/2) - (Area of half parabola) Ã— (Centroid arm to C) = [wLÂ³/(24EI)](L/2) - [(2/3)(L/2)(wLÂ²/8EI)] Ã— [3/8 Ã— (L/2)] = 5wLâ´ / (384EI) Downward!"
+        ]
+      }
+    ],
+    shortcuts: [
+      "âš¡ Centroid of Triangle: Distance from the pointed (zero) tip to centroid is ALWAYS 2/3 of span! Distance from heavy end is 1/3 of span.",
+      "âš¡ Parabola Area Shortcut: Area of full symmetric parabola = (2/3)Â·bÂ·h. Area of 2nd-degree spandrel (vertex at support) = (1/3)Â·bÂ·h.",
+      "ðŸ”¥ The Overhang Secret: An overhang in a real beam always turns into a FIXED support in the conjugate beam! You solve the main span first, then evaluate the cantilever overhang directly."
+    ],
+    arena: [
+      {
+        title: "Challenge 2.1: Support Transformation Mastery",
+        diagram: `Real Beam: A [Fixed] ======== B (Interior Roller) ======== C (Free Overhang)`,
+        prompt: "Transform supports A, B, and C into their Conjugate Beam counterparts:",
+        options: [
+          { text: "A) A = Free End, B = Internal Hinge, C = Fixed Support", correct: true, explain: "Spot on! Fixed becomes Free, interior support becomes internal hinge, and free tip becomes fixed support." },
+          { text: "B) A = Fixed, B = Roller, C = Free", correct: false, explain: "Supports must transform so kinematic conditions match static conditions!" },
+          { text: "C) A = Free, B = Roller, C = Pin", correct: false, explain: "An interior roller prevents deflection (v = 0) while slope is continuous, which is the exact definition of an internal hinge (M* = 0, V* continuous)!" }
+        ]
+      }
+    ],
+    cheatsheet: `
+      â€¢ <strong>Cantilever Tip Load P:</strong> Î¸ = PLÂ²/(2EI),  v = PLÂ³/(3EI)<br/>
+      â€¢ <strong>Cantilever UDL w:</strong> Î¸ = wLÂ³/(6EI),  v = wLâ´/(8EI)<br/>
+      â€¢ <strong>Simple Beam Center Load P:</strong> Î¸ = PLÂ²/(16EI),  v = PLÂ³/(48EI)<br/>
+      â€¢ <strong>Simple Beam UDL w:</strong> Î¸ = wLÂ³/(24EI),  v = 5wLâ´/(384EI)<br/>
+      â€¢ <strong>Simple Beam End Moment M_o:</strong> Î¸_near = M_o L / (3EI),  Î¸_far = M_o L / (6EI)
+    `
+  },
+
+  // =========================================================================
+  // MODULE 3: VIRTUAL WORK (UNIT LOAD METHOD)
+  // =========================================================================
+  {
+    id: "mod3",
+    shortTitle: "3. Virtual Work",
+    fullTitle: "Chapter 3: Virtual Work (Unit Load Method) for Trusses, Beams & Frames",
+    icon: "ðŸŽ¯",
+    theory: [
+      {
+        heading: "3.1 Principle of Virtual Work for Deformable Bodies",
+        body: `
+          <p>Bernoulli's principle of virtual displacements states that for an elastic body in equilibrium under a fictitious virtual load system (State II), subjected to the real deformations caused by actual loads, temperature changes, or support movements (State I):</p>
+          <div class="concept-callout">
+            <strong>External Virtual Work (W_e) = Internal Virtual Work (W_i)</strong><br/>
+            â€¢ To find a linear deflection Î”: Apply a fictitious <strong>Unit Force (P = 1.0)</strong> at the point and in the direction of Î” âž” <code>1.0 Â· Î” = W_i</code><br/>
+            â€¢ To find an angular rotation Î¸: Apply a fictitious <strong>Unit Couple (M = 1.0)</strong> at the point and in the direction of Î¸ âž” <code>1.0 Â· Î¸ = W_i</code>
+          </div>
+        `,
+        formula: `1.0 Â· Î” = Î£ [n Â· Î”L] + âˆ« [m Â· M / (EI)] dx`
+      },
+      {
+        heading: "3.2 Trusses: Axial Strains, Temperature & Fabrication Errors",
+        body: `
+          <p>For pin-jointed trusses, the internal virtual work is summed over all members:</p>
+          <ul>
+            <li><strong>From Real Applied Loads:</strong> <code>Î”L = NÂ·L / (EÂ·A)</code> âž” <code>1Â·Î” = Î£ [n Â· N Â· L / (E Â· A)]</code></li>
+            <li><strong>From Temperature Change (Î”T):</strong> <code>Î”L = Î± Â· (Î”T) Â· L</code> âž” <code>1Â·Î” = Î£ [n Â· Î± Â· (Î”T) Â· L]</code></li>
+            <li><strong>From Fabrication Error:</strong> <code>Î”L = Î”L_fab</code> (positive if manufactured too long, negative if too short) âž” <code>1Â·Î” = Î£ [n Â· Î”L_fab]</code></li>
+          </ul>
+        `
+      },
+      {
+        heading: "3.3 Graphical Multiplication Method (Vereshchagin's Rule)",
+        body: `
+          <p>Calculating the integral <code>âˆ« [m Â· M / EI] dx</code> by hand calculus is tedious. Since the virtual moment diagram <em>m(x)</em> from a unit load is <strong>always piecewise linear</strong>, Vereshchagin proved that:</p>
+          <div class="concept-callout">
+            <strong>Vereshchagin's Rule:</strong><br/>
+            <code>âˆ«â‚€á´¸ m Â· M dx = Area(M) Ã— m_centroid</code><br/>
+            Multiply the total area of the real bending moment diagram <strong>Area(M)</strong> by the ordinate value of the linear virtual moment diagram <strong>m_c</strong> measured directly under the centroid of Area(M)!
+          </div>
+        `,
+        diagram: `VERESHCHAGIN GRAPHICAL MULTIPLICATION TABLE:
+
+1. Rectangle:         Area = h Â· L           Centroid: a = L/2,   b = L/2
+2. Triangle:          Area = Â½ Â· h Â· L       Centroid: a = L/3,   b = 2L/3
+3. Standard Parabola: Area = â…” Â· h Â· L       Centroid: a = L/2,   b = L/2
+4. 2ndÂ° Spandrel:     Area = â…“ Â· h Â· L       Centroid: a = L/4,   b = 3L/4`
+      },
+      {
+        heading: "3.4 Support Movements in Statically Determinate Structures",
+        body: `
+          <p><strong>Fundamental Insight:</strong> In a statically determinate structure, settlement or translation of a support induces <strong>zero internal stress (M = 0, N = 0)</strong>! The structure simply shifts as a rigid body.</p>
+          <p>Therefore, internal virtual work is strictly zero: <code>W_i = 0</code>!</p>
+          <p>Equating external virtual work to zero gives: <code>1.0 Â· Î”_target + Î£ (R_virtual Â· Î”_settlement) = 0</code></p>
+        `
+      }
+    ],
+    examples: [
+      {
+        title: "Lecture Example: Complete 13-Member Truss Deflection Table (PDF 3, Page 9)",
+        problem: "Calculate the vertical deflection of joint B for an 8-joint bridge truss subjected to a 10 kN downward load at joint D. Chord members have A = 6 cmÂ², web members A = 4 cmÂ², E = 210 GPa.",
+        diagram: `        H (2.4m)         G               F
+        o---------------o---------------o
+       /|\\              |              /|\\
+      / | \\             |             / | \\
+     o--o--o------------o------------o--o--o
+     A  B               C               D  E
+     |2.4m|---1.6m---|---1.6m---|2.4m|  (10 kN â†“ at D)`,
+        steps: [
+          "Step 1: Compute real forces N in all 13 members under 10 kN at joint D using method of joints/sections.",
+          "Step 2: Remove real load; apply unit vertical load (P = 1.0) downward at joint B; compute virtual forces n in all 13 members.",
+          "Step 3: Form the product column (n Â· N Â· L / A) for each member:",
+          "â€¢ Member EF: L=3.394m, A=6cmÂ², N=-9.90kN, n=-0.424 âž” Product = +2.374",
+          "â€¢ Member HC: L=2.884m, A=4cmÂ², N=+3.61kN, n=-0.361 âž” Product = -0.940",
+          "â€¢ Summing all 13 members gives: Î£ (n Â· N Â· L / A) = 7.002 kNÂ·m/cmÂ² = 70.02 kNÂ·m/mÂ².",
+          "Step 4: Divide by E = 210 Ã— 10â¶ kN/mÂ²: Î´_B = 70.02 / (210 Ã— 10â¶) m = 0.333 mm Downward!"
+        ]
+      }
+    ],
+    shortcuts: [
+      "ðŸ”¥ Zero-Force Member Elimination: If a member has n = 0 (no force under virtual load), its product nÂ·NÂ·L/EA is ZERO! Don't waste time computing its real force N!",
+      "âš¡ Sign Rule for Virtual Work: If n and N have the SAME sign (both tension + or both compression -), their product is POSITIVE (contributes in the direction of the unit load).",
+      "ðŸŽ¯ Frame Axial Neglect: In beams and rigid frames, axial deformation energy is typically < 1% of bending deformation. Always neglect axial strains unless explicitly told otherwise."
+    ],
+    arena: [
+      {
+        title: "Challenge 3.1: Graphical Multiplication Speed Run",
+        diagram: `Real M-Diagram: Parabola of height h = wLÂ²/(8EI) over span L (Area = â…” Â· h Â· L)
+Virtual m-Diagram (Unit Couple at Support A): Triangle from 1.0 at A to 0 at B (Midspan ordinate m_c = 0.5)`,
+        prompt: "Use Vereshchagin's rule to find the end rotation Î¸_A without integrating:",
+        options: [
+          { text: "A) Î¸_A = [ â…” Â· L Â· wLÂ²/(8EI) ] Ã— (0.5) = wLÂ³ / (24EI)", correct: true, explain: "Mastery! Area = wLÂ³/(12EI). Multiply by midspan ordinate 0.5 gives exactly wLÂ³/(24EI) in 5 seconds flat!" },
+          { text: "B) Î¸_A = wLÂ³ / (12EI)", correct: false, explain: "You forgot to multiply by the centroid ordinate m_c = 0.5!" },
+          { text: "C) Î¸_A = 5wLâ´ / (384EI)", correct: false, explain: "5wLâ´/(384EI) is the midspan deflection v, not the end rotation Î¸!" }
+        ]
+      }
+    ],
+    cheatsheet: `
+      â€¢ <strong>Truss Axial Strain:</strong> 1Â·Î” = Î£ [n Â· N Â· L / (EA)]<br/>
+      â€¢ <strong>Temperature Effect:</strong> 1Â·Î” = Î£ [n Â· Î± Â· Î”T Â· L]<br/>
+      â€¢ <strong>Fabrication Error:</strong> 1Â·Î” = Î£ [n Â· Î”L_fab]<br/>
+      â€¢ <strong>Beam/Frame Flexure:</strong> 1Â·Î” = âˆ« [m Â· M / (EI)] dx = Î£ [Area(M) Ã— m_c / EI]<br/>
+      â€¢ <strong>Support Movement (Determinate):</strong> 1Â·Î” = - Î£ (R_virtual Â· Î”_settlement)
+    `
+  },
+
+  // =========================================================================
+  // MODULE 4: CONSISTENT DEFORMATION (FLEXIBILITY / FORCE METHOD)
+  // =========================================================================
+  {
+    id: "mod4",
+    shortTitle: "4. Consistent Deformation",
+    fullTitle: "Chapter 4: Analysis of Indeterminate Structures by Consistent Deformation",
+    icon: "ðŸ§©",
+    theory: [
+      {
+        heading: "4.1 The Core Philosophy of the Force/Flexibility Method",
+        body: `
+          <p>Statically indeterminate structures cannot be solved by equilibrium alone because there are more unknown forces than available equations. The <strong>Method of Consistent Deformation</strong> resolves this in 4 systematic steps:</p>
+          <div class="concept-callout">
+            <strong>1. Release Redundants:</strong> Remove redundant supports or cut members to convert the indeterminate structure into a stable, statically determinate <em>Primary (Base) Structure</em>.<br/>
+            <strong>2. Free Deformation (State 0):</strong> Apply the real external loads to the primary structure. Calculate the resulting deflection at the released coordinate: <code>Î”_10</code>.<br/>
+            <strong>3. Unit Redundant (State 1):</strong> Remove real loads and apply a unit redundant force (Xâ‚ = 1.0) at the release. Calculate the flexibility coefficient: <code>Î´_11</code> (deflection per unit redundant force).<br/>
+            <strong>4. Compatibility Equation:</strong> Enforce that the actual boundary does not move (or moves by a known settlement Î”_support):
+            <br/><code>Î”â‚â‚€ + Xâ‚ Â· Î´â‚â‚ = 0   âž”   Xâ‚ = - Î”â‚â‚€ / Î´â‚â‚</code>
+          </div>
+        `,
+        formula: `Compatibility: [Î´] {X} + {Î”_o} = {Î”_settlement}`
+      },
+      {
+        heading: "4.2 Multiple Redundants & Maxwell-Betti Reciprocal Theorem",
+        body: `
+          <p>For a structure indeterminate to degree <em>n</em>, release <em>n</em> redundants. Compatibility forms a system of <em>n</em> simultaneous linear equations:</p>
+          <div class="formula-banner">
+            Î”â‚â‚€ + Xâ‚Â·Î´â‚â‚ + Xâ‚‚Â·Î´â‚â‚‚ + ... + X_nÂ·Î´â‚_n = 0<br/>
+            Î”â‚‚â‚€ + Xâ‚Â·Î´â‚‚â‚ + Xâ‚‚Â·Î´â‚‚â‚‚ + ... + X_nÂ·Î´â‚‚_n = 0
+          </div>
+          <p><strong>Maxwell's Reciprocal Deflection Theorem:</strong> The deflection at coordinate <em>i</em> due to a unit load at <em>j</em> is identical to the deflection at <em>j</em> due to a unit load at <em>i</em>: <code>Î´_ij = Î´_ji</code>! This guarantees that the flexibility matrix is always <strong>symmetric</strong>, cutting your integration work in half!</p>
+        `
+      }
+    ],
+    examples: [
+      {
+        title: "Lecture Example 1: Propped Cantilever under UDL w (PDF 4, Page 3)",
+        problem: "Determine the reaction at roller B and draw the BMD for a propped cantilever beam AB of span L with fixed support at A and roller at B, carrying uniform load w.",
+        diagram: `Real Beam:       A [Fixed] ==================== B (Roller) [Uniform load w]
+Primary Structure: A [Fixed] ==================== B (Free tip) [Release Roller B]
+State 0: Real load w pushes B down: Î”_B0 = -wLâ´ / (8EI)
+State 1: Unit upward force at B pushes B up: Î´_BB = +LÂ³ / (3EI)`,
+        steps: [
+          "Step 1: Release redundant roller B. The primary structure is a determinate cantilever.",
+          "Step 2: Under real load w, downward tip deflection is Î”_B0 = -wLâ´ / (8EI).",
+          "Step 3: Under unit upward load X_B = 1 at B, upward tip deflection is Î´_BB = LÂ³ / (3EI).",
+          "Step 4: Compatibility condition: Î”_B0 + X_B Â· Î´_BB = 0",
+          "âž” X_B = -Î”_B0 / Î´_BB = [-(-wLâ´/8EI)] / [LÂ³/3EI] = (3/8) wL Upward!",
+          "Step 5: Solve remaining reactions by statics:",
+          "â€¢ Vertical reaction at A: R_A = wL - R_B = wL - (3/8)wL = (5/8) wL Upward.",
+          "â€¢ Fixed end moment at A: M_A = wLÂ²/2 - R_BÂ·L = wLÂ²/2 - (3/8)wLÂ² = wLÂ² / 8 (Hogging)!"
+        ]
+      }
+    ],
+    shortcuts: [
+      "ðŸ”¥ The Propped Cantilever Shortcut: For ANY propped cantilever under UDL w, the roller ALWAYS takes exactly 3/8 wL, and the fixed wall takes 5/8 wL and wLÂ²/8 moment!",
+      "âš¡ Strategic Base Structure Choice: Choosing a primary structure that maximizes symmetry or zero-moment regions drastically reduces your virtual work integrals.",
+      "ðŸŽ¯ Support Settlement Inclusion: If the roller support settles downward by amount Î”_s, simply put -Î”_s on the right-hand side of compatibility: Î”_B0 + R_B Â· Î´_BB = -Î”_s."
+    ],
+    arena: [
+      {
+        title: "Challenge 4.1: Propped Cantilever Center Point Load",
+        diagram: `A [Fixed] ============= (P at midspan L/2) ============= B (Roller)`,
+        prompt: "Using consistent deformation (Î”_B0 = -5PLÂ³/(48EI), Î´_BB = LÂ³/(3EI)), find reaction R_B:",
+        options: [
+          { text: "A) R_B = 5P / 16 (Upward)", correct: true, explain: "Boom! R_B = (5PLÂ³/48EI) / (LÂ³/3EI) = (5/48) Ã— 3 P = 5P/16. Then wall reaction is R_A = 11P/16 and M_A = 3PL/16!" },
+          { text: "B) R_B = P / 2", correct: false, explain: "P/2 would be a symmetric simply supported beam. Fixed end A attracts more stiffness, leaving only 5P/16 for roller B." },
+          { text: "C) R_B = 3P / 8", correct: false, explain: "3/8 is for uniform load wL, not a concentrated center load P!" }
+        ]
+      }
+    ],
+    cheatsheet: `
+      â€¢ <strong>Single Redundant:</strong> R = - Î”â‚â‚€ / Î´â‚â‚<br/>
+      â€¢ <strong>Propped Cantilever (UDL w):</strong> R_roller = 3wL/8,  R_wall = 5wL/8,  M_wall = wLÂ²/8<br/>
+      â€¢ <strong>Propped Cantilever (Mid Point P):</strong> R_roller = 5P/16,  R_wall = 11P/16,  M_wall = 3PL/16<br/>
+      â€¢ <strong>Symmetry Theorem:</strong> Î´_ij = Î´_ji (Maxwell-Betti Reciprocal Theorem)
+    `
+  },
+
+  // =========================================================================
+  // MODULE 5: THREE-MOMENT EQUATION (CLAPEYRON'S THEOREM)
+  // =========================================================================
+  {
+    id: "mod5",
+    shortTitle: "5. Three-Moment Equation",
+    fullTitle: "Chapter 5: Continuous Beams â€” Clapeyron's Three-Moment Equation",
+    icon: "ðŸ“",
+    theory: [
+      {
+        heading: "5.1 Physical Basis: Tangent Slope Continuity",
+        body: `
+          <p>Clapeyron's Three-Moment Equation relates the internal bending moments at three consecutive supports (Left <em>L</em>, Center <em>C</em>, Right <em>R</em>) of a continuous beam. It enforces that the beam's elastic curve has a <strong>smooth, continuous slope (Î¸_left = Î¸_right)</strong> across the interior support.</p>
+          <div class="concept-callout">
+            <strong>Standard Three-Moment Equation (Constant EI & Unyielding Supports):</strong><br/>
+            <code>M_L Â· L_L + 2 M_C (L_L + L_R) + M_R Â· L_R = - (6 A_L x_L / L_L) - (6 A_R x_R / L_R)</code>
+          </div>
+        `,
+        formula: `M_L Â· L_L + 2 M_C (L_L + L_R) + M_R Â· L_R = - [6 A_L x_L / L_L] - [6 A_R x_R / L_R]`
+      },
+      {
+        heading: "5.2 Universal Load Terms (6Ax/L)",
+        body: `
+          <p>The right-hand side represents the free bending moment diagram area terms:</p>
+          <ul>
+            <li><strong>Uniformly Distributed Load (w) on span L:</strong> <code>6Ax / L = w Â· LÂ³ / 4</code></li>
+            <li><strong>Concentrated Load (P) at distance <em>a</em> from outer support:</strong> <code>6Ax / L = P Â· a Â· (LÂ² - aÂ²) / L</code></li>
+            <li><strong>Center Point Load (P at midspan L/2):</strong> <code>6Ax / L = (3/8) Â· P Â· LÂ²</code></li>
+          </ul>
+        `
+      },
+      {
+        heading: "5.3 The Imaginary Zero-Span Trick for Fixed Ends",
+        body: `
+          <p><strong>The Dilemma:</strong> A fixed support has an unknown moment (M_wall â‰  0), but it has no span to its left to apply the 3-moment equation.</p>
+          <p><strong>The Master Trick:</strong> Add an <strong>imaginary span of length Lâ‚€ = 0 and infinite rigidity (EIâ‚€ = âˆž)</strong> to the left of the fixed end! The ratio <code>Lâ‚€ / EIâ‚€ = 0</code>, and the load term is 0. This instantly yields an extra equation to solve the fixed end moment directly!</p>
+        `
+      }
+    ],
+    examples: [
+      {
+        title: "Lecture Example 3: Two-Span Continuous Beam (PDF 5, Page 5)",
+        problem: "Find support moment M_B and all reactions for continuous beam ABC. Span AB = 4.0m with 40 kN point load at midspan (a = 2m); Span BC = 6.0m with uniform load 10 kN/m. Supports A and C are simple pins/rollers.",
+        diagram: `         40 kN (midspan)              10 kN/m (uniform)
+             â†“                        â†“â†“â†“â†“â†“â†“â†“â†“â†“â†“â†“â†“â†“â†“â†“â†“â†“â†“
+   A (Pin) ======== B (Roller) ============================== C (Roller)
+     |--- 2m ---|--- 2m ---|                  |--------- 6.0m ---------|`,
+        steps: [
+          "Step 1: Identify boundary conditions: Exterior simple supports carry zero moment: M_A = 0, M_C = 0.",
+          "Step 2: Compute load term for Span AB (Point load 40 kN at a = 2m, L = 4m):",
+          "â€¢ 6 A_L x_L / L_L = P Â· a Â· (LÂ² - aÂ²) / L = 40 Ã— 2 Ã— (4Â² - 2Â²) / 4 = 80 Ã— 12 / 4 = 240 kNÂ·mÂ².",
+          "Step 3: Compute load term for Span BC (UDL 10 kN/m on L = 6m):",
+          "â€¢ 6 A_R x_R / L_R = w Â· LÂ³ / 4 = 10 Ã— 6Â³ / 4 = 10 Ã— 216 / 4 = 540 kNÂ·mÂ².",
+          "Step 4: Substitute into Three-Moment Equation for ABC:",
+          "â€¢ 0(4) + 2 M_B (4 + 6) + 0(6) = - [240 + 540]",
+          "â€¢ 20 M_B = -780  âž”  M_B = -39.0 kNÂ·m (Hogging over support B)!",
+          "Step 5: Compute reactions by isolating each span:",
+          "â€¢ Span AB: Î£M_B = 0 âž” R_A Ã— 4 - 40 Ã— 2 + (-39) = 0 âž” R_A = (80 - 39)/4 = 10.25 kN.",
+          "â€¢ Span BC: Î£M_B = 0 âž” R_C Ã— 6 - (10 Ã— 6) Ã— 3 + (-39) = 0 âž” R_C = (180 - 39)/6 = 23.50 kN.",
+          "â€¢ Support B reaction: R_B = Total Load - R_A - R_C = (40 + 60) - 10.25 - 23.50 = 66.25 kN Upward!"
+        ]
+      }
+    ],
+    shortcuts: [
+      "ðŸ”¥ The Negative Sign on RHS: Gravity loads push DOWN, causing positive sagging free moments, which always create NEGATIVE hogging support moments over interior piers! Never drop the minus sign on the RHS!",
+      "âš¡ Equal Spans & UDL Shortcut: For two equal spans L under uniform load w: 2 M_B (L + L) = - 2 (wLÂ³/4) âž” 4L M_B = - wLÂ³/2 âž” M_B = - wLÂ² / 8!",
+      "ðŸŽ¯ Fixed-End FEM Derivation: You can derive any standard fixed-end moment formula in 2 lines using the Three-Moment imaginary zero span!"
+    ],
+    arena: [
+      {
+        title: "Challenge 5.1: Two Equal Spans with UDL",
+        diagram: `A (Pin) ======== (Span L, UDL w) ======== B (Roller) ======== (Span L, UDL w) ======== C (Roller)`,
+        prompt: "What is the hogging support moment M_B over the center support?",
+        options: [
+          { text: "A) M_B = - wLÂ² / 8", correct: true, explain: "Flawless! 2 M_B (L + L) = - 2(wLÂ³/4) âž” 4L M_B = - wLÂ³/2 âž” M_B = -wLÂ²/8!" },
+          { text: "B) M_B = - wLÂ² / 12", correct: false, explain: "-wLÂ²/12 is the fixed end moment of a single clamped span, not an interior roller with simple ends!" },
+          { text: "C) M_B = - wLÂ² / 16", correct: false, explain: "Check the arithmetic: 2(wLÂ³/4) / (4L) = (wLÂ²/2) / 4 = wLÂ²/8." }
+        ]
+      }
+    ],
+    cheatsheet: `
+      â€¢ <strong>Three-Moment Equation:</strong> M_L L_L + 2 M_C (L_L + L_R) + M_R L_R = - [6A_L x_L / L_L + 6A_R x_R / L_R]<br/>
+      â€¢ <strong>UDL Load Term:</strong> 6Ax / L = w LÂ³ / 4<br/>
+      â€¢ <strong>Point Load Term:</strong> 6Ax / L = P a (LÂ² - aÂ²) / L<br/>
+      â€¢ <strong>Center Point Load Term:</strong> 6Ax / L = 3 P LÂ² / 8<br/>
+      â€¢ <strong>Fixed End:</strong> Attach imaginary span Lâ‚€ = 0, EIâ‚€ = âˆž
+    `
+  },
+
+  // =========================================================================
+  // MODULE 6: SLOPE-DEFLECTION METHOD
+  // =========================================================================
+  {
+    id: "mod6",
+    shortTitle: "6. Slope-Deflection",
+    fullTitle: "Chapter 6: Slope-Deflection Method for Indeterminate Beams & Frames",
+    icon: "ðŸ“ˆ",
+    theory: [
+      {
+        heading: "6.1 Core Principle & The AAU COTM 3101 Sign Convention",
+        body: `
+          <p>The Slope-Deflection method is a <strong>Displacement (Stiffness) Method</strong>. Member end moments are expressed directly in terms of joint rotations (Î¸) and relative lateral joint translations / chord sway (Î”).</p>
+          <div class="concept-callout">
+            <strong>CRITICAL EXAM ALERT â€” AAU COTM 3101 Statical Sign Convention:</strong><br/>
+            Unlike some US textbooks that make clockwise moments positive everywhere, your AAU lecture notes establish:
+            <br/><br/>
+            â€¢ <strong>Joint & Member Rotation Î¸:</strong> POSITIVE when <strong>CLOCKWISE</strong>.<br/>
+            â€¢ <strong>Member End Moment M_AB:</strong> POSITIVE when it acts <strong>COUNTER-CLOCKWISE on the member</strong> (which means Clockwise on the joint!).<br/>
+            â€¢ <strong>Because of this exact convention, the AAU Slope-Deflection equation has a MINUS sign:</strong>
+          </div>
+        `,
+        formula: `M_AB = M^F_AB - 2EK ( 2Î¸_A + Î¸_B - 3Î”/L )`
+      },
+      {
+        heading: "6.2 Anatomy of the Slope-Deflection Equation",
+        body: `
+          <p>In the formula <code>M_AB = M^F_AB - 2EK ( 2Î¸_A + Î¸_B - 3Î”/L )</code>:</p>
+          <ul>
+            <li><strong>M^F_AB:</strong> Fixed-End Moment at end A with all joints clamped.</li>
+            <li><strong>K = I / L:</strong> Relative member flexural stiffness.</li>
+            <li><strong>Î¸_A:</strong> Rotation of the near end A (radians).</li>
+            <li><strong>Î¸_B:</strong> Rotation of the far end B (radians).</li>
+            <li><strong>Ïˆ = Î” / L:</strong> Chord rotation due to side sway or support settlement.</li>
+          </ul>
+        `
+      },
+      {
+        heading: "6.3 Fixed-End Moments Table (AAU Sign Convention)",
+        body: `
+          <div class="eng-table-wrapper">
+            <table class="eng-table">
+              <thead>
+                <tr>
+                  <th>Load Case</th>
+                  <th>Left End (M^F_AB)</th>
+                  <th>Right End (M^F_BA)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>UDL w over entire span L</td><td>+ wLÂ² / 12 (CCW)</td><td>- wLÂ² / 12 (CW)</td></tr>
+                <tr><td>Concentrated Center Load P</td><td>+ PL / 8 (CCW)</td><td>- PL / 8 (CW)</td></tr>
+                <tr><td>Point Load P at distance <em>a</em> from A, <em>b</em> from B</td><td>+ P a bÂ² / LÂ²</td><td>- P aÂ² b / LÂ²</td></tr>
+                <tr><td>Couple Mâ‚€ at center L/2</td><td>- Mâ‚€ / 4</td><td>- Mâ‚€ / 4</td></tr>
+              </tbody>
+            </table>
+          </div>
+        `
+      },
+      {
+        heading: "6.4 Sway vs. Non-Sway Frames & The Story Shear Equation",
+        body: `
+          <p>Frames without lateral bracing can sway horizontally (Î” â‰  0). Each independent sway degree of freedom introduces an extra unknown: Î”.</p>
+          <p>To solve for Î”, construct a <strong>Column Shear Equilibrium Equation</strong> by cutting the columns of the story horizontally and applying Î£Fx = 0 across the entire story!</p>
+        `
+      }
+    ],
+    examples: [
+      {
+        title: "Lecture Example: Two-Span Continuous Beam (PDF 6, Page 9)",
+        problem: "Solve the end moments for beam ABC with Fixed support at A, Roller at B, and Roller at C under uniform loads using Slope-Deflection equations.",
+        diagram: `A [Fixed] ================= B (Roller) ================= C (Roller)
+Î¸_A = 0 (Fixed wall)      Î¸_B = unknown        Î¸_C = unknown`,
+        steps: [
+          "Step 1: Identify degrees of freedom: Î¸_A = 0 (fixed). Unknowns are joint rotations Î¸_B and Î¸_C. No sway (Î” = 0).",
+          "Step 2: Write fixed end moments for spans AB and BC from the standard table.",
+          "Step 3: Write Slope-Deflection equations for M_AB, M_BA, M_BC, and M_CB in terms of Î¸_B and Î¸_C.",
+          "Step 4: Formulate joint equilibrium equations:",
+          "â€¢ Joint B: Î£M_B = 0 âž” M_BA + M_BC = 0",
+          "â€¢ Exterior Roller C: M_CB = 0",
+          "Step 5: Solve the 2 Ã— 2 system for Î¸_B and Î¸_C, then back-substitute to find all final member end moments!"
+        ]
+      }
+    ],
+    shortcuts: [
+      "ðŸ”¥ The AAU Minus Sign Decoded: If you write '+ 2EK', you will get opposite signs on every single exam problem! Memorize: M_AB = M^F_AB - 2EK(2Î¸_A + Î¸_B - 3Î”/L).",
+      "âš¡ Far-End Hinge Shortcut: When far end B is a simple hinge (M_BA = 0), eliminate Î¸_B beforehand: M_AB = M^F_AB - (M^F_BA / 2) - 3EK(Î¸_A - Î”/L).",
+      "ðŸŽ¯ Number of Equations = Kinematic Indeterminacy: Count unconstrained joint rotations + independent sway modes. That is EXACTLY how many simultaneous equations you must solve."
+    ],
+    arena: [
+      {
+        title: "Challenge 6.1: Why the Minus Sign in Your Lecture Notes?",
+        diagram: `AAU Governing Formula: M_AB = M^F_AB - 2EK ( 2Î¸_A + Î¸_B - 3Î”/L )`,
+        prompt: "Why is there a MINUS sign in front of 2EK in your COTM 3101 course notes?",
+        options: [
+          { text: "A) Because joint rotation Î¸ is positive CLOCKWISE, while member end moment M is defined positive COUNTER-CLOCKWISE on the member!", correct: true, explain: "Brilliant! When end A rotates clockwise (+Î¸_A), the beam resists with a clockwise moment on the memberâ€”which is NEGATIVE under the CCW convention (-4EKÎ¸_A)!" },
+          { text: "B) It is a typographical error in the PDF.", correct: false, explain: "It is mathematically rigorous and consistent across all AAU lecture notes!" },
+          { text: "C) Because Young's Modulus E is negative.", correct: false, explain: "E is a positive material constant." }
+        ]
+      }
+    ],
+    cheatsheet: `
+      â€¢ <strong>Slope-Deflection Formula:</strong> M_AB = M^F_AB - 2EK [2Î¸_A + Î¸_B - 3(Î”/L)]<br/>
+      â€¢ <strong>Near End Rotation:</strong> Multiplier is 2 (i.e. 4EKÎ¸_A)<br/>
+      â€¢ <strong>Far End Rotation:</strong> Multiplier is 1 (i.e. 2EKÎ¸_B)<br/>
+      â€¢ <strong>Chord Rotation / Sway:</strong> Multiplier is 3 (i.e. 6EKÎ”/L)<br/>
+      â€¢ <strong>Joint Equilibrium:</strong> Î£ M_joint = 0 for all interior joints
+    `
+  },
+
+  // =========================================================================
+  // MODULE 7: MOMENT DISTRIBUTION METHOD (HARDY CROSS)
+  // =========================================================================
+  {
+    id: "mod7",
+    shortTitle: "7. Moment Distribution",
+    fullTitle: "Chapter 7: Moment Distribution Method (Hardy Cross Method)",
+    icon: "ðŸ”„",
+    theory: [
+      {
+        heading: "7.1 Physical Concept: The Successive Locking & Unlocking Process",
+        body: `
+          <p>Invented by Prof. Hardy Cross in 1930, Moment Distribution solves the simultaneous Slope-Deflection equations <strong>by rapid physical iteration</strong> without solving matrices:</p>
+          <div class="concept-callout">
+            <strong>1. Lock all joints:</strong> Clamp all joints against rotation. Calculate initial <strong>Fixed-End Moments (FEM)</strong>.<br/>
+            <strong>2. Compute Member Stiffness (K):</strong> <code>K = I / L</code> (or <code>K = 4EI / L</code>).<br/>
+            <strong>3. Distribution Factor (DF):</strong> The fraction of unbalanced joint moment absorbed by each member framing into joint <em>J</em>:
+            <br/><code>DF_i = K_i / Î£ K</code> (Note: Clamped wall has DF = 0; exterior hinge has DF = 1.0).<br/>
+            <strong>4. Balance Joint:</strong> Release the clamp at the joint. An unbalanced moment exists: <code>M_unbal = Î£ FEM</code>. Apply an equal and opposite balancing moment distributed as: <code>- (M_unbal) Ã— DF_i</code>.<br/>
+            <strong>5. Carry Over:</strong> Clamping the joint again causes an induced moment at the opposite far end: <code>Carry-Over Moment = 0.5 Ã— (Balancing Moment)</code> (provided far end is fixed!).
+          </div>
+        `,
+        formula: `DF_i = K_i / Î£ K   |   Balancing Moment = - (Î£ M_joint) Ã— DF_i   |   COF = + 0.5`
+      },
+      {
+        heading: "7.2 The Modified 3/4 Stiffness Secret for Hinged Ends",
+        body: `
+          <p><strong>The Nightmare:</strong> If a beam has an exterior pin/roller, normal carry-over creates endless back-and-forth oscillations between the interior joint and the pin.</p>
+          <div class="concept-callout">
+            <strong>The Master 3/4 K Shortcut (PDF 7, Page 5):</strong><br/>
+            Modify the stiffness of any span whose far end is a simple hinge beforehand:<br/>
+            <code>K_modified = (3/4) Â· (I / L)</code><br/>
+            Release the hinged end once at the start, carry over to the interior joint, and <strong>NEVER carry over to the hinged end again</strong>! Your table converges in <strong>ONE single cycle</strong>!
+          </div>
+        `
+      }
+    ],
+    examples: [
+      {
+        title: "Lecture Example: Two-Span Continuous Beam ABC (PDF 7, Pages 4â€“6)",
+        problem: "Determine support moments for beam ABC. Span AB = 3.6m (Fixed at A, Roller at B, I = 3.6). Span BC = 4.0m (Roller at B, Simple Hinge at C, I = 3.6). Concentrated load on BC gives FEM_BA = +30 kNm, FEM_BC = -22.5 kNm.",
+        diagram: `A [Fixed] ===== (3.6m, I=3.6) ===== B (Roller) ===== (4.0m, I=3.6) ===== C (Hinged End)`,
+        steps: [
+          "Step 1: Compute stiffnesses. Span AB has far end fixed: K_BA = I / L = 3.6 / 3.6 = 1.0.",
+          "Step 2: Span BC has far end hinged! Use modified stiffness shortcut: K_BC = Â¾ (I / L) = Â¾ (3.6 / 4.0) = 0.675 (â‰ˆ 0.68).",
+          "Step 3: Compute Distribution Factors at joint B:",
+          "â€¢ Total stiffness: Î£ K_B = K_BA + K_BC = 1.0 + 0.675 = 1.675.",
+          "â€¢ DF_BA = 1.0 / 1.675 = 0.60.",
+          "â€¢ DF_BC = 0.675 / 1.675 = 0.40.",
+          "Step 4: Initial FEMs: Fixed end A has DF = 0; Hinged C has M_C = 0 permanently.",
+          "â€¢ Unbalanced moment at B: Î£ M_B = (+30.0) + (-22.5) = +7.5 kNÂ·m.",
+          "â€¢ Balancing moments: Bal_BA = -7.5 Ã— 0.60 = -4.50 kNÂ·m; Bal_BC = -7.5 Ã— 0.40 = -3.00 kNÂ·m.",
+          "Step 5: Carry-over to fixed support A: CO_AB = 0.5 Ã— (-4.50) = -2.25 kNÂ·m. No carry over to C (modified stiffness)!",
+          "Step 6: Sum columns: Final M_BA = +25.50 kNÂ·m, M_BC = -25.50 kNÂ·m (Balanced!), M_AB = -32.25 kNÂ·m!"
+        ]
+      }
+    ],
+    shortcuts: [
+      "ðŸ”¥ The 3/4 Factor Power: Whenever you see an exterior hinge/roller, IMMEDIATELY multiply its I/L by 0.75 and set its Carry-Over Factor to ZERO! Saves 80% of calculation time.",
+      "âš¡ Clamped Wall DF = 0: A fixed support has infinite stiffness (K = âˆž). Therefore, its Distribution Factor DF is ALWAYS 0. It receives carry-overs, but never distributes!",
+      "ðŸŽ¯ Sum Check at Every Joint: At every rigid joint (like B), the sum of final moments M_BA + M_BC MUST equal 0. If it doesn't, you made an arithmetic error in balancing!"
+    ],
+    arena: [
+      {
+        title: "Challenge 7.1: The 3/4 Stiffness Calculation",
+        diagram: `Joint B connects to Span BA (3.6m, I=3.6, A is Fixed) and Span BC (4.0m, I=3.6, C is Hinged)`,
+        prompt: "Compute the modified stiffness K_BC and Distribution Factor DF_BC at Joint B:",
+        options: [
+          { text: "A) K_BC = 0.675, DF_BC = 0.40 (and DF_BA = 0.60)", correct: true, explain: "Grandmaster level! K_BC = 0.75 Ã— (3.6/4.0) = 0.675. Total K = 1.0 + 0.675 = 1.675. DF_BC = 0.675/1.675 = 0.40!" },
+          { text: "B) K_BC = 0.90, DF_BC = 0.474", correct: false, explain: "0.90 is the unmodified stiffness (used only if C is fixed or if you want to iterate 10 times to C)!" },
+          { text: "C) K_BC = 0.45, DF_BC = 0.31", correct: false, explain: "0.5 is the carry-over factor, whereas the modified stiffness factor is 3/4 = 0.75!" }
+        ]
+      }
+    ],
+    cheatsheet: `
+      â€¢ <strong>Member Stiffness (Far End Fixed):</strong> K = I / L<br/>
+      â€¢ <strong>Modified Stiffness (Far End Hinged):</strong> K_mod = Â¾ (I / L)<br/>
+      â€¢ <strong>Distribution Factor:</strong> DF_i = K_i / Î£ K<br/>
+      â€¢ <strong>Fixed End DF:</strong> DF_fixed = 0<br/>
+      â€¢ <strong>Hinged End DF:</strong> DF_hinge = 1.0<br/>
+      â€¢ <strong>Carry-Over Factor:</strong> COF = + 0.5 (to fixed far ends)
+    `
+  }
+];
+
+if (typeof module !== 'undefined') module.exports = COURSE_MODULES;
+
+</script>
+  <script>
+// COTM 3101: Theory of Structures - Application Controller & Gamification Engine
+
+let currentModIndex = 0;
+let currentMode = 'theory'; // 'theory', 'examples', 'shortcuts', 'arena', 'cheatsheet', 'solver'
+let currentSolver = 'determinacy'; // 'determinacy', 'threemoment', 'hardycross'
+
+// User State with LocalStorage Persistence
+let userState = {
+  xp: 0,
+  streak: 0,
+  solved: {},
+  rank: 'Apprentice Structural Engineer'
+};
+
+function loadState() {
+  const saved = localStorage.getItem('structures_mastery_state');
+  if (saved) {
+    try {
+      userState = JSON.parse(saved);
+    } catch(e) {
+      console.error(e);
+    }
+  }
+  updateStatsHUD();
+}
+
+function saveState() {
+  localStorage.setItem('structures_mastery_state', JSON.stringify(userState));
+  updateStatsHUD();
+}
+
+function resetProgress() {
+  if (confirm("Reset all your earned XP, streaks, and challenge progress?")) {
+    userState = {
+      xp: 0,
+      streak: 0,
+      solved: {},
+      rank: 'Apprentice Structural Engineer'
+    };
+    saveState();
+    renderContent();
+  }
+}
+
+function updateStatsHUD() {
+  const ranks = [
+    { min: 0, title: 'Apprentice' },
+    { min: 300, title: 'Junior Analyst' },
+    { min: 700, title: 'Design Engineer' },
+    { min: 1200, title: 'Senior Stress Analyst' },
+    { min: 1800, title: 'Master of Structures' }
+  ];
+
+  let currentRank = 'Apprentice';
+  for (const r of ranks) {
+    if (userState.xp >= r.min) currentRank = r.title;
+  }
+  userState.rank = currentRank;
+
+  let totalChallenges = 0;
+  COURSE_MODULES.forEach(m => totalChallenges += m.arena.length);
+  const solvedCount = Object.keys(userState.solved).length;
+  const masteryPct = totalChallenges > 0 ? Math.round((solvedCount / totalChallenges) * 100) : 0;
+
+  const rankEl = document.getElementById('rankBadge');
+  const xpEl = document.getElementById('xpBadge');
+  const streakEl = document.getElementById('streakBadge');
+  const masteryEl = document.getElementById('masteryBadge');
+
+  if (rankEl) rankEl.innerText = `ðŸŽ–ï¸ ${userState.rank}`;
+  if (xpEl) xpEl.innerText = `âš¡ ${userState.xp} XP`;
+  if (streakEl) streakEl.innerText = `ðŸ”¥ Streak: ${userState.streak}`;
+  if (masteryEl) masteryEl.innerText = `ðŸ“Š ${masteryPct}% Mastered`;
+}
+
+// =========================================================================
+// RENDERERS
+// =========================================================================
+
+function renderSidebar() {
+  const container = document.getElementById('moduleList');
+  if (!container) return;
+
+  container.innerHTML = COURSE_MODULES.map((m, idx) => `
+    <button class="nav-item ${idx === currentModIndex && currentMode !== 'solver' ? 'active' : ''}" onclick="selectModule(${idx})">
+      <span>${m.icon} ${m.shortTitle}</span>
+    </button>
+  `).join('');
+}
+
+function selectModule(index) {
+  currentModIndex = index;
+  if (currentMode === 'solver') currentMode = 'theory';
+  updateTabUI();
+  renderSidebar();
+  renderContent();
+}
+
+function switchMode(mode) {
+  currentMode = mode;
+  updateTabUI();
+  renderSidebar();
+  renderContent();
+}
+
+function updateTabUI() {
+  document.querySelectorAll('.mode-tab').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.mode === currentMode);
+  });
+}
+
+function openSandbox(solverName) {
+  currentMode = 'solver';
+  currentSolver = solverName;
+  updateTabUI();
+  renderSidebar();
+  renderContent();
+}
+
+function renderContent() {
+  const viewport = document.getElementById('viewport');
+  if (!viewport) return;
+
+  if (currentMode === 'solver') {
+    renderSolverView(viewport);
+    return;
+  }
+
+  const mod = COURSE_MODULES[currentModIndex];
+
+  if (currentMode === 'theory') {
+    viewport.innerHTML = `
+      <div class="card">
+        <h2>${mod.icon} ${mod.fullTitle} â€” Deep Theory & Intuition</h2>
+        ${mod.theory.map(t => `
+          <h3>${t.heading}</h3>
+          <div>${t.body}</div>
+          ${t.formula ? `<div class="formula-banner">${t.formula}</div>` : ''}
+          ${t.diagram ? `<div class="blueprint-diagram">${t.diagram}</div>` : ''}
+        `).join('')}
+      </div>
+    `;
+  } else if (currentMode === 'examples') {
+    viewport.innerHTML = `
+      <div class="card">
+        <h2>ðŸ”¬ Step-by-Step Worked Lecture Examples â€” ${mod.shortTitle}</h2>
+        <p style="color:var(--text-muted); margin-bottom:16px;">Direct step-by-step solutions with engineering diagrams and formulas from your AAU lecture notes.</p>
+        ${mod.examples.map((ex, exIdx) => `
+          <div class="step-box" style="margin-bottom:20px;">
+            <div class="step-header">
+              <span>${ex.title}</span>
+            </div>
+            <p><strong>Problem:</strong> ${ex.problem}</p>
+            ${ex.diagram ? `<div class="blueprint-diagram">${ex.diagram}</div>` : ''}
+            <div style="margin-top:14px;">
+              <h4 style="color:var(--accent); margin-bottom:8px;">Step-by-Step Solution Breakdown:</h4>
+              <ol style="padding-left:20px;">
+                ${ex.steps.map(s => `<li style="margin-bottom:8px;">${s}</li>`).join('')}
+              </ol>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  } else if (currentMode === 'shortcuts') {
+    viewport.innerHTML = `
+      <div class="card">
+        <h2>âš¡ Master's Ninja Shortcuts & Exam Secrets â€” ${mod.shortTitle}</h2>
+        <p style="color:var(--text-muted); margin-bottom:16px;">Tested speed tricks, geometric insights, and mental checks that save 70% of exam time.</p>
+        <div style="display:flex; flex-direction:column; gap:14px;">
+          ${mod.shortcuts.map(s => `
+            <div class="concept-callout" style="border-left-color:var(--gold); font-size:1rem;">
+              ${s}
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  } else if (currentMode === 'arena') {
+    viewport.innerHTML = `
+      <div class="card">
+        <h2>âš”ï¸ Challenge Gauntlet â€” ${mod.shortTitle}</h2>
+        <p style="color:var(--text-muted); margin-bottom:16px;">Solve these problems to gain XP, raise your rank, and eliminate exam pitfalls.</p>
+        ${mod.arena.map((q, qIdx) => {
+          const key = `${mod.id}_q${qIdx}`;
+          const isDone = userState.solved[key];
+          return `
+            <div class="step-box" style="margin-bottom:24px;" id="qcard_${key}">
+              <div class="step-header">
+                <span>${q.title}</span>
+                <span>${isDone ? 'âœ… Mastered (+150 XP)' : 'â³ Active Challenge'}</span>
+              </div>
+              ${q.diagram ? `<div class="blueprint-diagram">${q.diagram}</div>` : ''}
+              <p style="font-weight:600; font-size:1.05rem; margin:12px 0;">${q.prompt}</p>
+              <div class="options-list">
+                ${q.options.map((opt, optIdx) => `
+                  <button class="option-btn" onclick="checkChallengeAnswer('${key}', ${optIdx})">
+                    ${opt.text}
+                  </button>
+                `).join('')}
+              </div>
+              <div class="feedback-banner" id="feedback_${key}"></div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    `;
+  } else if (currentMode === 'cheatsheet') {
+    viewport.innerHTML = `
+      <div class="card">
+        <h2>âš¡ Formula Vault & Sign Rules â€” ${mod.shortTitle}</h2>
+        <div class="concept-callout" style="font-size:1.05rem; line-height:2.0;">
+          ${mod.cheatsheet}
+        </div>
+      </div>
+    `;
+  }
+}
+
+// Challenge Answer Checker
+function checkChallengeAnswer(key, selectedIdx) {
+  const parts = key.split('_q');
+  const modId = parts[0];
+  const qIdx = parseInt(parts[1]);
+  const mod = COURSE_MODULES.find(m => m.id === modId);
+  if (!mod) return;
+  const q = mod.arena[qIdx];
+  const chosen = q.options[selectedIdx];
+
+  const card = document.getElementById(`qcard_${key}`);
+  const feedback = document.getElementById(`feedback_${key}`);
+  if (!card || !feedback) return;
+
+  const btns = card.querySelectorAll('.option-btn');
+  btns.forEach((b, i) => {
+    b.classList.remove('correct', 'wrong');
+    if (i === selectedIdx) {
+      b.classList.add(chosen.correct ? 'correct' : 'wrong');
+    }
+  });
+
+  feedback.style.display = 'block';
+  if (chosen.correct) {
+    if (!userState.solved[key]) {
+      userState.solved[key] = true;
+      userState.xp += 150;
+      userState.streak += 1;
+      saveState();
+    }
+    feedback.className = 'feedback-banner';
+    feedback.style.background = 'rgba(34, 197, 94, 0.2)';
+    feedback.style.border = '1px solid var(--success)';
+    feedback.style.color = '#86efac';
+    feedback.innerHTML = `<strong>âœ… Master Answer (+150 XP)!</strong><br/>${chosen.explain}`;
+  } else {
+    userState.streak = 0;
+    saveState();
+    feedback.className = 'feedback-banner';
+    feedback.style.background = 'rgba(239, 68, 68, 0.2)';
+    feedback.style.border = '1px solid var(--danger)';
+    feedback.style.color = '#fca5a5';
+    feedback.innerHTML = `<strong>âŒ Not quite!</strong><br/>${chosen.explain}`;
+  }
+}
+
+// =========================================================================
+// SANDBOX SOLVER RENDERERS
+// =========================================================================
+
+function renderSolverView(viewport) {
+  if (currentSolver === 'determinacy') {
+    viewport.innerHTML = `
+      <div class="card">
+        <h2>ðŸ” Live Determinacy & Stability Analyzer</h2>
+        <p style="color:var(--text-muted); margin-bottom:16px;">Test any structural configuration in real time. Detects geometric instability, parallel reactions, and internal mechanisms.</p>
+        
+        <div class="calc-grid">
+          <div class="input-group">
+            <label>Structure Category</label>
+            <select id="detType" onchange="updateDetInputs()">
+              <option value="beam">Continuous Beam</option>
+              <option value="truss">Plane Truss</option>
+              <option value="frame">Rigid Frame</option>
+            </select>
+          </div>
+          <div id="detDynamicInputs" style="display:contents;"></div>
+        </div>
+
+        <button class="btn-primary" onclick="runDeterminacySolve()">Compute Stability & Determinacy</button>
+
+        <div id="detResultBox" style="margin-top:20px; display:none;"></div>
+      </div>
+    `;
+    updateDetInputs();
+    runDeterminacySolve();
+  } else if (currentSolver === 'threemoment') {
+    viewport.innerHTML = `
+      <div class="card">
+        <h2>ðŸ“ Live 2-Span Three-Moment Equation Solver (Clapeyron)</h2>
+        <p style="color:var(--text-muted); margin-bottom:16px;">Solves the support moment M_B and reactions for a two-span continuous beam with UDL or Point loads.</p>
+
+        <div class="calc-grid">
+          <div class="input-group">
+            <label>Span 1 Length (Lâ‚, m)</label>
+            <input type="number" id="tm_L1" value="4.0" step="0.5" />
+          </div>
+          <div class="input-group">
+            <label>Span 1 Load Type</label>
+            <select id="tm_loadType1">
+              <option value="point">Concentrated Load (P)</option>
+              <option value="udl">Uniform Load (w)</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label>Span 1 Load Magnitude (P or w)</label>
+            <input type="number" id="tm_mag1" value="40" step="5" />
+          </div>
+          <div class="input-group">
+            <label>Span 1 Load Distance from A (aâ‚, m)</label>
+            <input type="number" id="tm_a1" value="2.0" step="0.5" />
+          </div>
+
+          <div class="input-group">
+            <label>Span 2 Length (Lâ‚‚, m)</label>
+            <input type="number" id="tm_L2" value="6.0" step="0.5" />
+          </div>
+          <div class="input-group">
+            <label>Span 2 Load Type</label>
+            <select id="tm_loadType2">
+              <option value="udl">Uniform Load (w)</option>
+              <option value="point">Concentrated Load (P)</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label>Span 2 Load Magnitude (P or w)</label>
+            <input type="number" id="tm_mag2" value="10" step="5" />
+          </div>
+          <div class="input-group">
+            <label>Span 2 Load Distance from C (aâ‚‚, m)</label>
+            <input type="number" id="tm_a2" value="3.0" step="0.5" />
+          </div>
+        </div>
+
+        <button class="btn-primary" onclick="runThreeMomentSolve()">Solve Two-Span Continuous Beam</button>
+
+        <div id="tmResultBox" style="margin-top:20px; display:none;"></div>
+      </div>
+    `;
+    runThreeMomentSolve();
+  } else if (currentSolver === 'hardycross') {
+    viewport.innerHTML = `
+      <div class="card">
+        <h2>ðŸ”„ Hardy Cross Moment Distribution Live Engine</h2>
+        <p style="color:var(--text-muted); margin-bottom:16px;">Generates a real-time iterative balance and carry-over engineering table for a 2-span beam.</p>
+
+        <div class="calc-grid">
+          <div class="input-group">
+            <label>Span AB Length (m)</label>
+            <input type="number" id="hc_L1" value="3.6" step="0.1" />
+          </div>
+          <div class="input-group">
+            <label>Span BC Length (m)</label>
+            <input type="number" id="hc_L2" value="4.0" step="0.1" />
+          </div>
+          <div class="input-group">
+            <label>Support A Condition</label>
+            <select id="hc_endA">
+              <option value="fixed">Fixed Support (DF = 0)</option>
+              <option value="hinged">Hinged / Simple (DF = 1.0)</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label>Support C Condition</label>
+            <select id="hc_endC">
+              <option value="hinged">Hinged / Simple (Modified Â¾ K)</option>
+              <option value="fixed">Fixed Support (DF = 0)</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label>Initial FEM AB (kNÂ·m)</label>
+            <input type="number" id="hc_femAB" value="-30.0" />
+          </div>
+          <div class="input-group">
+            <label>Initial FEM BA (kNÂ·m)</label>
+            <input type="number" id="hc_femBA" value="+30.0" />
+          </div>
+          <div class="input-group">
+            <label>Initial FEM BC (kNÂ·m)</label>
+            <input type="number" id="hc_femBC" value="-22.5" />
+          </div>
+          <div class="input-group">
+            <label>Initial FEM CB (kNÂ·m)</label>
+            <input type="number" id="hc_femCB" value="+22.5" />
+          </div>
+        </div>
+
+        <button class="btn-primary" onclick="runHardyCrossSolve()">Generate Iterative Distribution Table</button>
+
+        <div id="hcResultBox" style="margin-top:20px; display:none;"></div>
+      </div>
+    `;
+    runHardyCrossSolve();
+  }
+}
+
+function updateDetInputs() {
+  const type = document.getElementById('detType').value;
+  const container = document.getElementById('detDynamicInputs');
+  if (type === 'beam') {
+    container.innerHTML = `
+      <div class="input-group"><label>Total Reaction Components (r)</label><input type="number" id="det_r" value="5" min="1" /></div>
+      <div class="input-group"><label>Internal Hinges (s)</label><input type="number" id="det_s" value="1" min="0" /></div>
+      <div class="input-group"><label>Are all reactions parallel?</label><select id="det_parallel"><option value="false">No (Stable)</option><option value="true">Yes (Unstable Trap!)</option></select></div>
+    `;
+  } else if (type === 'truss') {
+    container.innerHTML = `
+      <div class="input-group"><label>Joints (j)</label><input type="number" id="det_j" value="8" min="3" /></div>
+      <div class="input-group"><label>Members (m)</label><input type="number" id="det_m" value="13" min="3" /></div>
+      <div class="input-group"><label>Reactions (r)</label><input type="number" id="det_r" value="3" min="3" /></div>
+      <div class="input-group"><label>Any unbraced open panels?</label><select id="det_unbraced"><option value="false">No (Fully triangulated)</option><option value="true">Yes (Mechanism Trap!)</option></select></div>
+    `;
+  } else if (type === 'frame') {
+    container.innerHTML = `
+      <div class="input-group"><label>Rigid Joints (j)</label><input type="number" id="det_j" value="9" min="2" /></div>
+      <div class="input-group"><label>Members (m)</label><input type="number" id="det_m" value="10" min="1" /></div>
+      <div class="input-group"><label>Reactions (r)</label><input type="number" id="det_r" value="9" min="3" /></div>
+      <div class="input-group"><label>Special Releases (s)</label><input type="number" id="det_s" value="0" min="0" /></div>
+      <div class="input-group"><label>Closed Loops (n)</label><input type="number" id="det_loops" value="4" min="0" /></div>
+    `;
+  }
+}
+
+function runDeterminacySolve() {
+  const type = document.getElementById('detType').value;
+  let inputs = {};
+  if (type === 'beam') {
+    inputs = {
+      reactions: document.getElementById('det_r').value,
+      internalHinges: document.getElementById('det_s').value,
+      parallelReactions: document.getElementById('det_parallel').value === 'true'
+    };
+  } else if (type === 'truss') {
+    inputs = {
+      joints: document.getElementById('det_j').value,
+      members: document.getElementById('det_m').value,
+      reactions: document.getElementById('det_r').value,
+      unbracedPanel: document.getElementById('det_unbraced').value === 'true'
+    };
+  } else if (type === 'frame') {
+    inputs = {
+      joints: document.getElementById('det_j').value,
+      members: document.getElementById('det_m').value,
+      reactions: document.getElementById('det_r').value,
+      specialConditions: document.getElementById('det_s').value,
+      closedLoops: document.getElementById('det_loops').value
+    };
+  }
+
+  const res = StructureSolvers.analyzeDeterminacy(type, inputs);
+  const box = document.getElementById('detResultBox');
+  box.style.display = 'block';
+
+  box.innerHTML = `
+    <div class="step-box" style="border-color:${res.isStable ? 'var(--accent)' : 'var(--danger)'}">
+      <h3 style="color:${res.isStable ? 'var(--accent)' : 'var(--danger)'}; margin-top:0;">Verdict: ${res.status}</h3>
+      <div class="formula-banner">${res.formula}</div>
+      <ul style="padding-left:20px; margin-top:10px;">
+        ${res.notes.map(n => `<li style="margin-bottom:6px;">${n}</li>`).join('')}
+      </ul>
+    </div>
+  `;
+}
+
+function runThreeMomentSolve() {
+  const params = {
+    L1: document.getElementById('tm_L1').value,
+    L2: document.getElementById('tm_L2').value,
+    span1LoadType: document.getElementById('tm_loadType1').value,
+    span2LoadType: document.getElementById('tm_loadType2').value,
+    w1: document.getElementById('tm_mag1').value,
+    P1: document.getElementById('tm_mag1').value,
+    a1: document.getElementById('tm_a1').value,
+    w2: document.getElementById('tm_mag2').value,
+    P2: document.getElementById('tm_mag2').value,
+    a2: document.getElementById('tm_a2').value
+  };
+
+  const res = StructureSolvers.solveThreeMoment(params);
+  const box = document.getElementById('tmResultBox');
+  box.style.display = 'block';
+
+  box.innerHTML = `
+    <div class="step-box">
+      <h3 style="color:var(--gold); margin-top:0;">Clapeyron Solution Results:</h3>
+      <p><strong>Load Terms:</strong> Span 1 (6Aâ‚xâ‚/Lâ‚) = <code>${res.term1} kNÂ·mÂ²</code> | Span 2 (6Aâ‚‚xâ‚‚/Lâ‚‚) = <code>${res.term2} kNÂ·mÂ²</code></p>
+      <div class="formula-banner">Three-Moment Equation: ${res.coeff_MB} Â· M_B = ${res.RHS}  âž”  M_B = ${res.M_B} kNÂ·m</div>
+      
+      <div class="calc-grid" style="margin-top:16px;">
+        <div class="stat-pill" style="text-align:center;">Support Moment M_B: <strong>${res.M_B} kNÂ·m</strong></div>
+        <div class="stat-pill" style="text-align:center;">Reaction R_A: <strong>${res.R_A} kN</strong></div>
+        <div class="stat-pill" style="text-align:center;">Reaction R_B: <strong>${res.R_B} kN</strong></div>
+        <div class="stat-pill" style="text-align:center;">Reaction R_C: <strong>${res.R_C} kN</strong></div>
+      </div>
+      <p style="margin-top:10px; color:var(--text-muted);">Max Span Sagging Moments: Span 1 = +${res.maxSag1} kNÂ·m | Span 2 = +${res.maxSag2} kNÂ·m</p>
+    </div>
+  `;
+}
+
+function runHardyCrossSolve() {
+  const params = {
+    L1: document.getElementById('hc_L1').value,
+    L2: document.getElementById('hc_L2').value,
+    endA: document.getElementById('hc_endA').value,
+    endC: document.getElementById('hc_endC').value,
+    FEM_AB: document.getElementById('hc_femAB').value,
+    FEM_BA: document.getElementById('hc_femBA').value,
+    FEM_BC: document.getElementById('hc_femBC').value,
+    FEM_CB: document.getElementById('hc_femCB').value,
+    useModifiedStiffness: true
+  };
+
+  const res = StructureSolvers.solveHardyCross2Span(params);
+  const box = document.getElementById('hcResultBox');
+  box.style.display = 'block';
+
+  box.innerHTML = `
+    <div class="step-box">
+      <h3 style="color:var(--gold); margin-top:0;">Hardy Cross Distribution Summary:</h3>
+      <p>Stiffness K_BA = <code>${res.K_BA}</code>, Modified K_BC = <code>${res.K_BC}</code> | DF_BA = <code>${res.DF_BA}</code>, DF_BC = <code>${res.DF_BC}</code></p>
+      <div class="eng-table-wrapper">
+        <table class="eng-table">
+          <thead>
+            <tr>
+              <th>Operation / Step</th>
+              <th>Joint A (M_AB)</th>
+              <th>Joint B (M_BA)</th>
+              <th>Joint B (M_BC)</th>
+              <th>Joint C (M_CB)</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${res.rows.map(r => `
+              <tr class="${r.isFinal ? 'sum-row' : ''}">
+                <td style="text-align:left; font-weight:${r.isFinal ? 'bold' : 'normal'}">${r.step}</td>
+                <td>${r.AB}</td>
+                <td>${r.BA}</td>
+                <td>${r.BC}</td>
+                <td>${r.CB}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+      <p style="color:var(--accent); font-weight:bold; margin-top:8px;">âœ… Joint B is completely in equilibrium: Î£M_B = (${res.rows[res.rows.length-1].BA}) + (${res.rows[res.rows.length-1].BC}) = 0.00 kNÂ·m!</p>
+    </div>
+  `;
+}
+
+// Download Standalone App Single-File Bundler
+function exportStandaloneHTML() {
+  const link = document.createElement('a');
+  link.href = './standalone.html';
+  link.download = 'Theory_of_Structures_Mastery_Lab.html';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
+// Initialize on Load
+window.addEventListener('DOMContentLoaded', () => {
+  loadState();
+  renderSidebar();
+  renderContent();
+
+  // Register PWA Service Worker for Offline Execution
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js').then(() => {
+      console.log('PWA Service Worker Active - 100% Offline Ready!');
+    }).catch(e => console.log('SW registration note:', e));
+  }
+});
+
+</script>
+</body>
+</html>

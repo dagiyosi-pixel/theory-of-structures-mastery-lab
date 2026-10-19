@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>COTM 3101: Theory of Structures — Complete Mastery Lab</title>
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#030712" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- TOP HUD BAR -->
+  <header class="hud-header">
+    <div class="brand">
+      <span class="brand-icon">🏗️</span>
+      <div>
+        <h1>COTM 3101: Theory of Structures Mastery Lab</h1>
+        <p>Interactive Engineering Workbench • AAU EiABC Curriculum • 100% Offline</p>
+      </div>
+    </div>
+    <div class="hud-stats">
+      <div class="stat-pill" id="rankBadge">🎖️ Apprentice</div>
+      <div class="stat-pill" id="xpBadge">⚡ 0 XP</div>
+      <div class="stat-pill" id="streakBadge">🔥 Streak: 0</div>
+      <div class="stat-pill" id="masteryBadge">📊 0% Mastered</div>
+      <button class="hud-btn" onclick="exportStandaloneHTML()" title="Download single standalone HTML file for phone or offline PC">📲 Save Offline App</button>
+      <button class="hud-btn reset-btn" onclick="resetProgress()" title="Reset Saved Progress">↺ Reset</button>
+    </div>
+  </header>
+
+  <div class="workspace">
+    <!-- LEFT SIDEBAR: 7 CHAPTER MODULES + LIVE STRUCTURAL SOLVERS -->
+    <aside class="sidebar">
+      <div class="sidebar-section-title">📚 COURSE MODULES (PDF 1–7)</div>
+      <nav id="moduleList" class="module-nav"></nav>
+
+      <div class="sidebar-section-title" style="margin-top:24px;">🧮 LIVE ENGINEERING SANDBOXES</div>
+      <div class="module-nav">
+        <button class="nav-item tool-btn" onclick="openSandbox('determinacy')">
+          <span>🔍 Stability & Determinacy Engine</span>
+        </button>
+        <button class="nav-item tool-btn" onclick="openSandbox('threemoment')">
+          <span>📐 2-Span Clapeyron Live Solver</span>
+        </button>
+        <button class="nav-item tool-btn" onclick="openSandbox('hardycross')">
+          <span>🔄 Hardy Cross Live Table Engine</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="main-panel">
+      <!-- MODE SWITCHER TABS -->
+      <div class="mode-tabs" id="modeTabs">
+        <button class="mode-tab active" data-mode="theory" onclick="switchMode('theory')">
+          📖 1. Deep Theory & Intuition
+        </button>
+        <button class="mode-tab" data-mode="examples" onclick="switchMode('examples')">
+          🔬 2. Step-by-Step Worked Examples
+        </button>
+        <button class="mode-tab" data-mode="shortcuts" onclick="switchMode('shortcuts')">
+          ⚡ 3. Ninja Shortcuts & Speed Tricks
+        </button>
+        <button class="mode-tab" data-mode="arena" onclick="switchMode('arena')">
+          ⚔️ 4. Challenge Gauntlet (+XP)
+        </button>
+        <button class="mode-tab" data-mode="cheatsheet" onclick="switchMode('cheatsheet')">
+          📜 5. Formula Vault & Sign Rules
+        </button>
+      </div>
+
+      <!-- DYNAMIC VIEWPORT -->
+      <div id="viewport" class="viewport"></div>
+    </main>
+  </div>
+
+  <!-- Computational Engines and Knowledge Base -->
+  <script src="solvers.js"></script>
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
