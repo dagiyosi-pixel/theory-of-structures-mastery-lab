@@ -1,11 +1,12 @@
 // Theory of Structures Mastery Lab - Service Worker
-const CACHE_NAME = 'structures-mastery-v1';
+const CACHE_NAME = 'structures-mastery-v2';
 const ASSETS = [
   './',
   './index.html',
   './styles.css',
-  './data.js',
+  './visuals.js',
   './solvers.js',
+  './data.js',
   './app.js',
   './manifest.json',
   './standalone.html'

@@ -1,5 +1,5 @@
-// COTM 3101: Theory of Structures - Interactive Structural Solvers
-// Provides real-time calculation engines for structural engineering analysis.
+// COTM 3101: Theory of Structures - Interactive Structural Solvers & Visualizers
+// Integrates real-time static calculations with dynamic SVG diagrams.
 
 const StructureSolvers = {
   // =========================================================================
@@ -17,11 +17,11 @@ const StructureSolvers = {
 
       if (parallel) {
         stable = false;
-        notes.push("CRITICAL TRAP: All reaction forces are parallel! The structure is geometrically unstable horizontally (cannot resist lateral loads).");
+        notes.push("CRITICAL TRAP: All reaction forces are parallel (e.g., all vertical rollers)! The beam cannot resist lateral loads (ΣFx = 0 unsatisfied).");
       }
       if (concurrent) {
         stable = false;
-        notes.push("CRITICAL TRAP: All reaction lines intersect at a single point! The structure is geometrically unstable against rotation about this point.");
+        notes.push("CRITICAL TRAP: All reaction lines intersect at a single point! The structure has zero rotational resistance about this point.");
       }
 
       const eqCount = 3 + s;
@@ -31,28 +31,48 @@ const StructureSolvers = {
       if (r < 3) {
         stable = false;
         status = "Externally Unstable (r < 3)";
-        notes.push("Fewer than 3 reaction components in 2D space.");
+        notes.push("Fewer than 3 external restraints in 2D space.");
       } else if (!stable) {
         status = "Geometrically Unstable Mechanism";
       } else if (d === 0) {
         status = "Statically Determinate & Stable";
-        notes.push("Reactions exactly equal equilibrium equations (r = 3 + s). All internal forces can be solved with statics.");
+        notes.push("Available reactions exactly match equations (r = 3 + s). All reactions and internal forces can be solved by statics.");
       } else if (d > 0) {
         status = `Statically Indeterminate to Degree ${d}`;
-        notes.push(`Requires ${d} compatibility condition(s) (Force/Flexibility Method or Displacement Method).`);
+        notes.push(`Requires ${d} additional compatibility equations (Force Method, Three-Moment, or Displacement Method).`);
       } else {
         stable = false;
-        status = "Unstable Mechanism (Equations exceed reactions)";
-        notes.push("Excess internal releases make this beam an unstable kinematic mechanism.");
+        status = "Unstable Kinematic Mechanism";
+        notes.push("Internal releases exceed reactions, creating an internal folding mechanism.");
       }
 
+      // Generate visual SVG representation
+      let supports = [];
+      if (r >= 3 && !parallel) {
+        supports = [{ x: 0, type: 'pin', label: 'Pin (r=2)' }, { x: 8, type: 'roller', label: 'Roller (r=1)' }];
+      } else if (parallel) {
+        supports = [{ x: 1, type: 'roller', label: 'Roller 1' }, { x: 4, type: 'roller', label: 'Roller 2' }, { x: 7, type: 'roller', label: 'Roller 3' }];
+      }
+      if (s > 0) {
+        supports.push({ x: 4, type: 'hinge', label: `Hinge (s=${s})` });
+      }
+
+      const svgHtml = StructureVisuals.renderBeam({
+        width: 620,
+        height: 180,
+        length: 8,
+        supports: supports,
+        loads: [{ x: 4, type: 'point', val: 'Arbitrary Load P' }]
+      });
+
       return {
-        type: 'Beam',
+        type: 'Continuous Beam',
         formula: `D = r - (3 + s) = ${r} - (3 + ${s}) = ${d}`,
         degree: d,
         status: status,
         isStable: stable,
-        notes: notes
+        notes: notes,
+        svg: svgHtml
       };
     }
 
@@ -76,7 +96,7 @@ const StructureSolvers = {
       }
       if (hasUnbracedPanel) {
         stable = false;
-        notes.push("CRITICAL TRAP: An open rectangular panel lacks diagonal bracing! Even if m + r = 2j, that panel collapses in shear (Internally Unstable).");
+        notes.push("CRITICAL TRAP: An unbraced rectangular panel lacks diagonal bars! Even if m + r = 2j, that panel collapses in shear (Internally Unstable Mechanism).");
       }
 
       let status = "";
@@ -84,7 +104,7 @@ const StructureSolvers = {
         status = "Unstable Mechanism";
       } else if (d_total === 0) {
         status = "Statically Determinate & Stable";
-        notes.push("All joint equilibrium equations (2j) are satisfied by the available members and reactions.");
+        notes.push("All 2j joint equations are satisfied by the available members and reactions.");
       } else if (d_total > 0) {
         status = `Statically Indeterminate (Overall D = ${d_total})`;
         notes.push(`External Indeterminacy D_e = ${d_ext >= 0 ? d_ext : 0}, Internal Indeterminacy D_i = ${d_int}.`);
@@ -93,13 +113,29 @@ const StructureSolvers = {
         stable = false;
       }
 
+      const svgHtml = StructureVisuals.renderTruss({
+        width: 620,
+        height: 180,
+        scale: 65,
+        nodes: { A: [0, 0], B: [1.6, 0], C: [3.2, 0], D: [4.8, 0], E: [0.8, 1.2], F: [2.4, 1.2], G: [4.0, 1.2] },
+        members: [
+          ['A', 'B'], ['B', 'C'], ['C', 'D'],
+          ['E', 'F'], ['F', 'G'],
+          ['A', 'E'], ['B', 'E'], ['B', 'F'], ['C', 'F'], ['C', 'G'], ['D', 'G'],
+          ['E', 'B'], ['F', 'C']
+        ],
+        supports: [{ node: 'A', type: 'pin' }, { node: 'D', type: 'roller' }],
+        loads: [{ node: 'F', val: 'P' }]
+      });
+
       return {
         type: 'Plane Truss',
         formula: `Overall: D = (m + r) - 2j = (${m} + ${r}) - 2(${j}) = ${d_total}\nExternal: D_e = r - 3 = ${r} - 3 = ${d_ext}\nInternal: D_i = (m + 3) - 2j = (${m} + 3) - 2(${j}) = ${d_int}`,
         degree: d_total,
         status: status,
         isStable: stable,
-        notes: notes
+        notes: notes,
+        svg: svgHtml
       };
     }
 
@@ -123,7 +159,7 @@ const StructureSolvers = {
         status = "Statically Determinate & Stable";
       } else if (d_total > 0 && stable) {
         status = `Statically Indeterminate to Degree ${d_total}`;
-        notes.push(`Classical Closed-Loop Check: D_i = 3(loops) - s = 3(${loops}) - ${s} = ${d_loops}`);
+        notes.push(`Closed-Loop Formula Check: D_i = 3(closed loops) - s = 3(${loops}) - ${s} = ${d_loops}`);
       } else {
         status = "Unstable Frame Mechanism";
         stable = false;
@@ -141,7 +177,7 @@ const StructureSolvers = {
   },
 
   // =========================================================================
-  // 2. TWO-SPAN THREE-MOMENT EQUATION ENGINE (Clapeyron's Equation)
+  // 2. TWO-SPAN THREE-MOMENT EQUATION ENGINE WITH SFD/BMD CURVES
   // =========================================================================
   solveThreeMoment: function(params) {
     const L1 = parseFloat(params.L1) || 4.0;
@@ -152,19 +188,17 @@ const StructureSolvers = {
     const span1Type = params.span1LoadType; // 'udl' or 'point'
     const span2Type = params.span2LoadType; // 'udl' or 'point'
 
-    // Load values
     const w1 = parseFloat(params.w1) || 0;
     const P1 = parseFloat(params.P1) || 0;
-    const a1 = parseFloat(params.a1) || (L1 / 2); // dist from A to load
+    const a1 = parseFloat(params.a1) || (L1 / 2);
     const b1 = L1 - a1;
 
     const w2 = parseFloat(params.w2) || 0;
     const P2 = parseFloat(params.P2) || 0;
-    const a2 = parseFloat(params.a2) || (L2 / 2); // dist from C to load (outer support)
+    const a2 = parseFloat(params.a2) || (L2 / 2); // distance from C
     const b2 = L2 - a2;
 
     // Load terms: (6*A*x / L)
-    // For Span 1 (about joint B, centroid x measured from A):
     let term1 = 0;
     if (span1Type === 'udl') {
       term1 = (w1 * Math.pow(L1, 3)) / 4;
@@ -172,7 +206,6 @@ const StructureSolvers = {
       term1 = (P1 * a1 * (Math.pow(L1, 2) - Math.pow(a1, 2))) / L1;
     }
 
-    // For Span 2 (about joint B, centroid x measured from C):
     let term2 = 0;
     if (span2Type === 'udl') {
       term2 = (w2 * Math.pow(L2, 3)) / 4;
@@ -180,15 +213,11 @@ const StructureSolvers = {
       term2 = (P2 * a2 * (Math.pow(L2, 2) - Math.pow(a2, 2))) / L2;
     }
 
-    // Modified by relative flexural stiffness (I1, I2):
     const coeff_MB = 2 * ((L1 / I1) + (L2 / I2));
     const RHS = -((term1 / I1) + (term2 / I2));
-
-    // Simple ends: M_A = 0, M_C = 0
     const M_B = RHS / coeff_MB;
 
-    // Static reactions by cutting at support B:
-    // Span 1: Sum moments about B: R_A * L1 - TotalLoad1*Centroid + M_B = 0
+    // Reactions by isolating spans
     let R_A = 0;
     if (span1Type === 'udl') {
       R_A = (w1 * L1 / 2) + (M_B / L1);
@@ -203,14 +232,13 @@ const StructureSolvers = {
       R_C = (P2 * b2 / L2) + (M_B / L2);
     }
 
-    // Total vertical equilibrium:
     let totalLoad = 0;
     if (span1Type === 'udl') totalLoad += w1 * L1; else totalLoad += P1;
     if (span2Type === 'udl') totalLoad += w2 * L2; else totalLoad += P2;
 
     const R_B = totalLoad - R_A - R_C;
 
-    // Midspan / max positive moments:
+    // Max Sagging Moments
     let maxSag1 = 0;
     if (span1Type === 'udl') {
       maxSag1 = (w1 * Math.pow(L1, 2) / 8) + (M_B / 2);
@@ -225,6 +253,36 @@ const StructureSolvers = {
       maxSag2 = (P2 * a2 * b2 / L2) + (M_B * (L2 - a2) / L2);
     }
 
+    // Dynamic Beam SVG
+    const totalL = L1 + L2;
+    const beamSvg = StructureVisuals.renderBeam({
+      width: 640,
+      height: 190,
+      length: totalL,
+      supports: [
+        { x: 0, type: 'pin', label: `A (R=${R_A.toFixed(1)}kN)` },
+        { x: L1, type: 'roller', label: `B (R=${R_B.toFixed(1)}kN)` },
+        { x: totalL, type: 'roller', label: `C (R=${R_C.toFixed(1)}kN)` }
+      ],
+      loads: [
+        span1Type === 'udl' ? { start: 0, end: L1, type: 'udl', val: `${w1} kN/m` } : { x: a1, type: 'point', val: `${P1} kN` },
+        span2Type === 'udl' ? { start: L1, end: totalL, type: 'udl', val: `${w2} kN/m` } : { x: L1 + (L2 - a2), type: 'point', val: `${P2} kN` }
+      ],
+      showDeflection: true,
+      sagAmount: 22
+    });
+
+    // Dynamic BMD Curve
+    const fracB = L1 / totalL;
+    const bmdPoints = [
+      { x: 0, y: 0, label: '0' },
+      { x: fracB / 2, y: maxSag1 * 0.8, control: { x: fracB / 2, y: maxSag1 * 1.1 }, label: `+${maxSag1.toFixed(1)}` },
+      { x: fracB, y: M_B * 0.8, label: `${M_B.toFixed(1)}` },
+      { x: fracB + (1 - fracB) / 2, y: maxSag2 * 0.8, control: { x: fracB + (1 - fracB) / 2, y: maxSag2 * 1.1 }, label: `+${maxSag2.toFixed(1)}` },
+      { x: 1, y: 0, label: '0' }
+    ];
+    const bmdSvg = StructureVisuals.renderDiagramCurve('bmd', bmdPoints, 640, 160, `BENDING MOMENT DIAGRAM — Support Moment M_B = ${M_B.toFixed(2)} kN·m`);
+
     return {
       L1: L1,
       L2: L2,
@@ -237,7 +295,9 @@ const StructureSolvers = {
       R_B: R_B.toFixed(2),
       R_C: R_C.toFixed(2),
       maxSag1: maxSag1.toFixed(2),
-      maxSag2: maxSag2.toFixed(2)
+      maxSag2: maxSag2.toFixed(2),
+      beamSvg: beamSvg,
+      bmdSvg: bmdSvg
     };
   },
 
@@ -250,10 +310,9 @@ const StructureSolvers = {
     const I1 = parseFloat(params.I1) || 3.6;
     const I2 = parseFloat(params.I2) || 3.6;
 
-    const endA = params.endA || 'fixed'; // 'fixed' or 'hinged'
-    const endC = params.endC || 'hinged'; // 'fixed' or 'hinged'
+    const endA = params.endA || 'fixed';
+    const endC = params.endC || 'hinged';
 
-    // Stiffness K:
     let K_BA = I1 / L1;
     if (endA === 'hinged') K_BA = 0.75 * (I1 / L1);
 
@@ -267,21 +326,17 @@ const StructureSolvers = {
     const DF_AB = endA === 'fixed' ? 0.0 : 1.0;
     const DF_CB = endC === 'fixed' ? 0.0 : 1.0;
 
-    // Fixed End Moments (User inputs or standard point/UDL load)
     let FEM_AB = parseFloat(params.FEM_AB) || -30.0;
     let FEM_BA = parseFloat(params.FEM_BA) || +30.0;
     let FEM_BC = parseFloat(params.FEM_BC) || -22.5;
     let FEM_CB = parseFloat(params.FEM_CB) || +22.5;
 
-    // If end C is hinged and using modified 3/4 K, adjust FEM_BC to propped cantilever FEM
     if (endC === 'hinged' && params.useModifiedStiffness) {
-      // Release joint C immediately: balance C and carry over to B
       const releaseC = -FEM_CB;
       FEM_BC = FEM_BC + 0.5 * releaseC;
       FEM_CB = 0.0;
     }
 
-    // Step-by-step table generation
     const rows = [];
     rows.push({
       step: 'Distribution Factors (DF)',
@@ -304,8 +359,7 @@ const StructureSolvers = {
     let cur_BC = FEM_BC;
     let cur_CB = FEM_CB;
 
-    // Iteration Cycle 1
-    // Joint B unbalanced moment:
+    // Cycle 1: Balance
     const unbal_B1 = cur_BA + cur_BC;
     const bal_BA1 = -unbal_B1 * DF_BA;
     const bal_BC1 = -unbal_B1 * DF_BC;
@@ -316,7 +370,7 @@ const StructureSolvers = {
     if (endC === 'hinged' && !params.useModifiedStiffness) bal_CB1 = -cur_CB * DF_CB;
 
     rows.push({
-      step: 'Cycle 1: Balance (Distribution)',
+      step: 'Cycle 1: Balance Joint B',
       AB: bal_AB1.toFixed(2),
       BA: bal_BA1.toFixed(2),
       BC: bal_BC1.toFixed(2),
@@ -328,14 +382,14 @@ const StructureSolvers = {
     cur_BC += bal_BC1;
     cur_CB += bal_CB1;
 
-    // Carry-Over:
+    // Cycle 1: Carry-Over
     const co_AB1 = (endA === 'fixed') ? 0.5 * bal_BA1 : 0;
     const co_BA1 = (endA === 'hinged') ? 0.5 * bal_AB1 : 0;
     const co_CB1 = (endC === 'fixed') ? 0.5 * bal_BC1 : 0;
     const co_BC1 = (endC === 'hinged' && !params.useModifiedStiffness) ? 0.5 * bal_CB1 : 0;
 
     rows.push({
-      step: 'Cycle 1: Carry-Over (COF = 0.5)',
+      step: 'Cycle 1: Carry-Over (COF = +0.5)',
       AB: co_AB1.toFixed(2),
       BA: co_BA1.toFixed(2),
       BC: co_BC1.toFixed(2),
@@ -353,7 +407,7 @@ const StructureSolvers = {
     const bal_BC2 = -unbal_B2 * DF_BC;
 
     rows.push({
-      step: 'Cycle 2: Balance (Distribution)',
+      step: 'Cycle 2: Balance Joint B',
       AB: '0.00',
       BA: bal_BA2.toFixed(2),
       BC: bal_BC2.toFixed(2),
@@ -373,9 +427,8 @@ const StructureSolvers = {
     });
     cur_AB += co_AB2;
 
-    // Final Sum Row
     rows.push({
-      step: 'FINAL END MOMENTS (ΣM)',
+      step: 'FINAL EQUILIBRIUM MOMENTS (ΣM)',
       AB: cur_AB.toFixed(2),
       BA: cur_BA.toFixed(2),
       BC: cur_BC.toFixed(2),
@@ -390,8 +443,75 @@ const StructureSolvers = {
       DF_BC: DF_BC.toFixed(3),
       rows: rows
     };
+  },
+
+  // =========================================================================
+  // 4. CONJUGATE BEAM INTERACTIVE TRANSFORMER
+  // =========================================================================
+  getConjugateTransform: function(caseKey) {
+    const cases = {
+      cantilever: {
+        title: "Cantilever Beam (Fixed at A, Free Tip at B)",
+        realSvg: {
+          width: 580,
+          height: 160,
+          length: 6,
+          supports: [{ x: 0, type: 'fixed', label: 'Fixed (θ=0, v=0)' }],
+          loads: [{ x: 6, type: 'point', val: 'P ↓' }],
+          showDeflection: true,
+          sagAmount: 24
+        },
+        conjSvg: {
+          width: 580,
+          height: 160,
+          length: 6,
+          supports: [{ x: 6, type: 'fixed', label: 'Fixed (V*≠0, M*≠0)' }],
+          loads: [{ start: 0, end: 6, type: 'udl', val: 'M/EI Triangle ↓' }]
+        },
+        explanation: "At fixed end A, θ=0 and v=0, which transforms to V*=0 and M*=0 (Free End). At free tip B, θ≠0 and v≠0, which requires V*≠0 and M*≠0 (Fixed Support)."
+      },
+      propped: {
+        title: "Propped Cantilever (Fixed at A, Roller at B)",
+        realSvg: {
+          width: 580,
+          height: 160,
+          length: 6,
+          supports: [{ x: 0, type: 'fixed', label: 'Fixed (θ=0, v=0)' }, { x: 6, type: 'roller', label: 'Roller (v=0)' }],
+          loads: [{ start: 0, end: 6, type: 'udl', val: 'w (kN/m)' }],
+          showDeflection: true,
+          sagAmount: 18
+        },
+        conjSvg: {
+          width: 580,
+          height: 160,
+          length: 6,
+          supports: [{ x: 6, type: 'pin', label: 'Pin (M*=0)' }],
+          loads: [{ start: 0, end: 6, type: 'udl', val: 'M/EI Diagram' }]
+        },
+        explanation: "Fixed end A becomes a Free End. Simple exterior roller B remains a Simple Support (v=0 ➔ M*=0)."
+      },
+      overhang: {
+        title: "Overhanging Beam (Pin at A, Roller at B, Free Tip at C)",
+        realSvg: {
+          width: 580,
+          height: 160,
+          length: 8,
+          supports: [{ x: 0, type: 'pin', label: 'Pin A' }, { x: 6, type: 'roller', label: 'Roller B' }],
+          loads: [{ x: 8, type: 'point', val: '21 kN ↓' }]
+        },
+        conjSvg: {
+          width: 580,
+          height: 160,
+          length: 8,
+          supports: [{ x: 0, type: 'pin', label: 'Pin A' }, { x: 6, type: 'hinge', label: 'Internal Hinge B' }, { x: 8, type: 'fixed', label: 'Fixed Support C' }],
+          loads: [{ start: 0, end: 8, type: 'udl', val: 'M/EI Diagram' }]
+        },
+        explanation: "Exterior pin A remains a pin. Interior support B transforms into an INTERNAL HINGE (v=0 ➔ M*=0). Overhang tip C transforms into a FIXED SUPPORT (θ≠0, v≠0 ➔ V*≠0, M*≠0)!"
+      }
+    };
+
+    return cases[caseKey] || cases['cantilever'];
   }
 };
 
-// Export for browser or node
 if (typeof module !== 'undefined') module.exports = StructureSolvers;
