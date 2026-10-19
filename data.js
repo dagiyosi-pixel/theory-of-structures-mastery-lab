@@ -2,10 +2,367 @@
 // Addis Ababa University (AAU) / EiABC Curriculum
 
 const COURSE_MODULES = [
+  {
+    "id": "mod0",
+    "shortTitle": "0. Statics & Solid Mechanics Foundations",
+    "fullTitle": "Module 0: Core Foundations — Statics & Strength of Materials Prerequisites",
+    "icon": "📐",
+    "prerequisites": "Engineering Mechanics (Statics), Coplanar Force Systems, Strength of Materials Fundamentals, Basic Calculus.",
+    "intuition": "Statically indeterminate structural analysis cannot be mastered without an instinctive, infallible foundation in determinate statics and elasticity. You cannot release a redundant force if you cannot isolate a free-body diagram, nor can you evaluate virtual work without constructing flawless bending moment functions. Module 0 guarantees your foundation has zero gaps, directly working through the 6 core review problems from the Addis Ababa University (AAU / EiABC) COTM 3101 course notes.",
+    "theory": [
+      {
+        "heading": "0.1 2D Equilibrium & Free-Body Diagrams (FBDs)",
+        "body": "\n        <p>A planar rigid body in 2D space possesses 3 independent degrees of freedom: translation in X, translation in Y, and rotation in Z. For the body to remain in static equilibrium under any arbitrary coplanar load system, the resultant force and resultant moment about any point must vanish identically:</p>\n        <div class=\"concept-callout\">\n          <strong>The Three Fundamental Coplanar Equilibrium Equations:</strong><br/>\n          $$\\sum F_x = 0 \\quad \\text{(No horizontal translation)}$$<br/>\n          $$\\sum F_y = 0 \\quad \\text{(No vertical translation)}$$<br/>\n          $$\\sum M_z = 0 \\quad \\text{(No rotation about any point)}$$\n        </div>\n        <p><strong>The Four Classic Support Idealizations:</strong></p>\n        <ul>\n          <li><strong>Roller Support (1 Reaction Component):</strong> Restrains motion strictly perpendicular to the supporting surface ($R_y$). Permits translation parallel to the surface and free rotation.</li>\n          <li><strong>Pin / Hinge Support (2 Reaction Components):</strong> Restrains translation in both X and Y directions ($R_x, R_y$). Permits free rotation without restraint ($M = 0$).</li>\n          <li><strong>Fixed / Clamped Support (3 Reaction Components):</strong> Completely prevents translation and rotation ($R_x, R_y, M$). Transmits horizontal shear, vertical reaction, and resisting fixity moment.</li>\n          <li><strong>Sliding Guide / Sleeve (2 Reaction Components):</strong> Restrains rotation ($M$) and transverse translation ($R_y$), but permits frictionless axial sliding along the guide axis ($R_x = 0$).</li>\n        </ul>\n        <div class=\"concept-callout\" style=\"border-left-color:var(--accent);\">\n          <strong>Multi-Body Systems & Internal Releases:</strong><br/>\n          • <strong>Internal Hinge:</strong> A physical pin inserted between structural segments. It transmits shear force $V$ and axial force $N$, but cannot transmit bending moment: $M_{\\text{hinge}} = 0$. This provides <strong>1 condition equation ($s = 1$)</strong>. When separating the structure at the hinge into two FBDs, internal forces appear as equal and opposite Newton's third law pairs.<br/>\n          • <strong>Two-Force Member:</strong> Any member subjected to loads only at its two end pin connections (with no transverse lateral loads or intermediate couples). The resultant force must act strictly along the straight line passing through the two pin centers (pure axial tension or compression).\n        </div>\n      ",
+        "formula": "\\sum F_x = 0, \\quad \\sum F_y = 0, \\quad \\sum M_z = 0"
+      },
+      {
+        "heading": "0.2 Internal Resultants & Standard Beam Sign Conventions",
+        "body": "\n        <p>When external loads act on a structure, internal resisting forces develop continuously through the material fibers. Passing an imaginary cut through the beam exposes three internal stress resultants required to maintain equilibrium:</p>\n        <ul>\n          <li><strong>Axial (Normal) Force $N(x)$:</strong> Resultant force acting along the centroidal axis perpendicular to the cross section.</li>\n          <li><strong>Shear Force $V(x)$:</strong> Resultant force acting parallel to the cross-sectional plane.</li>\n          <li><strong>Bending Moment $M(x)$:</strong> Resultant couple causing flexural curvature about the neutral axis.</li>\n        </ul>\n        <div class=\"concept-callout\">\n          <strong>COTM 3101 Standard Beam Sign Conventions (Memorize Permanently!):</strong><br/>\n          • <strong>Axial Force $N$:</strong> <em>Tension is POSITIVE (+)</em> (pulling away from cut face); <em>Compression is NEGATIVE (-)</em> (pushing into cut face).<br/>\n          • <strong>Shear Force $V$:</strong> <em>Clockwise shearing couple is POSITIVE (+)</em>. Upward on left-hand cut face, downward on right-hand cut face.<br/>\n          • <strong>Bending Moment $M$:</strong> <em>SAGGING moment is POSITIVE (+)</em> (creates tension in bottom fibers and compression in top fibers — \"smiling beam\"). Counter-clockwise on right cut face, clockwise on left cut face. <em>HOGGING moment is NEGATIVE (-)</em> (creates tension in top fibers — \"frowning beam\").\n        </div>\n      ",
+        "formula": "N(x) \\text{ [Tension +]}, \\quad V(x) \\text{ [CW +]}, \\quad M(x) \\text{ [Sagging +]}"
+      },
+      {
+        "heading": "0.3 Differential Equilibrium Relations & SFD/BMD Graphical Rules",
+        "body": "\n        <p>Consider an infinitesimal beam element of length $dx$ subjected to a distributed load $w(x)$ acting downwards:</p>\n        <div class=\"concept-callout\">\n          <strong>Fundamental Differential Calculus Relations:</strong><br/>\n          $$\\frac{dV}{dx} = -w(x) \\quad \\iff \\quad \\Delta V = -\\int w(x) dx$$<br/>\n          $$\\frac{dM}{dx} = V(x) \\quad \\iff \\quad \\Delta M = \\int V(x) dx$$<br/>\n          $$\\frac{d^2M}{dx^2} = -w(x)$$\n        </div>\n        <p><strong>Master Rules for Instant SFD & BMD Construction:</strong></p>\n        <ol>\n          <li><strong>Slope of SFD</strong> equals the negative of the distributed load: $\\text{Slope} = -w(x)$. If $w=0$, shear is horizontal constant. If $w=\\text{const}$, shear is a straight downward-sloping line.</li>\n          <li><strong>Slope of BMD</strong> equals the shear force value: $\\text{Slope} = V(x)$. Where shear is zero ($V = 0$), the bending moment has a horizontal tangent (local maximum or minimum).</li>\n          <li><strong>Change in Shear ($\\Delta V$)</strong> between two points equals the negative area under the distributed load diagram.</li>\n          <li><strong>Change in Moment ($\\Delta M$)</strong> between two points equals the net area under the Shear Force Diagram.</li>\n          <li><strong>Concentrated Point Load ($P$):</strong> Causes an instantaneous vertical jump in the SFD equal to $P$ in the direction of the force. Causes a sharp kink (change of slope) in the BMD.</li>\n          <li><strong>Concentrated Couple ($M_0$):</strong> Causes no change in the SFD, but produces an instantaneous vertical step jump in the BMD equal to $M_0$.</li>\n        </ol>\n      ",
+        "formula": "\\frac{dV}{dx} = -w(x), \\quad \\frac{dM}{dx} = V(x), \\quad \\Delta M = \\int_{x_1}^{x_2} V(x) dx"
+      },
+      {
+        "heading": "0.4 Plane Truss Statics, Zero-Force Members & Tension-Only Cables",
+        "body": "\n        <p>A plane truss is an ideal assembly of slender bars connected exclusively at frictionless pin joints. Since loads are applied only at joints, every member acts as a pure two-force member carrying constant axial force $N$.</p>\n        <div class=\"concept-callout\">\n          <strong>Elastic Axial Deformation (Hooke's Law):</strong><br/>\n          $$\\Delta L = \\frac{N L}{E A}$$\n          where $N$ is internal axial force (N), $L$ is length (m), $E$ is Young's Modulus (N/m²), and $A$ is cross-sectional area (m²). If temperature changes by $\\Delta T$: $\\Delta L_T = \\alpha (\\Delta T) L$.\n        </div>\n        <p><strong>The Three Golden Inspection Rules for Zero-Force Members:</strong></p>\n        <div class=\"concept-callout\" style=\"border-left-color:var(--warning);\">\n          <strong>Rule 1 (Two Non-Collinear Members at Unloaded Joint):</strong> If only two non-collinear members meet at a joint with NO external load or support reaction, <strong>BOTH members carry zero force</strong> ($F_1 = F_2 = 0$).<br/><br/>\n          <strong>Rule 2 (Three Members at Unloaded Joint with Two Collinear):</strong> If three members meet at an unloaded joint and two form a straight line, the <strong>third (non-collinear) member is zero-force</strong> ($F_3 = 0$), and the two collinear members carry equal forces ($F_1 = F_2$).<br/><br/>\n          <strong>Rule 3 (Two Members with Load Collinear to One):</strong> If two members meet at a joint and an external load acts in line with one member, the <strong>other (non-collinear) member is zero-force</strong>.\n        </div>\n        <p><strong>Slender Tension-Only Counter-Diagonal Cables (Course Review Fig. 2):</strong></p>\n        <p>In structural trusses with slender diagonal tie rods or cables across a panel, cables buckle under negligible compressive stress. In any loading condition, <em>only the diagonal that goes into tension ($T \\ge 0$) carries load</em>; the opposing diagonal goes completely slack ($N = 0$).</p>\n      ",
+        "formula": "\\Delta L = \\frac{N L}{E A}, \\quad \\sum F_x = 0, \\quad \\sum F_y = 0"
+      },
+      {
+        "heading": "0.5 Cross-Sectional Geometry, Centroids & Elastic Flexure",
+        "body": "\n        <p>Bending moment produces longitudinal normal stresses $\\sigma$ across the beam depth. By Euler-Bernoulli beam theory (plane sections remain plane), strain varies linearly from the Neutral Axis (NA), where strain is zero.</p>\n        <div class=\"concept-callout\">\n          <strong>1. Centroid of Composite Cross-Section:</strong><br/>\n          $$\\bar{y} = \\frac{\\sum A_i y_i}{\\sum A_i}$$<br/>\n          <strong>2. Second Moment of Area (Moment of Inertia) for Rectangle ($b \\times h$):</strong><br/>\n          $$I_{NA} = \\frac{b h^3}{12}$$<br/>\n          <strong>3. Parallel Axis Theorem (Steiner's Theorem):</strong><br/>\n          $$I_x = I_{NA} + A d^2 \\quad \\text{($d$ = distance between centroidal axis and target axis)}$$<br/>\n          <strong>4. Elastic Flexure Formula (Navier's Equation):</strong><br/>\n          $$\\sigma = -\\frac{M y}{I}$$\n          where $y$ is the vertical distance measured from the neutral axis ($y > 0$ above NA, $y < 0$ below NA). Maximum bending stress occurs at the extreme fiber ($y = \\pm c$):<br/>\n          $$\\sigma_{\\max} = \\frac{M}{S}, \\quad \\text{where Section Modulus } S = \\frac{I}{c} = \\frac{b h^2}{6} \\text{ (for rectangle)}$$\n        </div>\n      ",
+        "formula": "\\sigma = -\\frac{M y}{I}, \\quad I_{NA} = \\frac{b h^3}{12}, \\quad I_x = I_{NA} + A d^2"
+      },
+      {
+        "heading": "0.6 Beam Deflections by Direct Double Integration",
+        "body": "\n        <p>The curvature $\\kappa = 1/\\rho$ of a flexural member is proportional to bending moment: $\\kappa = \\frac{d^2v}{dx^2} = \\frac{M(x)}{EI}$.</p>\n        <div class=\"concept-callout\">\n          <strong>Governing Second-Order Differential Equation:</strong><br/>\n          $$EI \\frac{d^2v}{dx^2} = M(x)$$\n          <strong>First Integration (Rotation / Slope $\\theta(x)$):</strong><br/>\n          $$EI \\frac{dv}{dx} = EI \\theta(x) = \\int M(x) dx + C_1$$\n          <strong>Second Integration (Transverse Deflection $v(x)$):</strong><br/>\n          $$EI v(x) = \\int \\left[ \\int M(x) dx \\right] dx + C_1 x + C_2$$\n        </div>\n        <p><strong>Essential Boundary Conditions to Solve Integration Constants $C_1, C_2$:</strong></p>\n        <ul>\n          <li><strong>Pin / Roller Support at $x = 0$:</strong> Zero deflection $\\implies v(0) = 0$.</li>\n          <li><strong>Fixed Support at $x = 0$:</strong> Zero deflection AND zero slope $\\implies v(0) = 0$ and $\\theta(0) = v'(0) = 0$.</li>\n          <li><strong>Symmetric Midspan under Symmetric Load at $x = L/2$:</strong> Zero slope $\\implies \\theta(L/2) = 0$.</li>\n          <li><strong>Continuity Across Load Intervals ($x = x_k$):</strong> Deflection and slope must match from left and right: $v_L(x_k) = v_R(x_k)$ and $\\theta_L(x_k) = \\theta_R(x_k)$.</li>\n        </ul>\n      ",
+        "formula": "EI \\frac{d^2v}{dx^2} = M(x) \\implies EI v(x) = \\iint M(x) dx dx + C_1 x + C_2"
+      },
+      {
+        "heading": "0.7 Mohr's Moment-Area Theorems (Theorems 1 & 2)",
+        "body": "\n        <p>Mohr's Moment-Area theorems provide a fast, elegant geometric technique to calculate slopes and deflections directly from the area and centroid of the $M/EI$ diagram without solving differential equations.</p>\n        <div class=\"concept-callout\">\n          <strong>First Moment-Area Theorem (Change in Slope):</strong><br/>\n          $$\\theta_{B/A} = \\theta_B - \\theta_A = \\int_A^B \\frac{M}{EI} dx = \\text{Area of the } \\frac{M}{EI} \\text{ diagram between } A \\text{ and } B$$<br/>\n          <strong>Second Moment-Area Theorem (Tangential Deviation):</strong><br/>\n          $$t_{B/A} = \\int_A^B x \\frac{M}{EI} dx = \\left(\\text{Area of } \\frac{M}{EI}\\right)_{A-B} \\cdot \\bar{x}_B$$\n        </div>\n        <div class=\"concept-callout\" style=\"border-left-color:var(--danger);\">\n          <strong>CRITICAL NOTATION & CONVENTION (AAU Exam Rule):</strong><br/>\n          • $t_{B/A}$ is defined as the <strong>vertical distance from the tangent drawn at point $A$ to the elastic curve at point $B$</strong>.<br/>\n          • The centroid distance $\\bar{x}_B$ <strong>MUST BE MEASURED FROM POINT $B$</strong> (the point where the deviation is being evaluated)!<br/>\n          • <strong>$t_{B/A} \\ne t_{A/B}$!</strong> In general, $t_{A/B} = \\text{Area} \\cdot \\bar{x}_A$ measures from point $A$ to the tangent drawn at $B$. Reversing this index is the #1 student exam error!\n        </div>\n      ",
+        "formula": "\\theta_{B/A} = \\int_A^B \\frac{M}{EI} dx, \\quad t_{B/A} = \\bar{x}_B \\cdot \\left(\\text{Area}_{M/EI}\\right)_{A-B}"
+      },
+      {
+        "heading": "0.8 Comprehensive Solutions: Course Review Exercises (Figs. 1 to 6)",
+        "body": "\n        <p>The introductory chapter of COTM 3101 assigns 6 comprehensive review exercises covering all prerequisite statics and solid mechanics principles. Here are the rigorous, step-by-step master solutions:</p>\n        \n        <div class=\"concept-callout\">\n          <strong>Review Exercise 1 (Fig. 1: Pin-Connected Frame with Two-Force Member BD):</strong><br/>\n          • <em>Geometry:</em> Vertical column ABC (height $AB = 1.5$m, $BC = 1.5$m, total height 3.0m). Horizontal beam CDE ($CD = 2.0$m, $DE = 2.0$m, total length 4.0m). Member BD connects pin B(0, 1.5) to pin D(2.0, 3.0).<br/>\n          • <em>Loads:</em> Horizontal force 6 kN at C pointing right; vertical load 4 kN at E pointing down.<br/>\n          • <em>Key Insight:</em> Member BD has pins at both ends and NO intermediate transverse loads $\\implies$ <strong>Two-Force Member</strong>! Force acts along the line BD.<br/>\n          • $L_{BD} = \\sqrt{2.0^2 + 1.5^2} = 2.5$m. $\\cos\\theta = 2.0/2.5 = 0.8$, $\\sin\\theta = 1.5/2.5 = 0.6$.<br/>\n          • <em>Isolate Beam CDE:</em> Take $\\sum M_C = 0 \\implies (F_{BD} \\sin\\theta)(2.0) - (4)(4.0) = 0 \\implies F_{BD}(0.6)(2.0) = 16 \\implies \\mathbf{F_{BD} = 13.333\\text{ kN (Tension)}}$.<br/>\n          • <em>Reactions at C:</em> $\\sum F_y = 0 \\implies C_y + 13.333(0.6) - 4 = 0 \\implies C_y = -4$ kN (downward on CDE $\\implies$ upward on ABC). $\\sum F_x = 0 \\implies C_x + 13.333(0.8) = 0 \\implies C_x = -10.667$ kN.<br/>\n          • <em>Isolate Column ABC:</em> Take $\\sum F_x = 0, \\sum F_y = 0, \\sum M_A = 0$ to find base pin reactions: $\\mathbf{A_x = 4.67\\text{ kN}}, \\mathbf{A_y = 4.0\\text{ kN}}$.\n        </div>\n\n        <div class=\"concept-callout\">\n          <strong>Review Exercise 2 (Fig. 2: Plane Truss with Tension-Only Counter-Diagonals):</strong><br/>\n          • <em>Geometry & Loads:</em> Symmetrical Pratt truss with counter diagonals DI and EJ in the central panel. Slender cables carry ONLY tension ($T \\ge 0$).<br/>\n          • <em>Tension-Only Cable Rule:</em> Compute the vertical shear across the panel $V_{panel}$. The diagonal inclined to oppose the panel shear carries tension; the opposing diagonal would require compression to satisfy equilibrium, so it goes slack ($F = 0$).<br/>\n          • Using Method of Sections through panel BK, JI, EF: resolve equilibrium of the cut segment directly to find the axial forces in members BK, JI, and EF.\n        </div>\n\n        <div class=\"concept-callout\">\n          <strong>Review Exercise 3 (Fig. 3: Beam with Internal Hinge, Overhang & Distributed Load):</strong><br/>\n          • <em>Geometry:</em> Overhang span AB = 2.0m with point load 15 kN at A. Pin support at B. Internal hinge at C ($x = 4.0$m). Spans CD = 1.0m, DE = 1.0m, EF = 1.0m with UDL $w = 10$ kN/m on segment DE and point load at E.<br/>\n          • <em>Decomposition:</em> Split the beam at internal hinge C ($M_C = 0$).<br/>\n          • Sub-beam AC is statically determinate when the hinge reaction $V_C$ is determined from the right sub-beam CF.<br/>\n          • Solve reactions: $R_B, R_D, R_F$. Construct complete Shear Force Diagram (SFD) and Bending Moment Diagram (BMD). Peak sagging occurs where $V(x) = 0$.\n        </div>\n\n        <div class=\"concept-callout\">\n          <strong>Review Exercise 4 (Fig. 4: Direct Integration Method for Elastic Curve):</strong><br/>\n          • <em>Loads:</em> Beam with UDL $w = 20$ kN/m over main span $L = 5.0$m and point load $P = 40$ kN on overhang of 1.6m.<br/>\n          • Set up $M(x)$ equations. Integrate twice: $EI \\theta(x) = \\int M dx + C_1$, $EI v(x) = \\iint M dx dx + C_1 x + C_2$.<br/>\n          • Apply boundary conditions: $v(0) = 0$ and $v(5.0) = 0$ to solve $C_1, C_2$.<br/>\n          • Evaluate exact slope at B: $\\theta_B = v'(5.0)$ and tip deflection at C: $v_C = v(6.6)$.\n        </div>\n\n        <div class=\"concept-callout\">\n          <strong>Review Exercise 5 (Fig. 5: Moment-Area Method for Overhanging Beam):</strong><br/>\n          • <em>Loads:</em> Beam ABCD with spans 3.0m, 3.0m, 2.2m, point loads 60 kN and 45 kN, and applied couple $M = 30$ kN·m.<br/>\n          • Construct $M/EI$ diagram. Calculate geometric areas $A_i$ and centroid positions $\\bar{x}_i$.<br/>\n          • Compute tangential deviation $t_{B/A} = \\sum A_i \\bar{x}_{B,i}$.<br/>\n          • Determine reference tangent slope: $\\theta_A = -t_{B/A} / L_{AB}$.<br/>\n          • Evaluate deflection at A ($v_A$) and slope at D ($\\theta_D$) by geometric superposition!\n        </div>\n\n        <div class=\"concept-callout\">\n          <strong>Review Exercise 6 (Fig. 6: Compound Beam with Internal Hinge & Mixed Loads):</strong><br/>\n          • Determine reactions at all supports by separating at internal hinge.<br/>\n          • Draw complete Shear Force Diagram (SFD) showing exact step jumps at concentrated loads.<br/>\n          • Draw Bending Moment Diagram (BMD) locating zero-moment points of contraflexure (inflection points).\n        </div>\n      ",
+        "formula": "F_{BD} = 13.33\\text{ kN}, \\quad \\theta_{B/A} = \\text{Area}_{M/EI}, \\quad t_{B/A} = \\bar{x}_B \\cdot \\text{Area}_{M/EI}"
+      }
+    ],
+    "guidedExamples": [
+      {
+        "title": "Guided Example 0.1: Complete Statics of Multi-Body Beam with Internal Hinge (Review Fig. 3)",
+        "problem": "A beam has an overhang of 2.0 m on the left with a 15 kN downward point load at A, a roller support at B, an internal hinge at C (2.0 m to the right of B), and a supported span CF of 3.0 m with a UDL w = 10 kN/m and supports at D and F. Determine all reactions and the shear/moment equations.",
+        "svgConfig": {
+          "width": 620,
+          "height": 180,
+          "length": 7,
+          "supports": [
+            {
+              "x": 2,
+              "type": "pin",
+              "label": "B"
+            },
+            {
+              "x": 5,
+              "type": "roller",
+              "label": "D"
+            },
+            {
+              "x": 7,
+              "type": "roller",
+              "label": "F"
+            }
+          ],
+          "loads": [
+            {
+              "x": 0,
+              "type": "point",
+              "val": "15 kN ↓"
+            },
+            {
+              "x": 4,
+              "type": "hinge",
+              "label": "Hinge C"
+            },
+            {
+              "x": 5.5,
+              "type": "udl",
+              "val": "10 kN/m"
+            }
+          ]
+        },
+        "hints": [
+          "First step: separate the beam at internal hinge C where bending moment is identically zero (M_C = 0).",
+          "Left segment AC has only ONE support at B; taking moments about B determines the internal shear interaction V_C directly!",
+          "Apply Newton's third law: the force V_C acting on segment AC acts equal and opposite on segment CF."
+        ],
+        "steps": [
+          {
+            "stepName": "Step 1: Decouple the Structure at Internal Hinge C",
+            "content": "An internal hinge transmits shear force V and axial force N, but zero bending moment: <code>M_C = 0</code>. Split the compound beam into two independent free-body diagrams: sub-beam AC and sub-beam CF. The hinge transmits an unknown vertical shear force V_C (acting downward on AC, upward on CF)."
+          },
+          {
+            "stepName": "Step 2: Solve Equilibrium of Left Sub-Beam AC",
+            "content": "Take moments about pin support B: <code>ΣM_B = 0 ➔ -(15 kN)(2.0 m) + V_C(2.0 m) = 0 ➔ V_C = 15 kN</code>. Then vertical equilibrium gives R_B: <code>ΣF_y = 0 ➔ R_B - 15 - V_C = 0 ➔ R_B = 30 kN (upward)</code>."
+          },
+          {
+            "stepName": "Step 3: Solve Equilibrium of Right Sub-Beam CF",
+            "content": "Apply the upward interaction force V_C = 15 kN at the left end C of sub-beam CF. Together with the applied UDL w = 10 kN/m, solve support reactions R_D and R_F using the two remaining equilibrium equations: <code>ΣM_D = 0</code> and <code>ΣF_y = 0</code>."
+          },
+          {
+            "stepName": "Step 4: Construct SFD and Locate Maximum Bending Moment",
+            "content": "Plot shear force starting from A. The shear passes through zero in span CD, giving the location of peak sagging moment. Maximum hogging occurs over support B: <code>M_B = -(15)(2.0) = -30 kN·m</code>."
+          }
+        ]
+      },
+      {
+        "title": "Guided Example 0.2: Deflection & Slope by Direct Double Integration (Review Fig. 4)",
+        "problem": "A simply supported beam with an overhanging tip carries a uniform distributed load w = 20 kN/m on the 5.0 m main span AB and a concentrated load P = 40 kN at the tip C of the 1.6 m overhang. Derive the elastic curve equation v(x) and determine the slope at B and deflection at C.",
+        "svgConfig": {
+          "width": 620,
+          "height": 180,
+          "length": 6.6,
+          "supports": [
+            {
+              "x": 0,
+              "type": "pin",
+              "label": "A"
+            },
+            {
+              "x": 5,
+              "type": "roller",
+              "label": "B"
+            }
+          ],
+          "loads": [
+            {
+              "x": 2.5,
+              "type": "udl",
+              "val": "20 kN/m"
+            },
+            {
+              "x": 6.6,
+              "type": "point",
+              "val": "40 kN ↓"
+            }
+          ]
+        },
+        "hints": [
+          "First find support reactions R_A and R_B by taking ΣM_A = 0 for the entire beam.",
+          "Formulate M(x) for the main span 0 ≤ x ≤ 5.0 m: M(x) = R_A x - w x² / 2.",
+          "Integrate twice to find v(x), and apply the boundary conditions v(0) = 0 and v(5.0) = 0 to evaluate integration constants C_1 and C_2."
+        ],
+        "steps": [
+          {
+            "stepName": "Step 1: Determine Support Reactions R_A and R_B",
+            "content": "Taking moments about pin A: <code>ΣM_A = 0 ➔ R_B(5.0) - (20 × 5.0)(2.5) - 40(6.6) = 0 ➔ R_B = 102.8 kN</code>. Total downward load = 140 kN, therefore <code>R_A = 140 - 102.8 = 37.2 kN</code>."
+          },
+          {
+            "stepName": "Step 2: Formulate Bending Moment Function M(x) for Span AB (0 ≤ x ≤ 5.0 m)",
+            "content": "Pass an imaginary cut at distance x from pin A: <code>M(x) = R_A x - (w x² / 2) = 37.2 x - 10 x²</code>."
+          },
+          {
+            "stepName": "Step 3: Perform First and Second Integrations",
+            "content": "1st Integration: <code>EI θ(x) = 18.6 x² - (10/3) x³ + C_1</code>.<br/>2nd Integration: <code>EI v(x) = 6.2 x³ - (5/6) x⁴ + C_1 x + C_2</code>."
+          },
+          {
+            "stepName": "Step 4: Apply Boundary Conditions to Solve Constants",
+            "content": "At pin A (x = 0): <code>v(0) = 0 ➔ C_2 = 0</code>.<br/>At roller B (x = 5.0 m): <code>v(5.0) = 0 ➔ 6.2(5)³ - (5/6)(5)⁴ + 5 C_1 = 0 ➔ C_1 = -51.13 kN·m²</code>."
+          },
+          {
+            "stepName": "Step 5: Evaluate Slope at B and Tip Deflection at C",
+            "content": "Slope at B: <code>θ_B = (1/EI) [18.6(5)² - (10/3)(5)³ - 51.13] = -3.80 / EI rad</code>.<br/>Deflection at overhang tip C: kinematics of the rigid extension gives <code>v_C = θ_B (1.6) + cantilever deflection = -6.08 / EI - 27.31 / EI = -33.39 / EI m</code>."
+          }
+        ]
+      }
+    ],
+    "shortcuts": [
+      "<strong>Instant Maximum Moments:</strong> Simply supported UDL <code>M_max = wL²/8</code>; Simply supported center point load <code>M_max = PL/4</code>; Cantilever under UDL <code>M_fixed = -wL²/2</code>; Cantilever tip load <code>M_fixed = -PL</code>.",
+      "<strong>Centroid & Area Quick Filter:</strong> Right triangle centroid is always at <code>1/3 L</code> from the vertical leg (<code>2/3 L</code> from apex). Second-degree parabolic spandrel has <code>Area = (1/3) b h</code> with centroid at <code>1/4 b</code> from vertical edge.",
+      "<strong>The Zero-Shear Max-Moment Rule:</strong> Never guess where the peak bending moment occurs. Set <code>V(x*) = 0</code>, solve for x*, and evaluate <code>M(x*)</code> directly."
+    ],
+    "methodSelection": "\n    <div class=\"concept-callout\">\n      <strong>Statics & Deflection Method Selection Matrix:</strong><br/>\n      • <strong>Method of Joints:</strong> Best when all member forces are required, or when starting from exterior pin joints with ≤ 2 unknown bars.<br/>\n      • <strong>Method of Sections:</strong> Best when forces in only 1 to 3 specific members are needed (cut directly through target members; bypass the rest of the truss!).<br/>\n      • <strong>Direct Double Integration:</strong> Best when the continuous deflection function v(x) is required over the entire span.<br/>\n      • <strong>Moment-Area Method:</strong> Best when slope or deflection is needed at a <em>single specific point</em> on a beam with simple, stepped, or overhanging geometry.<br/>\n      • <strong>Conjugate Beam Method:</strong> Best when dealing with internal hinges, varying EI, or when slopes and deflections are sought simultaneously.\n    </div>\n  ",
+    "commonTraps": [
+      "Inverting Tangential Deviation Indices: t_B/A is the deviation OF POINT B from the tangent drawn AT POINT A. The centroid moment arm x_B MUST be measured from point B! Reversing this is the #1 student exam error.",
+      "Assuming Internal Hinge Transmits Zero Force: An internal hinge has M = 0, but it transmits non-zero shear V and normal force N! Always include V_hinge and N_hinge when drawing free-body diagrams of separated segments.",
+      "Confusing Bending Moment Sign Convention with Statics Moment Sum: A static moment equation ΣM = 0 uses an arbitrary rotational sign (e.g., CCW positive). But internal bending moment M(x) MUST use the beam convention: SAGGING is positive (tension at bottom fiber), regardless of which side you cut from!",
+      "Misidentifying Tension-Only Counter-Diagonals: Slender cables cannot carry compression. If equilibrium of a cut panel indicates that a cable would be in compression, that cable is SLACK (N = 0) and the opposing diagonal carries all panel shear in tension."
+    ],
+    "mnemonics": "\n    <strong>CRUCIAL FOUNDATION MNEMONICS:</strong><br/>\n    • <strong>SMILING BEAM = POSITIVE (+):</strong> Sagging moment makes the beam smile (bottom stretched in tension, top in compression). Frowning beam = Hogging = Negative (-).<br/>\n    • <strong>R-O-L-L-E-R = ONE (1):</strong> A roller rolls along the plane, offering only ONE perpendicular resistance.<br/>\n    • <strong>M-A-R-K FROM TARGET:</strong> In Moment-Area Theorem 2 (t_{B/A}), measure the centroid distance <strong>FROM the target letter B</strong>, NOT from the tangent point A!\n  ",
+    "arena": [
+      {
+        "title": "Arena Challenge 0.1: Internal Hinge Stress Resultants",
+        "diagram": "[ Beam Segment 1 ] ───(○ Internal Hinge)─── [ Beam Segment 2 ]",
+        "prompt": "Which of the following correctly describes the internal stress resultants that can exist at a frictionless internal hinge in a 2D beam?",
+        "options": [
+          {
+            "text": "A) Axial Force and Shear Force can exist, but Bending Moment is strictly zero.",
+            "correct": true,
+            "explain": "Correct! A frictionless internal hinge allows free relative rotation between connected members, so it cannot resist or transmit bending moment (M = 0). However, it prevents relative translation in both transverse and longitudinal directions, transmitting internal shear force V and axial force N."
+          },
+          {
+            "text": "B) Only Shear Force can exist; Axial Force and Bending Moment are both zero.",
+            "correct": false,
+            "explain": "Incorrect. An internal pin prevents axial translation as well as transverse translation, so non-zero axial force N can definitely be transmitted."
+          },
+          {
+            "text": "C) All three resultants (Axial Force, Shear Force, and Bending Moment) are zero.",
+            "correct": false,
+            "explain": "Incorrect. If shear and axial forces were zero, the two beam segments would be completely detached and unsupported!"
+          },
+          {
+            "text": "D) Bending Moment can exist, but Shear Force is zero.",
+            "correct": false,
+            "explain": "Incorrect. A hinge allows free rotation, so moment is identically zero."
+          }
+        ]
+      },
+      {
+        "title": "Arena Challenge 0.2: Zero-Force Member Golden Rule",
+        "diagram": "Joint A: Members AB and AC collinear; Member AD connects at 45° with no external load.",
+        "prompt": "Three members meet at an unloaded pin joint in a plane truss. Two of the members (AB and AC) form a straight collinear line. What can be concluded about the axial force in the third member (AD)?",
+        "options": [
+          {
+            "text": "A) Member AD carries zero axial force (F_AD = 0).",
+            "correct": true,
+            "explain": "Correct! By Golden Rule 2 for Zero-Force Members: resolving equilibrium perpendicular to the collinear line AB-AC reveals that member AD has no force to balance its transverse component. Therefore, its force must be zero (F_AD = 0), and the two collinear members carry equal forces (F_AB = F_AC)."
+          },
+          {
+            "text": "B) Member AD carries the vector sum of AB and AC.",
+            "correct": false,
+            "explain": "Incorrect. The joint has no external load; any force in AD would create an unbalanced transverse component."
+          },
+          {
+            "text": "C) Member AD is in tension, while AB and AC are in compression.",
+            "correct": false,
+            "explain": "Incorrect. AD cannot carry tension without an opposing transverse force."
+          },
+          {
+            "text": "D) Determinacy cannot be established without solving the entire truss.",
+            "correct": false,
+            "explain": "Incorrect. Joint equilibrium alone proves F_AD = 0 immediately."
+          }
+        ]
+      },
+      {
+        "title": "Arena Challenge 0.3: Tangential Deviation Definition",
+        "diagram": "Elastic Curve: Tangent drawn at A ───────> Vertical offset measured at B = t_{B/A}",
+        "prompt": "In Mohr's Second Moment-Area Theorem, the tangential deviation t_{B/A} represents:",
+        "options": [
+          {
+            "text": "A) The vertical distance from the tangent drawn at point A to the elastic curve at point B.",
+            "correct": true,
+            "explain": "Correct! By standard convention, t_{B/A} is the vertical deviation of point B on the deflected elastic curve from the tangent line drawn to the curve at point A. The centroid arm in the integration must be measured from point B."
+          },
+          {
+            "text": "B) The vertical distance from the tangent drawn at point B to the elastic curve at point A.",
+            "correct": false,
+            "explain": "Incorrect. That is t_{A/B}, which is generally not equal to t_{B/A}."
+          },
+          {
+            "text": "C) The change in slope between points A and B.",
+            "correct": false,
+            "explain": "Incorrect. Change in slope is Mohr's First Theorem: θ_{B/A} = θ_B - θ_A."
+          },
+          {
+            "text": "D) The midspan deflection between A and B.",
+            "correct": false,
+            "explain": "Incorrect. Tangential deviation is a geometric offset from a tangent line, not a direct midspan deflection."
+          }
+        ]
+      },
+      {
+        "title": "Arena Challenge 0.4: Beam Flexure Stress Distribution",
+        "diagram": "Rectangular beam b × h: NA at mid-depth h/2. Sagging moment +M.",
+        "prompt": "According to Euler-Bernoulli beam theory, what is the maximum bending stress in a solid rectangular beam of width b and depth h subjected to a bending moment M?",
+        "options": [
+          {
+            "text": "A) σ_max = 6M / (b h²)",
+            "correct": true,
+            "explain": "Correct! Using Navier's formula: σ_max = M c / I, where c = h/2 and I = b h³ / 12. Thus σ_max = M (h/2) / (b h³ / 12) = 6M / (b h²) = M / S, where S = b h² / 6."
+          },
+          {
+            "text": "B) σ_max = 12M / (b h³)",
+            "correct": false,
+            "explain": "Incorrect. 12M / (b h³) has units of stress / length."
+          },
+          {
+            "text": "C) σ_max = M / (b h)",
+            "correct": false,
+            "explain": "Incorrect. M / (b h) is not dimensionally correct for bending stress."
+          },
+          {
+            "text": "D) σ_max = 3M / (2 b h²)",
+            "correct": false,
+            "explain": "Incorrect. 3V / (2 b h) is the maximum transverse shear stress for a rectangular section, not bending stress."
+          }
+        ]
+      },
+      {
+        "title": "Arena Challenge 0.5: Pratt Truss Counter-Diagonal Behavior",
+        "diagram": "Panel with cross diagonals DI and EJ (slender counter-bracing cables).",
+        "prompt": "In a Pratt truss panel with two slender counter-diagonal cables DI and EJ capable of supporting only tension, what happens when external shear acts across the panel?",
+        "options": [
+          {
+            "text": "A) The diagonal inclined to oppose the panel shear carries all the shear in tension, while the other diagonal goes slack (F = 0).",
+            "correct": true,
+            "explain": "Correct! Slender cables buckle under infinitesimal compression. When shear acts across the panel, the diagonal that would be compressed buckles and goes slack (carries zero force). The opposing diagonal carries the entire shear in pure tension."
+          },
+          {
+            "text": "B) Both diagonals share the shear equally, one in tension and one in compression.",
+            "correct": false,
+            "explain": "Incorrect. Cables cannot carry compression; they buckle immediately."
+          },
+          {
+            "text": "C) Both diagonals carry tension simultaneously.",
+            "correct": false,
+            "explain": "Incorrect. Under a single shear direction, kinematics would require one to shorten and one to elongate."
+          },
+          {
+            "text": "D) The truss becomes unstable and collapses immediately.",
+            "correct": false,
+            "explain": "Incorrect. The active tension diagonal provides full triangulated stability."
+          }
+        ]
+      },
+      {
+        "title": "Arena Challenge 0.6: Simply Supported Beam Sign Convention",
+        "diagram": "Beam supported at both ends under downward UDL w.",
+        "prompt": "A simply supported beam carries a uniformly distributed downward load w over its entire span L. What is the bending moment at midspan, and what fiber is in tension?",
+        "options": [
+          {
+            "text": "A) +wL²/8 (Sagging moment; bottom fiber in tension)",
+            "correct": true,
+            "explain": "Correct! Under uniform downward loading, the beam sags into a concave upward curve with maximum moment M = +wL²/8 at midspan. Tension occurs in the bottom fibers (sagging is positive)."
+          },
+          {
+            "text": "B) -wL²/8 (Hogging moment; top fiber in tension)",
+            "correct": false,
+            "explain": "Incorrect. Hogging occurs over interior supports of continuous beams or cantilevers, not at the midspan of a simply supported beam."
+          },
+          {
+            "text": "C) +wL²/4 (Sagging moment; bottom fiber in tension)",
+            "correct": false,
+            "explain": "Incorrect. PL/4 is for a concentrated center point load, not a distributed load."
+          },
+          {
+            "text": "D) -wL²/12 (Hogging moment; top fiber in tension)",
+            "correct": false,
+            "explain": "Incorrect. wL²/12 is the fixed-end moment for a clamped beam, not a simply supported beam."
+          }
+        ]
+      }
+    ],
+    "cheatsheet": "\n    <strong>MODULE 0 FORMULA & CONVENTION QUICK SHEET</strong><br/>\n    • <strong>2D Equilibrium:</strong> $\\sum F_x = 0, \\; \\sum F_y = 0, \\; \\sum M_z = 0$<br/>\n    • <strong>Differential Relations:</strong> $w = -dV/dx, \\; V = dM/dx, \\; \\Delta M = \\int V dx$<br/>\n    • <strong>Axial Deformation:</strong> $\\Delta L = NL / EA$<br/>\n    • <strong>Inertia & Parallel Axis:</strong> $I_{NA} = bh^3/12, \\; I = I_{NA} + Ad^2$<br/>\n    • <strong>Elastic Flexure:</strong> $\\sigma = -My/I, \\; S = bh^2/6$<br/>\n    • <strong>Double Integration:</strong> $EI v'' = M(x), \\; EI v' = \\int M dx + C_1, \\; EI v = \\iint M dx dx + C_1 x + C_2$<br/>\n    • <strong>Moment-Area:</strong> $\\theta_{B/A} = \\text{Area}_{M/EI}, \\; t_{B/A} = \\bar{x}_B \\cdot \\text{Area}_{M/EI}$ (arm $\\bar{x}_B$ measured from $B$)\n  "
+  },
+
   // =========================================================================
   // MODULE 1: STABILITY & DETERMINACY OF STRUCTURES
   // =========================================================================
-  {
+{
     id: "mod1",
     shortTitle: "1. Stability & Determinacy",
     fullTitle: "Chapter 1: Stability, Determinacy & Structural Loads",
@@ -981,6 +1338,342 @@ Virtual m-Diagram (Unit Couple at Support A): Triangle from 1.0 at A to 0 at B (
 // THE COMPREHENSIVE FORMULA ATLAS (WITH ANATOMY, SI UNITS & MNEMONICS)
 // =========================================================================
 const FORMULA_ATLAS = [
+  {
+    "id": "f-0-1",
+    "moduleId": "mod0",
+    "moduleTitle": "Statics & Solid Mechanics Foundations",
+    "name": "2D Coplanar Rigid-Body Equilibrium",
+    "formula": "\\sum F_x = 0, \\quad \\sum F_y = 0, \\quad \\sum M_z = 0",
+    "symbols": [
+      {
+        "symbol": "\\sum F_x",
+        "meaning": "Algebraic sum of all horizontal force components",
+        "unit": "kN"
+      },
+      {
+        "symbol": "\\sum F_y",
+        "meaning": "Algebraic sum of all vertical force components",
+        "unit": "kN"
+      },
+      {
+        "symbol": "\\sum M_z",
+        "meaning": "Algebraic sum of moments about any point in the plane",
+        "unit": "kN·m"
+      }
+    ],
+    "applicability": "Any 2D coplanar rigid body or structural sub-assembly in static equilibrium.",
+    "assumptions": "Negligible accelerations (Newton's 1st law); rigid body geometry.",
+    "signConvention": "Rightward forces (+), Upward forces (+), Counter-Clockwise moments (+).",
+    "derivation": "From Newton's second law: a body at rest requires zero linear acceleration in X and Y and zero angular acceleration about Z.",
+    "memoryCue": "'Three equations for three degrees of freedom in 2D' (Fx, Fy, Mz).",
+    "traps": "Do NOT sum moments about a point through which the only unknown force passes if you want to solve for that force!",
+    "related": [
+      "D_e = r_a - r_m",
+      "Method of Joints"
+    ]
+  },
+  {
+    "id": "f-0-2",
+    "moduleId": "mod0",
+    "moduleTitle": "Statics & Solid Mechanics Foundations",
+    "name": "Beam Differential Equilibrium Relations",
+    "formula": "\\frac{dV}{dx} = -w(x), \\quad \\frac{dM}{dx} = V(x), \\quad \\frac{d^2M}{dx^2} = -w(x)",
+    "symbols": [
+      {
+        "symbol": "V(x)",
+        "meaning": "Internal shear force at coordinate x",
+        "unit": "kN"
+      },
+      {
+        "symbol": "M(x)",
+        "meaning": "Internal bending moment at coordinate x",
+        "unit": "kN·m"
+      },
+      {
+        "symbol": "w(x)",
+        "meaning": "Transverse downward distributed load intensity",
+        "unit": "kN/m"
+      }
+    ],
+    "applicability": "Prismatic or non-prismatic beams subjected to transverse distributed loads.",
+    "assumptions": "Continuous load intensity; Euler-Bernoulli small deflection theory.",
+    "signConvention": "Clockwise shear (+); Sagging moment (+); Downward load (+w).",
+    "derivation": "Consider an infinitesimal slice dx: vertical equilibrium gives dV/dx = -w; moment equilibrium dM - V dx + (1/2)w dx² = 0 gives dM/dx = V.",
+    "memoryCue": "'Load is negative slope of shear; Shear is slope of moment' (w = -V', V = M').",
+    "traps": "Peak moment occurs strictly where shear crosses zero (V = 0), NOT necessarily at the physical midpoint!",
+    "related": [
+      "Area under SFD = ΔM",
+      "EI v'' = M(x)"
+    ]
+  },
+  {
+    "id": "f-0-3",
+    "moduleId": "mod0",
+    "moduleTitle": "Statics & Solid Mechanics Foundations",
+    "name": "Elastic Axial Deformation (Hooke's Law)",
+    "formula": "\\Delta L = \\frac{N L}{E A}",
+    "symbols": [
+      {
+        "symbol": "\\Delta L",
+        "meaning": "Total axial elongation or shortening",
+        "unit": "m"
+      },
+      {
+        "symbol": "N",
+        "meaning": "Internal axial normal force (Tension +, Compression -)",
+        "unit": "kN"
+      },
+      {
+        "symbol": "L",
+        "meaning": "Initial member length",
+        "unit": "m"
+      },
+      {
+        "symbol": "E",
+        "meaning": "Young's modulus of elasticity",
+        "unit": "kN/m²"
+      },
+      {
+        "symbol": "A",
+        "meaning": "Cross-sectional area",
+        "unit": "m²"
+      }
+    ],
+    "applicability": "Straight, uniform axial bars subjected to concentric end loads.",
+    "assumptions": "Linearly elastic isotropic material; stress remains below proportional limit.",
+    "signConvention": "Positive for elongation (Tension); Negative for contraction (Compression).",
+    "derivation": "Stress σ = N/A; Strain ε = ΔL/L. By Hooke's Law: σ = E ε ⇒ N/A = E (ΔL/L) ⇒ ΔL = NL/EA.",
+    "memoryCue": "'No Legs Every Autumn' (N L / E A).",
+    "traps": "Do not forget to convert mm to meters or GPa to kN/m² when calculating in engineering units!",
+    "related": [
+      "1·Δ = ∑ n (NL/EA)",
+      "Thermal strain ΔL = α ΔT L"
+    ]
+  },
+  {
+    "id": "f-0-4",
+    "moduleId": "mod0",
+    "moduleTitle": "Statics & Solid Mechanics Foundations",
+    "name": "Centroid of Composite Cross-Section",
+    "formula": "\\bar{y} = \\frac{\\sum A_i y_i}{\\sum A_i}",
+    "symbols": [
+      {
+        "symbol": "\\bar{y}",
+        "meaning": "Vertical distance to neutral axis from reference baseline",
+        "unit": "m"
+      },
+      {
+        "symbol": "A_i",
+        "meaning": "Area of sub-component i",
+        "unit": "m²"
+      },
+      {
+        "symbol": "y_i",
+        "meaning": "Centroid distance of sub-component i from baseline",
+        "unit": "m"
+      }
+    ],
+    "applicability": "Any composite cross-section (T-beams, I-beams, channel sections).",
+    "assumptions": "Homogeneous material across all parts of the cross section.",
+    "signConvention": "Consistent positive axis measured from chosen datum (usually bottom fiber).",
+    "derivation": "First moment of area about datum: Total Area × Centroid = Sum of (Area_i × Centroid_i).",
+    "memoryCue": "'Sum of Ay over Sum of A'.",
+    "traps": "Never measure y_i from different datums for different sub-areas; fix ONE reference line!",
+    "related": [
+      "Parallel Axis Theorem",
+      "I = bh³/12"
+    ]
+  },
+  {
+    "id": "f-0-5",
+    "moduleId": "mod0",
+    "moduleTitle": "Statics & Solid Mechanics Foundations",
+    "name": "Parallel Axis Theorem (Steiner's Theorem)",
+    "formula": "I_x = I_{NA} + A d^2",
+    "symbols": [
+      {
+        "symbol": "I_x",
+        "meaning": "Moment of inertia about arbitrary parallel axis x",
+        "unit": "m⁴"
+      },
+      {
+        "symbol": "I_{NA}",
+        "meaning": "Second moment of area about the cross-section centroidal neutral axis",
+        "unit": "m⁴"
+      },
+      {
+        "symbol": "A",
+        "meaning": "Cross-sectional area",
+        "unit": "m²"
+      },
+      {
+        "symbol": "d",
+        "meaning": "Perpendicular distance between centroidal axis and parallel axis",
+        "unit": "m"
+      }
+    ],
+    "applicability": "Calculation of moment of inertia for built-up and composite structural shapes.",
+    "assumptions": "The reference axis in I_NA MUST pass through the component's own centroid.",
+    "signConvention": "d is squared, so distance direction (+ or -) does not alter the result.",
+    "derivation": "I_x = ∫ (y + d)² dA = ∫ y² dA + 2d ∫ y dA + d² ∫ dA. Since ∫ y dA = 0 about centroid, I_x = I_NA + A d².",
+    "memoryCue": "'Inertia plus Area times Distance squared' (I + Ad²).",
+    "traps": "You can ONLY transfer to or from the CENTROIDAL axis. To transfer between two non-centroidal axes, you must pass through the centroid first!",
+    "related": [
+      "σ = -My/I",
+      "I_rect = bh³/12"
+    ]
+  },
+  {
+    "id": "f-0-6",
+    "moduleId": "mod0",
+    "moduleTitle": "Statics & Solid Mechanics Foundations",
+    "name": "Elastic Flexure Formula (Navier's Equation)",
+    "formula": "\\sigma = -\\frac{M y}{I}, \\quad \\sigma_{\\max} = \\frac{M}{S}",
+    "symbols": [
+      {
+        "symbol": "\\sigma",
+        "meaning": "Normal flexural bending stress at fiber y",
+        "unit": "kN/m²"
+      },
+      {
+        "symbol": "M",
+        "meaning": "Internal bending moment at cross section",
+        "unit": "kN·m"
+      },
+      {
+        "symbol": "y",
+        "meaning": "Perpendicular distance from neutral axis",
+        "unit": "m"
+      },
+      {
+        "symbol": "I",
+        "meaning": "Second moment of area about neutral axis",
+        "unit": "m⁴"
+      },
+      {
+        "symbol": "S",
+        "meaning": "Elastic section modulus (I / c)",
+        "unit": "m³"
+      }
+    ],
+    "applicability": "Straight beams subjected to pure or transverse bending within elastic limit.",
+    "assumptions": "Euler-Bernoulli hypothesis: Plane sections remain plane and normal to the neutral surface.",
+    "signConvention": "Sagging moment (+M) creates compression in top fiber (y > 0 ⇒ σ < 0) and tension in bottom fiber (y < 0 ⇒ σ > 0).",
+    "derivation": "Linear strain profile ε = -y/ρ; Hooke's Law σ = E ε = -E y / ρ; Moment equilibrium M = -∫ σ y dA = (E/ρ) ∫ y² dA = (E/ρ) I ⇒ σ = -My/I.",
+    "memoryCue": "'My over I' (σ = M y / I).",
+    "traps": "Remember y is measured from the CENTROID (neutral axis), NOT from the bottom or top surface!",
+    "related": [
+      "S = bh²/6",
+      "EI v'' = M(x)"
+    ]
+  },
+  {
+    "id": "f-0-7",
+    "moduleId": "mod0",
+    "moduleTitle": "Statics & Solid Mechanics Foundations",
+    "name": "Euler-Bernoulli Elastic Curve Differential Equation",
+    "formula": "EI \\frac{d^2v}{dx^2} = M(x)",
+    "symbols": [
+      {
+        "symbol": "v(x)",
+        "meaning": "Transverse deflection of beam centerline",
+        "unit": "m"
+      },
+      {
+        "symbol": "\\theta(x)",
+        "meaning": "Rotation / slope of beam (dv/dx)",
+        "unit": "rad"
+      },
+      {
+        "symbol": "M(x)",
+        "meaning": "Internal bending moment function",
+        "unit": "kN·m"
+      },
+      {
+        "symbol": "EI",
+        "meaning": "Flexural rigidity of beam cross section",
+        "unit": "kN·m²"
+      }
+    ],
+    "applicability": "Elastic deflection analysis of beams with small slopes (|dv/dx| ≪ 1).",
+    "assumptions": "Negligible shear deformations; linear elasticity; small rotations.",
+    "signConvention": "v(x) positive upwards; M(x) positive sagging (creates upward curvature d²v/dx² > 0).",
+    "derivation": "Geometric curvature κ ≈ d²v/dx²; from flexure theory 1/ρ = M/EI. Equating gives EI d²v/dx² = M(x).",
+    "memoryCue": "'EI times second derivative of deflection equals Moment' (EI v'' = M).",
+    "traps": "Do not forget the two integration constants C_1 and C_2! They must be resolved using physical support boundary conditions.",
+    "related": [
+      "Mohr's Theorems",
+      "Conjugate Beam"
+    ]
+  },
+  {
+    "id": "f-0-8",
+    "moduleId": "mod0",
+    "moduleTitle": "Statics & Solid Mechanics Foundations",
+    "name": "Mohr's First Moment-Area Theorem (Slope Change)",
+    "formula": "\\theta_{B/A} = \\theta_B - \\theta_A = \\int_A^B \\frac{M}{EI} dx = \\text{Area of } \\left(\\frac{M}{EI}\\right)_{A-B}",
+    "symbols": [
+      {
+        "symbol": "\\theta_{B/A}",
+        "meaning": "Change in slope of elastic curve between points A and B",
+        "unit": "rad"
+      },
+      {
+        "symbol": "\\theta_A, \\theta_B",
+        "meaning": "Slopes of elastic curve at points A and B",
+        "unit": "rad"
+      },
+      {
+        "symbol": "M/EI",
+        "meaning": "Curvature diagram along the beam length",
+        "unit": "1/m"
+      }
+    ],
+    "applicability": "Beams of uniform or stepped cross sections subjected to bending.",
+    "assumptions": "Continuous elastic curve; small deflection theory.",
+    "signConvention": "Positive (sagging) M/EI area produces counter-clockwise change in slope from A to B.",
+    "derivation": "From dθ = (M/EI) dx, integrating both sides from A to B gives θ_B - θ_A = ∫_A^B (M/EI) dx.",
+    "memoryCue": "'Slope change equals Area of M/EI diagram'.",
+    "traps": "This theorem gives the CHANGE in slope between two points (θ_B - θ_A), NOT the absolute slope θ_B unless θ_A is known (e.g. at a fixed support where θ_A = 0)!",
+    "related": [
+      "Mohr's Second Theorem",
+      "Conjugate Beam V* = θ"
+    ]
+  },
+  {
+    "id": "f-0-9",
+    "moduleId": "mod0",
+    "moduleTitle": "Statics & Solid Mechanics Foundations",
+    "name": "Mohr's Second Moment-Area Theorem (Tangential Deviation)",
+    "formula": "t_{B/A} = \\int_A^B x \\frac{M}{EI} dx = \\left(\\text{Area}_{M/EI}\\right)_{A-B} \\cdot \\bar{x}_B",
+    "symbols": [
+      {
+        "symbol": "t_{B/A}",
+        "meaning": "Vertical tangential deviation of point B from tangent drawn at point A",
+        "unit": "m"
+      },
+      {
+        "symbol": "\\bar{x}_B",
+        "meaning": "Centroid distance of M/EI area measured strictly from target point B",
+        "unit": "m"
+      },
+      {
+        "symbol": "\\text{Area}_{M/EI}",
+        "meaning": "Area of curvature diagram between A and B",
+        "unit": "rad"
+      }
+    ],
+    "applicability": "Calculating beam deflections and establishing reference tangent baselines.",
+    "assumptions": "Continuous elastic curve; small slopes.",
+    "signConvention": "Positive t_B/A indicates point B lies ABOVE the tangent line drawn at A.",
+    "derivation": "Infinitesimal deviation dt = x dθ = x (M/EI) dx. Integrating between A and B gives t_B/A = ∫ x (M/EI) dx = Area × x̄_B.",
+    "memoryCue": "'Deviation of B from tangent at A: Area times centroid arm measured FROM B' (t_B/A = A · x̄_B).",
+    "traps": "t_B/A ≠ t_A/B! Centroid distance x̄ MUST be measured from point B (the point whose deviation is evaluated), NOT from point A!",
+    "related": [
+      "t_A/B = Area · x̄_A",
+      "Conjugate Beam M* = v"
+    ]
+  },
   {
     id: "f-1-1",
     moduleId: "mod1",

@@ -174,6 +174,10 @@ function renderMainView() {
     else if (currentAppView === 'exam') renderExamSimulatorView(viewport);
     else if (currentAppView === 'errors') renderErrorNotebookView(viewport);
   }
+
+  setTimeout(function() {
+    renderMathInDOM(viewport);
+  }, 25);
 }
 
 // =========================================================================
@@ -187,7 +191,7 @@ function renderModuleView(viewport) {
       <div class="card">
         <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:10px;">
           <h2>${mod.icon} ${mod.fullTitle}</h2>
-          <span class="stat-pill" style="font-size:0.8rem;">Module ${currentModuleIdx + 1} of 7</span>
+          <span class="stat-pill" style="font-size:0.8rem;">Module ${currentModuleIdx} of ${COURSE_MODULES.length - 1} (${currentModuleIdx === 0 ? 'Prerequisites' : 'Core Curriculum'})</span>
         </div>
         <p style="color:var(--text-muted); margin: 8px 0 16px;"><strong>Prerequisites:</strong> ${mod.prerequisites}</p>
         <div class="concept-callout" style="border-left-color:var(--accent); font-size:1.02rem;">
@@ -197,7 +201,7 @@ function renderModuleView(viewport) {
         ${mod.theory.map(t => `
           <h3>${t.heading}</h3>
           <div>${t.body}</div>
-          ${t.formula ? `<div class="formula-banner">${t.formula}</div>` : ''}
+          ${t.formula ? `<div class="formula-banner math-display-card"><div class="math-card-header"><span class="math-badge">GOVERNING EQUATION</span><button class="copy-latex-btn" onclick="copyFormulaLatex('${encodeURIComponent(t.formula)}', this)">📋 Copy LaTeX</button></div><div class="math-card-body">${formatFormula(t.formula)}</div></div>` : ''}
           ${t.svgType === 'beamTrap' ? StructureVisuals.renderBeam({
             width: 620, height: 180, length: 8,
             supports: [{ x: 1, type: 'roller', label: 'Roller 1' }, { x: 4, type: 'roller', label: 'Roller 2' }, { x: 7, type: 'roller', label: 'Roller 3' }],
@@ -448,7 +452,13 @@ function renderFormulaAtlasView(viewport) {
                 <h3 style="color:var(--accent); margin:0;">${f.name}</h3>
                 <span class="stat-pill" style="font-size:0.75rem;">${f.moduleTitle}</span>
               </div>
-              <div class="formula-banner" style="font-size:1.15rem; margin:10px 0;">${f.formula}</div>
+              <div class="formula-banner math-display-card">
+                <div class="math-card-header">
+                  <span class="math-badge">FORMULA ATLAS</span>
+                  <button class="copy-latex-btn" onclick="copyFormulaLatex('${encodeURIComponent(f.formula)}', this)">📋 Copy LaTeX</button>
+                </div>
+                <div class="math-card-body">${formatFormula(f.formula)}</div>
+              </div>
               
               <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:14px; margin-top:10px;">
                 <div>
@@ -516,7 +526,9 @@ function renderFlashcardDeck() {
           <p style="color:var(--text-muted); font-size:0.95rem;">${card.applicability}</p>
           <div style="margin-top:24px; color:var(--accent); font-size:0.9rem; font-weight:600;">🔄 Tap card to reveal formula & derivation</div>
         ` : `
-          <div class="formula-banner" style="font-size:1.3rem; margin-bottom:14px;">${card.formula}</div>
+          <div class="formula-banner math-display-card" style="width:100%; margin-bottom:14px;">
+            <div class="math-card-body">${formatFormula(card.formula)}</div>
+          </div>
           <p style="color:var(--gold); font-size:0.95rem; margin-bottom:8px;"><strong>🎯 Memory Cue:</strong> ${card.memoryCue}</p>
           <p style="color:#fca5a5; font-size:0.9rem; margin-bottom:8px;"><strong>⚠️ Exam Trap:</strong> ${card.traps}</p>
           <p style="color:var(--text-muted); font-size:0.85rem;">${card.derivation}</p>
