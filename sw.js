@@ -1,7 +1,7 @@
 // COTM 3101: Theory of Structures Mastery Lab - Service Worker
 // Enables 100% offline access with full KaTeX math font assets cached.
 
-const CACHE_NAME = 'structures-mastery-v3';
+const CACHE_NAME = 'structures-mastery-v5';
 
 const ASSETS = [
   './',

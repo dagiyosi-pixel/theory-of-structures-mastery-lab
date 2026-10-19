@@ -1,14 +1,17 @@
-// COTM 3101: Theory of Structures - Master Application Controller
-// Orchestrates multi-module lessons, interactive SVG diagrams, formula atlas, active recall, exam simulator, and error notebook.
+// COTM 3101: Theory of Structures - Master Academic Controller & Futuristic Cockpit Engine
+// Addis Ababa University (AAU) / EiABC Curriculum • 100% Offline Single-Page Architecture
 
 let currentModuleIdx = 0;
-let currentAppView = 'module'; // 'module', 'solvers', 'atlas', 'exam', 'errors'
+let currentAppView = 'dashboard'; // 'dashboard', 'module', 'solvers', 'atlas', 'exam', 'errors'
 let currentModuleTab = 'theory'; // 'theory', 'guided', 'shortcuts', 'arena', 'cheatsheet'
-let currentSolver = 'determinacy'; // 'determinacy', 'threemoment', 'hardycross', 'conjugate'
+let currentSolver = 'beam'; // 'beam', 'determinacy', 'threemoment', 'hardycross', 'conjugate'
 
 // Flashcard & Exam States
 let currentFlashcardIdx = 0;
 let isFlashcardFlipped = false;
+let atlasSearch = '';
+let atlasFilter = 'all';
+let atlasMode = 'browse'; // 'browse' or 'flashcards'
 let examTimer = null;
 let examTimeSeconds = 600; // 10 minutes
 let examAnswers = {};
@@ -21,14 +24,15 @@ let userState = {
   solved: {},
   errors: [], // array of missed question objects
   flashcardRatings: {}, // { formId: 'easy'|'good'|'hard'|'again' }
-  rank: 'Apprentice'
+  rank: 'Apprentice',
+  lastModuleId: 'mod0'
 };
 
 function loadState() {
   const saved = localStorage.getItem('structures_mastery_v2');
   if (saved) {
     try {
-      userState = JSON.parse(saved);
+      userState = Object.assign(userState, JSON.parse(saved));
       if (!userState.errors) userState.errors = [];
       if (!userState.flashcardRatings) userState.flashcardRatings = {};
     } catch (e) {
@@ -51,27 +55,33 @@ function resetProgress() {
       solved: {},
       errors: [],
       flashcardRatings: {},
-      rank: 'Apprentice'
+      rank: 'Apprentice',
+      lastModuleId: 'mod0'
     };
     saveState();
     renderMainView();
   }
 }
 
-function updateStatsHUD() {
+function getRankData(xp) {
   const ranks = [
-    { min: 0, title: 'Apprentice' },
-    { min: 400, title: 'Junior Stress Analyst' },
-    { min: 900, title: 'Design Engineer' },
-    { min: 1500, title: 'Senior Structural Specialist' },
-    { min: 2400, title: 'Master of Structures' }
+    { min: 0, title: 'Apprentice', next: 400, icon: '🛠️' },
+    { min: 400, title: 'Junior Stress Analyst', next: 900, icon: '📐' },
+    { min: 900, title: 'Design Engineer', next: 1600, icon: '🏗️' },
+    { min: 1600, title: 'Senior Structural Specialist', next: 2600, icon: '⚡' },
+    { min: 2600, title: 'Chief Structural Professor (AAU)', next: 4000, icon: '🏛️' }
   ];
 
-  let currentRank = 'Apprentice';
+  let current = ranks[0];
   for (const r of ranks) {
-    if (userState.xp >= r.min) currentRank = r.title;
+    if (xp >= r.min) current = r;
   }
-  userState.rank = currentRank;
+  return current;
+}
+
+function updateStatsHUD() {
+  const rankData = getRankData(userState.xp);
+  userState.rank = rankData.title;
 
   let totalChallenges = 0;
   COURSE_MODULES.forEach(m => totalChallenges += m.arena.length);
@@ -83,26 +93,29 @@ function updateStatsHUD() {
   const streakEl = document.getElementById('streakBadge');
   const masteryEl = document.getElementById('masteryBadge');
 
-  if (rankEl) rankEl.innerText = `🎖️ ${userState.rank}`;
-  if (xpEl) xpEl.innerText = `⚡ ${userState.xp} XP`;
-  if (streakEl) streakEl.innerText = `🔥 Streak: ${userState.streak}`;
-  if (masteryEl) masteryEl.innerText = `📊 ${masteryPct}% Mastered`;
+  if (rankEl) rankEl.innerHTML = `${rankData.icon} ${userState.rank}`;
+  if (xpEl) xpEl.innerHTML = `⚡ ${userState.xp} XP`;
+  if (streakEl) streakEl.innerHTML = `🔥 Streak: ${userState.streak}`;
+  if (masteryEl) masteryEl.innerHTML = `📊 ${masteryPct}% Mastered`;
 }
 
 // =========================================================================
-// ROUTING & VIEW CONTROLLERS
+// ROUTING & NAVIGATION CONTROLLERS
 // =========================================================================
 
 function switchAppView(view) {
   currentAppView = view;
   updateTopNavUI();
   updateMobileNavUI();
+  renderSidebar();
   renderMainView();
 }
 
 function selectModule(idx) {
   currentModuleIdx = idx;
   currentAppView = 'module';
+  userState.lastModuleId = COURSE_MODULES[idx].id;
+  saveState();
   updateTopNavUI();
   updateMobileNavUI();
   renderSidebar();
@@ -147,13 +160,27 @@ function updateModuleTabUI() {
 // =========================================================================
 function renderSidebar() {
   const container = document.getElementById('moduleList');
+  const cockpitBtn = document.getElementById('sidebarCockpitBtn');
+  if (cockpitBtn) {
+    cockpitBtn.classList.toggle('active', currentAppView === 'dashboard');
+  }
   if (!container) return;
 
-  container.innerHTML = COURSE_MODULES.map((m, idx) => `
-    <button class="nav-item ${idx === currentModuleIdx && currentAppView === 'module' ? 'active' : ''}" onclick="selectModule(${idx})">
-      <span>${m.icon} ${m.shortTitle}</span>
-    </button>
-  `).join('');
+  container.innerHTML = COURSE_MODULES.map((m, idx) => {
+    const solvedInMod = m.arena.filter((q, qIdx) => userState.solved[`${m.id}_q${qIdx}`]).length;
+    const isMastered = solvedInMod === m.arena.length && m.arena.length > 0;
+    const badgeText = isMastered ? '✅ Done' : `${solvedInMod}/${m.arena.length}`;
+
+    return `
+      <button class="nav-item ${idx === currentModuleIdx && currentAppView === 'module' ? 'active' : ''}" onclick="selectModule(${idx})">
+        <span style="display:flex; align-items:center; gap:8px;">
+          <span>${m.icon}</span>
+          <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:170px;">${m.shortTitle}</span>
+        </span>
+        <span class="nav-item-badge ${isMastered ? 'badge-mastered' : ''}">${badgeText}</span>
+      </button>
+    `;
+  }).join('');
 }
 
 // =========================================================================
@@ -164,7 +191,12 @@ function renderMainView() {
   const modeTabs = document.getElementById('modeTabs');
   if (!viewport) return;
 
-  if (currentAppView === 'module') {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  if (currentAppView === 'dashboard') {
+    if (modeTabs) modeTabs.style.display = 'none';
+    renderDashboardView(viewport);
+  } else if (currentAppView === 'module') {
     if (modeTabs) modeTabs.style.display = 'flex';
     renderModuleView(viewport);
   } else {
@@ -175,13 +207,259 @@ function renderMainView() {
     else if (currentAppView === 'errors') renderErrorNotebookView(viewport);
   }
 
+  updateTopNavUI();
+  updateMobileNavUI();
+  renderSidebar();
+
   setTimeout(function() {
     renderMathInDOM(viewport);
   }, 25);
 }
 
 // =========================================================================
-// 1. MODULE VIEW RENDERER
+// 0. MISSION CONTROL / COCKPIT DASHBOARD VIEW
+// =========================================================================
+function renderDashboardView(viewport) {
+  const rankData = getRankData(userState.xp);
+  const nextXP = rankData.next;
+  const currentLevelMin = rankData.min;
+  const xpInLevel = Math.max(0, userState.xp - currentLevelMin);
+  const levelSpan = Math.max(1, nextXP - currentLevelMin);
+  const levelPct = Math.min(100, Math.round((xpInLevel / levelSpan) * 100));
+
+  let totalChallenges = 0;
+  COURSE_MODULES.forEach(m => totalChallenges += m.arena.length);
+  const solvedCount = Object.keys(userState.solved).length;
+  const totalMasteryPct = totalChallenges > 0 ? Math.round((solvedCount / totalChallenges) * 100) : 0;
+
+  // Compute Smart Recommendation
+  let recTitle = "";
+  let recDesc = "";
+  let recAction = "";
+  let recBtn = "";
+
+  if (userState.errors.length > 0) {
+    recTitle = "⚠️ Critical Weak Concepts Detected";
+    recDesc = `You have ${userState.errors.length} missed question(s) logged in your Error Notebook. Repairing these conceptual gaps protects your streak!`;
+    recAction = "switchAppView('errors')";
+    recBtn = "Drill Error Notebook ➔";
+  } else {
+    let nextIncompleteModIdx = 0;
+    for (let i = 0; i < COURSE_MODULES.length; i++) {
+      const m = COURSE_MODULES[i];
+      const sCount = m.arena.filter((q, qIdx) => userState.solved[`${m.id}_q${qIdx}`]).length;
+      if (sCount < m.arena.length) {
+        nextIncompleteModIdx = i;
+        break;
+      }
+    }
+    const targetMod = COURSE_MODULES[nextIncompleteModIdx];
+    const sCount = targetMod.arena.filter((q, qIdx) => userState.solved[`${targetMod.id}_q${qIdx}`]).length;
+
+    if (solvedCount >= totalChallenges && totalChallenges > 0) {
+      recTitle = "🏆 Full Curriculum Mastered!";
+      recDesc = "You have conquered all 8 chapters. Test your endurance in the timed 10-Minute Comprehensive University Exam Simulator.";
+      recAction = "switchAppView('exam')";
+      recBtn = "Launch Exam Sim ➔";
+    } else {
+      recTitle = `🎯 Next Target: ${targetMod.shortTitle}`;
+      recDesc = `You have completed ${sCount} of ${targetMod.arena.length} challenges in this chapter. Continue learning to rank up!`;
+      recAction = `selectModule(${nextIncompleteModIdx})`;
+      recBtn = "Continue Chapter ➔";
+    }
+  }
+
+  // Daily Challenge Question
+  const todayDay = new Date().getDate();
+  const allQuestions = [];
+  COURSE_MODULES.forEach((m, mIdx) => {
+    m.arena.forEach((q, qIdx) => {
+      allQuestions.push({ q, mIdx, qIdx, modTitle: m.shortTitle, key: `${m.id}_q${qIdx}` });
+    });
+  });
+  const dailyItem = allQuestions[todayDay % allQuestions.length] || allQuestions[0];
+  const isDailyDone = userState.solved[dailyItem.key];
+
+  // Random Formula of the Day
+  const dailyFormula = FORMULA_ATLAS[todayDay % FORMULA_ATLAS.length] || FORMULA_ATLAS[0];
+
+  viewport.innerHTML = `
+    <!-- COCKPIT HERO CARD -->
+    <div class="cockpit-hero">
+      <div class="hero-top-row">
+        <div class="hero-title-group">
+          <h2>🚀 Mission Control Cockpit</h2>
+          <p>Theory of Structures Mastery Lab • Addis Ababa University (EiABC) COTM 3101</p>
+        </div>
+        <button class="btn-primary" onclick="selectModule(${currentModuleIdx})">
+          ▶ Resume Learning (${COURSE_MODULES[currentModuleIdx].shortTitle})
+        </button>
+      </div>
+
+      <!-- Rank & Level Progress -->
+      <div class="rank-progress-container">
+        <div class="rank-progress-header">
+          <span>Rank: <strong style="color:var(--gold);">${rankData.icon} ${userState.rank}</strong></span>
+          <span style="color:var(--text-muted);">${userState.xp} / ${nextXP} XP (${levelPct}%)</span>
+        </div>
+        <div class="progress-bar-track">
+          <div class="progress-bar-fill" style="width: ${levelPct}%;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI STUDY ADVISOR CARD -->
+    <div class="advisor-card">
+      <div class="advisor-content">
+        <h4>${recTitle}</h4>
+        <p>${recDesc}</p>
+      </div>
+      <button class="btn-primary" style="margin-top:0;" onclick="${recAction}">
+        ${recBtn}
+      </button>
+    </div>
+
+    <!-- 4-METRIC COCKPIT OVERVIEW -->
+    <div class="cockpit-metrics-grid">
+      <div class="metric-card">
+        <div class="metric-icon-box" style="color:var(--accent);">⚡</div>
+        <div class="metric-info">
+          <h5>Total XP</h5>
+          <div class="metric-val">${userState.xp}</div>
+        </div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-icon-box" style="color:#fb7185;">🔥</div>
+        <div class="metric-info">
+          <h5>Active Streak</h5>
+          <div class="metric-val">${userState.streak} Days</div>
+        </div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-icon-box" style="color:var(--success);">📊</div>
+        <div class="metric-info">
+          <h5>Curriculum Mastery</h5>
+          <div class="metric-val">${totalMasteryPct}%</div>
+        </div>
+      </div>
+      <div class="metric-card" onclick="switchAppView('errors')" style="cursor:pointer;">
+        <div class="metric-icon-box" style="color:${userState.errors.length > 0 ? 'var(--danger)' : 'var(--text-muted)'};">📓</div>
+        <div class="metric-info">
+          <h5>Mistake Vault</h5>
+          <div class="metric-val">${userState.errors.length} to Review</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DAILY STRUCTURAL CHALLENGE -->
+    <div class="step-box" style="border-left:4px solid var(--gold); margin-bottom:20px;">
+      <div class="step-header">
+        <span>⚡ Today's Daily Structural Challenge (+200 XP Bonus)</span>
+        <span class="stat-pill" style="color:var(--gold);">${isDailyDone ? '✅ Mastered Today' : '⏳ Ready'}</span>
+      </div>
+      <p style="color:var(--text-muted); font-size:0.86rem; margin-bottom:8px;">Chapter: <strong>${dailyItem.modTitle}</strong></p>
+      <p style="font-weight:600; font-size:1.02rem; margin-bottom:12px;">${dailyItem.q.prompt}</p>
+      
+      <div class="options-list">
+        ${dailyItem.q.options.map((opt, optIdx) => `
+          <button class="option-btn" onclick="checkDailyChallengeAnswer(${dailyItem.mIdx}, ${dailyItem.qIdx}, ${optIdx})">
+            ${opt.text}
+          </button>
+        `).join('')}
+      </div>
+      <div class="feedback-banner" id="dailyFeedback"></div>
+    </div>
+
+    <!-- 8-MODULE CURRICULUM ROADMAP -->
+    <div style="display:flex; justify-content:space-between; align-items:center; margin: 24px 0 12px;">
+      <h3 style="margin:0; font-size:1.15rem; color:#fff;">📚 8-Module Curriculum Roadmap</h3>
+      <span style="font-size:0.82rem; color:var(--text-muted);">${solvedCount} / ${totalChallenges} Challenges Mastered</span>
+    </div>
+
+    <div class="curriculum-grid">
+      ${COURSE_MODULES.map((m, idx) => {
+        const solved = m.arena.filter((q, qIdx) => userState.solved[`${m.id}_q${qIdx}`]).length;
+        const total = m.arena.length;
+        const pct = total > 0 ? Math.round((solved / total) * 100) : 0;
+        const isDone = pct === 100;
+
+        return `
+          <div class="mod-card" onclick="selectModule(${idx})">
+            <div class="mod-card-top">
+              <span class="mod-card-icon">${m.icon}</span>
+              <span class="stat-pill" style="font-size:0.7rem; color:${isDone ? 'var(--success)' : pct > 0 ? 'var(--gold)' : 'var(--text-dim)'}">
+                ${isDone ? '✅ 100%' : pct > 0 ? `🟡 ${pct}%` : '⚪ Ready'}
+              </span>
+            </div>
+            <div>
+              <div class="mod-card-title">${m.shortTitle}</div>
+              <div class="progress-bar-track" style="margin:8px 0 4px; height:5px;">
+                <div class="progress-bar-fill" style="width:${pct}%;"></div>
+              </div>
+            </div>
+            <div class="mod-card-footer">
+              <span>${solved} / ${total} Solved</span>
+              <span style="color:var(--accent);">Study ➔</span>
+            </div>
+          </div>
+        `;
+      }).join('')}
+    </div>
+
+    <!-- FORMULA OF THE DAY (SPATIAL ACTIVE RECALL) -->
+    <div class="step-box" style="border-left:4px solid var(--accent); margin-bottom:20px;">
+      <div class="step-header">
+        <span>📜 High-Yield Formula of the Day</span>
+        <button class="hud-btn" onclick="switchAppView('atlas')">Open Full Formula Vault ➔</button>
+      </div>
+      <h4 style="color:#fff; margin:6px 0;">${dailyFormula.name} (${dailyFormula.moduleTitle})</h4>
+      <div class="formula-banner math-display-card">
+        <div class="math-card-body">${formatFormula(dailyFormula.formula)}</div>
+      </div>
+      <div style="font-size:0.88rem; color:var(--text-muted); margin-top:8px;">
+        <p><strong>🎯 Memory Cue:</strong> ${dailyFormula.memoryCue}</p>
+        <p style="color:#fca5a5; margin-top:4px;"><strong>⚠️ Exam Trap:</strong> ${dailyFormula.traps}</p>
+      </div>
+    </div>
+  `;
+}
+
+function checkDailyChallengeAnswer(mIdx, qIdx, optIdx) {
+  const mod = COURSE_MODULES[mIdx];
+  const q = mod.arena[qIdx];
+  const chosen = q.options[optIdx];
+  const key = `${mod.id}_q${qIdx}`;
+  const feedback = document.getElementById('dailyFeedback');
+  if (!feedback) return;
+
+  feedback.style.display = 'block';
+  if (chosen.correct) {
+    if (!userState.solved[key]) {
+      userState.solved[key] = true;
+      userState.xp += 200;
+      userState.streak += 1;
+      saveState();
+    }
+    feedback.className = 'feedback-banner';
+    feedback.style.background = 'rgba(16, 185, 129, 0.2)';
+    feedback.style.border = '1px solid var(--success)';
+    feedback.style.color = '#a7f3d0';
+    feedback.innerHTML = `<strong>✅ Master Answer (+200 XP Bonus Claimed!)</strong><br/>${chosen.explain}`;
+  } else {
+    feedback.className = 'feedback-banner';
+    feedback.style.background = 'rgba(244, 63, 94, 0.2)';
+    feedback.style.border = '1px solid var(--danger)';
+    feedback.style.color = '#fecdd3';
+    feedback.innerHTML = `<strong>❌ Not Quite.</strong><br/>${chosen.explain}`;
+  }
+
+  setTimeout(function() {
+    renderMathInDOM(feedback);
+  }, 10);
+}
+
+// =========================================================================
+// 1. MODULE VIEW RENDERER (WITH COLLAPSIBLE TOPICS & COMPACT SECTIONS)
 // =========================================================================
 function renderModuleView(viewport) {
   const mod = COURSE_MODULES[currentModuleIdx];
@@ -189,27 +467,40 @@ function renderModuleView(viewport) {
   if (currentModuleTab === 'theory') {
     viewport.innerHTML = `
       <div class="card">
-        <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:10px;">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:10px; margin-bottom:8px;">
           <h2>${mod.icon} ${mod.fullTitle}</h2>
           <span class="stat-pill" style="font-size:0.8rem;">Module ${currentModuleIdx} of ${COURSE_MODULES.length - 1} (${currentModuleIdx === 0 ? 'Prerequisites' : 'Core Curriculum'})</span>
         </div>
-        <p style="color:var(--text-muted); margin: 8px 0 16px;"><strong>Prerequisites:</strong> ${mod.prerequisites}</p>
-        <div class="concept-callout" style="border-left-color:var(--accent); font-size:1.02rem;">
+        <p style="color:var(--text-muted); margin: 4px 0 14px; font-size:0.9rem;"><strong>Prerequisites:</strong> ${mod.prerequisites}</p>
+        <div class="concept-callout" style="border-left-color:var(--accent); font-size:0.98rem; margin:12px 0 18px;">
           <strong>💡 First-Principles Intuition:</strong> ${mod.intuition}
         </div>
 
-        ${mod.theory.map(t => `
-          <h3>${t.heading}</h3>
-          <div>${t.body}</div>
-          ${t.formula ? `<div class="formula-banner math-display-card"><div class="math-card-header"><span class="math-badge">GOVERNING EQUATION</span><button class="copy-latex-btn" onclick="copyFormulaLatex('${encodeURIComponent(t.formula)}', this)">📋 Copy LaTeX</button></div><div class="math-card-body">${formatFormula(t.formula)}</div></div>` : ''}
-          ${t.svgType === 'beamTrap' ? StructureVisuals.renderBeam({
-            width: 620, height: 180, length: 8,
-            supports: [{ x: 1, type: 'roller', label: 'Roller 1' }, { x: 4, type: 'roller', label: 'Roller 2' }, { x: 7, type: 'roller', label: 'Roller 3' }],
-            loads: [{ x: 4, type: 'point', val: 'Wind / Lateral Load H ➔' }]
-          }) : ''}
-        `).join('')}
+        <div style="display:flex; flex-direction:column; gap:12px;">
+          ${mod.theory.map((t, tIdx) => `
+            <div class="collapsible-card ${tIdx === 0 ? 'open' : ''}" id="theory_card_${tIdx}">
+              <div class="collapsible-header" onclick="toggleCollapsible('theory_card_${tIdx}')">
+                <span>${t.heading}</span>
+                <span class="collapsible-toggle-icon">▼</span>
+              </div>
+              <div class="collapsible-body">
+                ${t.formula ? `
+                  <div class="formula-banner math-display-card">
+                    <div class="math-card-header">
+                      <span class="math-badge">GOVERNING EQUATION</span>
+                      <button class="copy-latex-btn" onclick="copyFormulaLatex('${encodeURIComponent(t.formula)}', this)">📋 Copy LaTeX</button>
+                    </div>
+                    <div class="math-card-body">${formatFormula(t.formula)}</div>
+                  </div>
+                ` : ''}
+                <div>${t.body}</div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
 
-        <div style="margin-top:28px; padding-top:16px; border-top:1px solid var(--border); display:flex; justify-content:space-between;">
+        <div style="margin-top:24px; padding-top:16px; border-top:1px solid var(--border); display:flex; justify-content:space-between;">
+          <button class="hud-btn" onclick="switchAppView('dashboard')">⬅ Back to Cockpit</button>
           <button class="btn-primary" onclick="switchModuleTab('guided')">Next: Guided Worked Examples ➔</button>
         </div>
       </div>
@@ -218,21 +509,21 @@ function renderModuleView(viewport) {
     viewport.innerHTML = `
       <div class="card">
         <h2>🔬 Guided Worked Lecture Examples — ${mod.shortTitle}</h2>
-        <p style="color:var(--text-muted); margin-bottom:20px;">Master each derivation step by step with interactive checkpoints and fading hints.</p>
+        <p style="color:var(--text-muted); margin-bottom:18px; font-size:0.92rem;">Master each derivation step by step with interactive checkpoints and fading hints.</p>
 
         ${mod.guidedExamples.map((ex, exIdx) => `
-          <div class="step-box" style="margin-bottom:28px;">
+          <div class="step-box" style="margin-bottom:24px;">
             <div class="step-header">
               <span>${ex.title}</span>
             </div>
-            <p><strong>Problem Statement:</strong> ${ex.problem}</p>
+            <p style="font-size:0.95rem; line-height:1.5;"><strong>Problem Statement:</strong> ${ex.problem}</p>
             
             ${ex.svgConfig ? (ex.svgConfig.nodes ? StructureVisuals.renderTruss(ex.svgConfig) : StructureVisuals.renderBeam(ex.svgConfig)) : ''}
 
             <!-- Fading Hints Accordion -->
-            <div style="margin:16px 0;">
+            <div style="margin:14px 0;">
               ${ex.hints.map((hint, hIdx) => `
-                <div class="hint-pill" id="hint_${exIdx}_${hIdx}" style="display:none; background:rgba(250,204,21,0.1); border:1px dashed var(--gold); color:#fde047; padding:10px 14px; border-radius:6px; margin-bottom:8px;">
+                <div class="hint-pill" id="hint_${exIdx}_${hIdx}" style="display:none; background:rgba(250,204,21,0.1); border:1px dashed var(--gold); color:#fde047; padding:10px 14px; border-radius:6px; margin-bottom:8px; font-size:0.9rem;">
                   💡 <strong>${hint}</strong>
                 </div>
               `).join('')}
@@ -240,23 +531,28 @@ function renderModuleView(viewport) {
             </div>
 
             <!-- Steps Breakdown -->
-            <div style="margin-top:16px;">
-              ${ex.steps.map((st, stIdx) => `
+            <div style="margin-top:14px;">
+              ${ex.steps.map((st) => `
                 <div style="border-left:2px solid var(--accent); padding-left:14px; margin-bottom:14px;">
-                  <h4 style="color:var(--accent); font-size:0.95rem; margin-bottom:4px;">${st.stepName}</h4>
-                  <div style="color:var(--text-main); font-size:0.92rem;">${st.content}</div>
+                  <h4 style="color:var(--accent); font-size:0.92rem; margin-bottom:4px;">${st.stepName}</h4>
+                  <div style="color:var(--text-main); font-size:0.9rem;">${st.content}</div>
                 </div>
               `).join('')}
             </div>
           </div>
         `).join('')}
+
+        <div style="margin-top:20px; display:flex; justify-content:space-between;">
+          <button class="hud-btn" onclick="switchModuleTab('theory')">⬅ Theory</button>
+          <button class="btn-primary" onclick="switchModuleTab('shortcuts')">Next: Speed Tricks ➔</button>
+        </div>
       </div>
     `;
   } else if (currentModuleTab === 'shortcuts') {
     viewport.innerHTML = `
       <div class="card">
-        <h2>⚡ Master's Ninja Shortcuts & Method Selection Guide — ${mod.shortTitle}</h2>
-        <p style="color:var(--text-muted); margin-bottom:20px;">Tested geometric insights, speed tricks, and method-selection rules that save 70% of exam time.</p>
+        <h2>⚡ Master's Ninja Shortcuts & Method Selection — ${mod.shortTitle}</h2>
+        <p style="color:var(--text-muted); margin-bottom:18px; font-size:0.92rem;">Tested geometric insights, speed tricks, and method-selection rules that save 70% of exam time.</p>
         
         <h3>🎯 When to Choose This Method:</h3>
         <div class="concept-callout" style="border-left-color:var(--success);">
@@ -264,40 +560,47 @@ function renderModuleView(viewport) {
         </div>
 
         <h3>🔥 High-Yield Speed Tricks:</h3>
-        <div style="display:flex; flex-direction:column; gap:12px; margin-top:12px;">
+        <div style="display:flex; flex-direction:column; gap:10px; margin-top:10px;">
           ${mod.shortcuts.map(s => `
-            <div class="concept-callout" style="border-left-color:var(--gold); font-size:0.98rem; margin:0;">
+            <div class="concept-callout" style="border-left-color:var(--gold); font-size:0.94rem; margin:0;">
               ${s}
             </div>
           `).join('')}
         </div>
 
         <h3>⚠️ Deadly Exam Traps & Pitfalls:</h3>
-        <ul style="padding-left:20px; margin-top:12px;">
-          ${mod.commonTraps.map(trap => `<li style="margin-bottom:8px; color:#fca5a5;"><strong>Trap:</strong> ${trap}</li>`).join('')}
+        <ul style="padding-left:20px; margin-top:10px;">
+          ${mod.commonTraps.map(trap => `<li style="margin-bottom:8px; color:#fca5a5; font-size:0.92rem;"><strong>Trap:</strong> ${trap}</li>`).join('')}
         </ul>
 
         <h3>🧠 Memory Cue & Mnemonic:</h3>
-        <div class="formula-banner">${mod.mnemonics}</div>
+        <div class="formula-banner math-display-card">
+          <div class="math-card-body" style="font-size:1.05rem;">${mod.mnemonics}</div>
+        </div>
+
+        <div style="margin-top:20px; display:flex; justify-content:space-between;">
+          <button class="hud-btn" onclick="switchModuleTab('guided')">⬅ Worked Examples</button>
+          <button class="btn-primary" onclick="switchModuleTab('arena')">Next: Challenge Gauntlet ➔</button>
+        </div>
       </div>
     `;
   } else if (currentModuleTab === 'arena') {
     viewport.innerHTML = `
       <div class="card">
         <h2>⚔️ Challenge Gauntlet — ${mod.shortTitle}</h2>
-        <p style="color:var(--text-muted); margin-bottom:20px;">Test your mastery against authentic exam traps. Correct answers earn XP and raise your structural engineering rank.</p>
+        <p style="color:var(--text-muted); margin-bottom:18px; font-size:0.92rem;">Test your mastery against authentic exam traps. Correct answers earn +150 XP and raise your structural engineering rank.</p>
 
         ${mod.arena.map((q, qIdx) => {
           const key = `${mod.id}_q${qIdx}`;
           const isDone = userState.solved[key];
           return `
-            <div class="step-box" style="margin-bottom:24px;" id="qcard_${key}">
+            <div class="step-box" style="margin-bottom:20px;" id="qcard_${key}">
               <div class="step-header">
                 <span>${q.title}</span>
-                <span>${isDone ? '✅ Mastered (+150 XP)' : '⏳ Active Challenge'}</span>
+                <span class="stat-pill" style="color:${isDone ? 'var(--success)' : 'var(--gold)'};">${isDone ? '✅ Mastered (+150 XP)' : '⏳ Active Challenge'}</span>
               </div>
               ${q.diagram ? `<div class="blueprint-diagram">${q.diagram}</div>` : ''}
-              <p style="font-weight:600; font-size:1.02rem; margin:12px 0;">${q.prompt}</p>
+              <p style="font-weight:600; font-size:0.98rem; margin:10px 0;">${q.prompt}</p>
               <div class="options-list">
                 ${q.options.map((opt, optIdx) => `
                   <button class="option-btn" onclick="checkArenaAnswer('${mod.id}', ${qIdx}, ${optIdx})">
@@ -309,22 +612,35 @@ function renderModuleView(viewport) {
             </div>
           `;
         }).join('')}
+
+        <div style="margin-top:20px; display:flex; justify-content:space-between;">
+          <button class="hud-btn" onclick="switchModuleTab('shortcuts')">⬅ Speed Tricks</button>
+          <button class="btn-primary" onclick="switchModuleTab('cheatsheet')">Next: Formula Vault ➔</button>
+        </div>
       </div>
     `;
   } else if (currentModuleTab === 'cheatsheet') {
     viewport.innerHTML = `
       <div class="card">
-        <h2>📜 Formula Vault & Sign Rules — ${mod.shortTitle}</h2>
-        <p style="color:var(--text-muted); margin-bottom:16px;">Quick-access reference equations for this module.</p>
-        <div class="concept-callout" style="font-size:1.02rem; line-height:2.0;">
+        <h2>📋 Chapter Formula Quick Sheet — ${mod.shortTitle}</h2>
+        <p style="color:var(--text-muted); margin-bottom:18px; font-size:0.92rem;">High-yield equations, sign conventions, and summary tables for immediate recall before exams.</p>
+        
+        <div class="concept-callout" style="border-left-color:var(--accent); font-size:0.98rem; line-height:1.8;">
           ${mod.cheatsheet}
         </div>
-        <div style="margin-top:20px;">
-          <button class="btn-primary" onclick="switchAppView('atlas')">Open Full Searchable Formula Atlas ➔</button>
+
+        <div style="margin-top:24px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;">
+          <button class="hud-btn" onclick="switchAppView('dashboard')">🏠 Mission Control</button>
+          <button class="btn-primary" onclick="switchAppView('atlas')">Explore Full 28-Formula Atlas ➔</button>
         </div>
       </div>
     `;
   }
+}
+
+function toggleCollapsible(id) {
+  const el = document.getElementById(id);
+  if (el) el.classList.toggle('open');
 }
 
 function revealHint(exIdx, totalHints) {
@@ -332,7 +648,7 @@ function revealHint(exIdx, totalHints) {
     const el = document.getElementById(`hint_${exIdx}_${i}`);
     if (el && el.style.display === 'none') {
       el.style.display = 'block';
-      return;
+      break;
     }
   }
 }
@@ -366,9 +682,9 @@ function checkArenaAnswer(modId, qIdx, optIdx) {
       saveState();
     }
     feedback.className = 'feedback-banner';
-    feedback.style.background = 'rgba(34, 197, 94, 0.2)';
+    feedback.style.background = 'rgba(16, 185, 129, 0.2)';
     feedback.style.border = '1px solid var(--success)';
-    feedback.style.color = '#86efac';
+    feedback.style.color = '#a7f3d0';
     feedback.innerHTML = `<strong>✅ Master Answer (+150 XP)!</strong><br/>${chosen.explain}`;
 
     // Remove from Error Notebook if previously missed
@@ -380,76 +696,82 @@ function checkArenaAnswer(modId, qIdx, optIdx) {
     if (!userState.errors.some(err => err.key === key)) {
       userState.errors.push({
         key: key,
+        modId: modId,
+        qIdx: qIdx,
         title: q.title,
         prompt: q.prompt,
-        modTitle: mod.shortTitle,
-        mistake: chosen.text,
-        correction: chosen.explain
+        diagram: q.diagram,
+        options: q.options,
+        timestamp: new Date().toLocaleDateString()
       });
+      saveState();
     }
-    saveState();
     feedback.className = 'feedback-banner';
-    feedback.style.background = 'rgba(239, 68, 68, 0.2)';
+    feedback.style.background = 'rgba(244, 63, 94, 0.2)';
     feedback.style.border = '1px solid var(--danger)';
-    feedback.style.color = '#fca5a5';
-    feedback.innerHTML = `<strong>❌ Not quite! Added to your Error Notebook.</strong><br/>${chosen.explain}`;
+    feedback.style.color = '#fecdd3';
+    feedback.innerHTML = `<strong>❌ Conceptual Trap!</strong><br/>${chosen.explain}<br/><span style="font-size:0.8rem; color:#fca5a5;">(Logged to Error Notebook for surgical review)</span>`;
   }
+
+  setTimeout(function() {
+    renderMathInDOM(feedback);
+  }, 10);
 }
 
 // =========================================================================
-// 2. THE SEARCHABLE FORMULA ATLAS & ACTIVE RECALL FLASHCARDS
+// 2. FORMULA ATLAS & ACTIVE RECALL ENGINE
 // =========================================================================
-let atlasFilter = 'all';
-let atlasSearch = '';
-let atlasMode = 'table'; // 'table' or 'flashcards'
-
 function renderFormulaAtlasView(viewport) {
   let filtered = FORMULA_ATLAS;
+
   if (atlasFilter !== 'all') {
     filtered = filtered.filter(f => f.moduleId === atlasFilter);
   }
-  if (atlasSearch.trim() !== '') {
+
+  if (atlasSearch.trim()) {
     const q = atlasSearch.toLowerCase();
-    filtered = filtered.filter(f => 
-      f.name.toLowerCase().includes(q) || 
-      f.formula.toLowerCase().includes(q) || 
-      f.memoryCue.toLowerCase().includes(q)
+    filtered = filtered.filter(f =>
+      f.name.toLowerCase().includes(q) ||
+      f.formula.toLowerCase().includes(q) ||
+      f.applicability.toLowerCase().includes(q) ||
+      f.derivation.toLowerCase().includes(q)
     );
   }
 
   viewport.innerHTML = `
     <div class="card">
       <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
-        <h2>📜 Complete Formula Atlas & Memory Vault</h2>
+        <h2>📜 Formula Vault & Active Recall Engine</h2>
         <div style="display:flex; gap:8px;">
-          <button class="hud-btn ${atlasMode === 'table' ? 'active' : ''}" onclick="setAtlasMode('table')">📋 Searchable Directory</button>
-          <button class="hud-btn ${atlasMode === 'flashcards' ? 'active' : ''}" onclick="setAtlasMode('flashcards')">🃏 Active Recall Flashcards</button>
+          <button class="hud-btn ${atlasMode === 'browse' ? 'active' : ''}" onclick="setAtlasMode('browse')">🔍 Browse All (${filtered.length})</button>
+          <button class="hud-btn ${atlasMode === 'flashcards' ? 'active' : ''}" onclick="setAtlasMode('flashcards')">🃏 Spaced Flashcards</button>
         </div>
       </div>
-      <p style="color:var(--text-muted); margin: 8px 0 16px;">Audited against AAU COTM 3101 course notes with symbol guides, SI units, derivations, memory cues, and exam pitfalls.</p>
+      <p style="color:var(--text-muted); margin: 6px 0 16px; font-size:0.9rem;">28 verified governing structural formulas across all 8 modules (COTM 3101 Addis Ababa University notes).</p>
 
-      ${atlasMode === 'table' ? `
-        <!-- Filter and Search Bar -->
-        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:20px;">
-          <input type="text" placeholder="🔍 Search formula, keyword, or mnemonic..." value="${atlasSearch}" oninput="searchAtlas(this.value)" style="flex:1; min-width:220px; padding:10px; background:var(--bg-input); border:1px solid var(--border); color:var(--text-main); border-radius:6px;" />
-          <select onchange="filterAtlas(this.value)" style="padding:10px; background:var(--bg-input); border:1px solid var(--border); color:var(--text-main); border-radius:6px;">
-            <option value="all" ${atlasFilter === 'all' ? 'selected' : ''}>All Modules</option>
-            <option value="mod1" ${atlasFilter === 'mod1' ? 'selected' : ''}>1. Stability & Determinacy</option>
-            <option value="mod2" ${atlasFilter === 'mod2' ? 'selected' : ''}>2. Conjugate Beam</option>
-            <option value="mod3" ${atlasFilter === 'mod3' ? 'selected' : ''}>3. Virtual Work</option>
-            <option value="mod4" ${atlasFilter === 'mod4' ? 'selected' : ''}>4. Consistent Deformation</option>
-            <option value="mod5" ${atlasFilter === 'mod5' ? 'selected' : ''}>5. Three-Moment Equation</option>
-            <option value="mod6" ${atlasFilter === 'mod6' ? 'selected' : ''}>6. Slope-Deflection</option>
-            <option value="mod7" ${atlasFilter === 'mod7' ? 'selected' : ''}>7. Moment Distribution</option>
+      ${atlasMode === 'browse' ? `
+        <!-- Filter and Search Controls -->
+        <div style="display:flex; gap:10px; margin-bottom:18px; flex-wrap:wrap;">
+          <input type="text" id="atlasSearchInput" placeholder="🔍 Search formulas (e.g. Clapeyron, Slope-Deflection, Vereshchagin, Hooke)..." value="${atlasSearch}" oninput="searchAtlas(this.value)" style="flex:1; min-width:240px; padding:10px 14px; background:var(--bg-input); border:1px solid var(--border); border-radius:8px; color:#fff; font-size:0.92rem;" />
+          <select onchange="filterAtlas(this.value)" style="padding:10px 14px; background:var(--bg-input); border:1px solid var(--border); border-radius:8px; color:#fff; font-size:0.92rem;">
+            <option value="all" ${atlasFilter === 'all' ? 'selected' : ''}>All Chapters (28 Formulas)</option>
+            <option value="mod0" ${atlasFilter === 'mod0' ? 'selected' : ''}>Module 0: Core Foundations</option>
+            <option value="mod1" ${atlasFilter === 'mod1' ? 'selected' : ''}>Module 1: Stability & Determinacy</option>
+            <option value="mod2" ${atlasFilter === 'mod2' ? 'selected' : ''}>Module 2: Conjugate Beam</option>
+            <option value="mod3" ${atlasFilter === 'mod3' ? 'selected' : ''}>Module 3: Virtual Work</option>
+            <option value="mod4" ${atlasFilter === 'mod4' ? 'selected' : ''}>Module 4: Consistent Deformation</option>
+            <option value="mod5" ${atlasFilter === 'mod5' ? 'selected' : ''}>Module 5: Three-Moment Equation</option>
+            <option value="mod6" ${atlasFilter === 'mod6' ? 'selected' : ''}>Module 6: Slope-Deflection Method</option>
+            <option value="mod7" ${atlasFilter === 'mod7' ? 'selected' : ''}>Module 7: Moment Distribution</option>
           </select>
         </div>
 
-        <div style="display:flex; flex-direction:column; gap:18px;">
+        <div style="display:flex; flex-direction:column; gap:16px;">
           ${filtered.length === 0 ? '<p style="color:var(--text-muted);">No formulas match your search query.</p>' : ''}
           ${filtered.map(f => `
             <div class="step-box" style="border-left:4px solid var(--accent);">
               <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-                <h3 style="color:var(--accent); margin:0;">${f.name}</h3>
+                <h3 style="color:var(--accent); margin:0; font-size:1.05rem;">${f.name}</h3>
                 <span class="stat-pill" style="font-size:0.75rem;">${f.moduleTitle}</span>
               </div>
               <div class="formula-banner math-display-card">
@@ -460,20 +782,20 @@ function renderFormulaAtlasView(viewport) {
                 <div class="math-card-body">${formatFormula(f.formula)}</div>
               </div>
               
-              <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:14px; margin-top:10px;">
+              <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:12px; margin-top:8px;">
                 <div>
-                  <h4 style="color:var(--gold); font-size:0.85rem; margin-bottom:4px;">SYMBOLS & SI UNITS:</h4>
-                  <ul style="padding-left:16px; font-size:0.85rem; color:var(--text-muted);">
+                  <h4 style="color:var(--gold); font-size:0.82rem; margin-bottom:4px; text-transform:uppercase;">SYMBOLS & SI UNITS:</h4>
+                  <ul style="padding-left:16px; font-size:0.84rem; color:var(--text-muted);">
                     ${f.symbols.map(s => `<li><code>${s.symbol}</code>: ${s.meaning} (<em>${s.unit}</em>)</li>`).join('')}
                   </ul>
                 </div>
                 <div>
-                  <h4 style="color:var(--gold); font-size:0.85rem; margin-bottom:4px;">APPLICABILITY & ASSUMPTIONS:</h4>
-                  <p style="font-size:0.85rem; color:var(--text-main);">${f.applicability} ${f.assumptions}</p>
+                  <h4 style="color:var(--gold); font-size:0.82rem; margin-bottom:4px; text-transform:uppercase;">APPLICABILITY & ASSUMPTIONS:</h4>
+                  <p style="font-size:0.84rem; color:var(--text-main);">${f.applicability} ${f.assumptions}</p>
                 </div>
               </div>
 
-              <div style="margin-top:12px; padding:10px; background:var(--bg-input); border-radius:6px; font-size:0.88rem;">
+              <div style="margin-top:10px; padding:10px 14px; background:var(--bg-input); border-radius:8px; font-size:0.86rem;">
                 <p><strong>🎯 Memory Cue:</strong> ${f.memoryCue}</p>
                 <p style="color:#fca5a5; margin-top:4px;"><strong>⚠️ Common Exam Trap:</strong> ${f.traps}</p>
                 <p style="color:var(--text-muted); margin-top:4px;"><strong>Derivation Core:</strong> ${f.derivation}</p>
@@ -519,32 +841,32 @@ function renderFlashcardDeck() {
       </div>
 
       <!-- Flip Card Box -->
-      <div class="flashcard-box" onclick="toggleFlashcardFlip()" style="cursor:pointer; background:var(--bg-panel); border:2px solid var(--accent); border-radius:12px; padding:32px 24px; min-height:260px; display:flex; flex-direction:column; justify-content:center; align-items:center; transition:all 0.2s;">
+      <div class="flashcard-box" onclick="toggleFlashcardFlip()">
         ${!isFlashcardFlipped ? `
           <div style="color:var(--text-muted); font-size:0.85rem; margin-bottom:8px;">${card.moduleTitle}</div>
-          <h3 style="font-size:1.35rem; color:var(--text-main); margin-bottom:16px;">${card.name}</h3>
-          <p style="color:var(--text-muted); font-size:0.95rem;">${card.applicability}</p>
-          <div style="margin-top:24px; color:var(--accent); font-size:0.9rem; font-weight:600;">🔄 Tap card to reveal formula & derivation</div>
+          <h3 style="font-size:1.35rem; color:var(--text-main); margin-bottom:14px;">${card.name}</h3>
+          <p style="color:var(--text-muted); font-size:0.92rem;">${card.applicability}</p>
+          <div style="margin-top:24px; color:var(--accent); font-size:0.88rem; font-weight:600;">🔄 Tap card to reveal formula & derivation</div>
         ` : `
           <div class="formula-banner math-display-card" style="width:100%; margin-bottom:14px;">
             <div class="math-card-body">${formatFormula(card.formula)}</div>
           </div>
-          <p style="color:var(--gold); font-size:0.95rem; margin-bottom:8px;"><strong>🎯 Memory Cue:</strong> ${card.memoryCue}</p>
-          <p style="color:#fca5a5; font-size:0.9rem; margin-bottom:8px;"><strong>⚠️ Exam Trap:</strong> ${card.traps}</p>
-          <p style="color:var(--text-muted); font-size:0.85rem;">${card.derivation}</p>
-          <div style="margin-top:16px; color:var(--text-muted); font-size:0.8rem;">Tap card to flip back</div>
+          <p style="color:var(--gold); font-size:0.92rem; margin-bottom:6px;"><strong>🎯 Memory Cue:</strong> ${card.memoryCue}</p>
+          <p style="color:#fca5a5; font-size:0.88rem; margin-bottom:6px;"><strong>⚠️ Exam Trap:</strong> ${card.traps}</p>
+          <p style="color:var(--text-muted); font-size:0.84rem;">${card.derivation}</p>
+          <div style="margin-top:14px; color:var(--text-dim); font-size:0.78rem;">Tap card to flip back</div>
         `}
       </div>
 
       <!-- Spaced Repetition Rating Buttons -->
-      <div style="display:flex; justify-content:center; gap:8px; margin-top:20px; flex-wrap:wrap;">
+      <div style="display:flex; justify-content:center; gap:8px; margin-top:18px; flex-wrap:wrap;">
         <button class="hud-btn" style="border-color:var(--danger); color:var(--danger);" onclick="rateFlashcard('${card.id}', 'again')">🔴 Again (+0 XP)</button>
         <button class="hud-btn" style="border-color:var(--gold); color:var(--gold);" onclick="rateFlashcard('${card.id}', 'hard')">🟡 Hard (+50 XP)</button>
         <button class="hud-btn" style="border-color:var(--accent); color:var(--accent);" onclick="rateFlashcard('${card.id}', 'good')">🟢 Good (+100 XP)</button>
         <button class="hud-btn" style="border-color:var(--success); color:var(--success);" onclick="rateFlashcard('${card.id}', 'easy')">🔵 Easy (+150 XP)</button>
       </div>
 
-      <div style="display:flex; justify-content:space-between; margin-top:20px;">
+      <div style="display:flex; justify-content:space-between; margin-top:18px;">
         <button class="hud-btn" onclick="prevFlashcard()">⬅ Previous Card</button>
         <button class="btn-primary" style="margin-top:0;" onclick="nextFlashcard()">Next Card ➔</button>
       </div>
@@ -571,287 +893,195 @@ function prevFlashcard() {
 
 function rateFlashcard(cardId, rating) {
   userState.flashcardRatings[cardId] = rating;
-  const xpReward = rating === 'easy' ? 150 : rating === 'good' ? 100 : rating === 'hard' ? 50 : 0;
-  userState.xp += xpReward;
+  if (rating === 'easy') userState.xp += 150;
+  else if (rating === 'good') userState.xp += 100;
+  else if (rating === 'hard') userState.xp += 50;
   saveState();
   nextFlashcard();
 }
 
 // =========================================================================
-// 3. DIAGNOSTIC EXAM SIMULATOR
+// 3. STRUCTURAL ENGINEERING SANDBOXES & LIVE BEAM SIMULATOR
 // =========================================================================
-let examCurrentIdx = 0;
 
-function renderExamSimulatorView(viewport) {
-  if (examFinished) {
-    // Render Diagnostic Results Scorecard
-    let score = 0;
-    const details = EXAM_SIMULATOR_QUESTIONS.map((q, idx) => {
-      const chosen = examAnswers[idx];
-      const isCorrect = chosen !== undefined && q.options[chosen].correct;
-      if (isCorrect) score++;
-      return { q, chosen, isCorrect };
-    });
+// Beam Simulator State
+let beamSimParams = {
+  L: 6.0,
+  hasPoint: true,
+  P: 40.0,
+  a: 2.5,
+  hasUDL: true,
+  w: 12.0,
+  showDeflection: true,
+  showSFD: true,
+  showBMD: true
+};
 
-    const pct = Math.round((score / EXAM_SIMULATOR_QUESTIONS.length) * 100);
+function updateBeamSim() {
+  const lEl = document.getElementById('beam_L');
+  const pEl = document.getElementById('beam_P');
+  const aEl = document.getElementById('beam_a');
+  const wEl = document.getElementById('beam_w');
+  const chkDef = document.getElementById('chk_def');
+  const chkSFD = document.getElementById('chk_sfd');
+  const chkBMD = document.getElementById('chk_bmd');
 
-    viewport.innerHTML = `
-      <div class="card">
-        <h2>⏱️ Diagnostic Exam Results & Diagnostic Breakdown</h2>
-        <div style="display:flex; gap:16px; align-items:center; margin:20px 0; flex-wrap:wrap;">
-          <div class="stat-pill" style="font-size:1.2rem; padding:12px 20px; border-color:${pct >= 70 ? 'var(--success)' : 'var(--danger)'}">
-            Score: ${score} / ${EXAM_SIMULATOR_QUESTIONS.length} (${pct}%)
-          </div>
-          <div class="stat-pill" style="font-size:1.1rem; color:var(--gold);">
-            ${pct >= 85 ? '🌟 Master Structural Analyst' : pct >= 70 ? '✅ Ready for University Exam' : '⚠️ Requires Targeted Concept Revision'}
-          </div>
-        </div>
-
-        <h3>Question by Question Diagnostic Breakdown:</h3>
-        <div style="display:flex; flex-direction:column; gap:16px; margin-top:16px;">
-          ${details.map((d, i) => `
-            <div class="step-box" style="border-left:4px solid ${d.isCorrect ? 'var(--success)' : 'var(--danger)'}">
-              <div style="display:flex; justify-content:space-between; font-weight:bold;">
-                <span>${d.q.title}</span>
-                <span style="color:${d.isCorrect ? 'var(--success)' : 'var(--danger)'}">${d.isCorrect ? '✅ Correct' : '❌ Missed'}</span>
-              </div>
-              <p style="margin:8px 0;"><strong>Prompt:</strong> ${d.q.prompt}</p>
-              <p style="color:${d.isCorrect ? '#86efac' : '#fca5a5'};">
-                <strong>Your Answer:</strong> ${d.chosen !== undefined ? d.q.options[d.chosen].text : 'Unanswered'}
-              </p>
-              ${!d.isCorrect ? `<p style="color:var(--gold); margin-top:6px;"><strong>Core Concept:</strong> ${d.q.options.find(o => o.correct).explain}</p>` : ''}
-            </div>
-          `).join('')}
-        </div>
-
-        <button class="btn-primary" style="margin-top:24px;" onclick="restartExam()">↺ Retake Diagnostic Exam</button>
-      </div>
-    `;
-    return;
+  if (lEl) beamSimParams.L = parseFloat(lEl.value) || 6.0;
+  if (pEl) beamSimParams.P = parseFloat(pEl.value) || 0;
+  if (aEl) {
+    // Clamp a to L
+    aEl.max = beamSimParams.L;
+    beamSimParams.a = Math.min(beamSimParams.L, parseFloat(aEl.value) || 0);
   }
+  if (wEl) beamSimParams.w = parseFloat(wEl.value) || 0;
+  if (chkDef) beamSimParams.showDeflection = chkDef.checked;
+  if (chkSFD) beamSimParams.showSFD = chkSFD.checked;
+  if (chkBMD) beamSimParams.showBMD = chkBMD.checked;
 
-  // Active Exam View
-  const q = EXAM_SIMULATOR_QUESTIONS[examCurrentIdx];
-  const chosen = examAnswers[examCurrentIdx];
+  // Update slider value badges
+  const lVal = document.getElementById('val_L');
+  const pVal = document.getElementById('val_P');
+  const aVal = document.getElementById('val_a');
+  const wVal = document.getElementById('val_w');
+  if (lVal) lVal.innerText = beamSimParams.L.toFixed(1) + ' m';
+  if (pVal) pVal.innerText = beamSimParams.P.toFixed(1) + ' kN';
+  if (aVal) aVal.innerText = beamSimParams.a.toFixed(1) + ' m';
+  if (wVal) wVal.innerText = beamSimParams.w.toFixed(1) + ' kN/m';
 
-  viewport.innerHTML = `
-    <div class="card">
-      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
-        <h2>⏱️ Midterm / Final Exam Simulator</h2>
-        <div style="display:flex; gap:10px;">
-          <span class="stat-pill" id="examTimerBadge" style="color:var(--danger)">⏳ Time Left: ${Math.floor(examTimeSeconds / 60)}:${(examTimeSeconds % 60).toString().padStart(2, '0')}</span>
-          <span class="stat-pill">Question ${examCurrentIdx + 1} of ${EXAM_SIMULATOR_QUESTIONS.length}</span>
-        </div>
-      </div>
-      <p style="color:var(--text-muted); margin: 6px 0 16px;">Timed mixed exam across all 7 lecture modules. Tests first principles, calculation formulas, and sign conventions.</p>
+  const res = StructureSolvers.simulateBeam(beamSimParams);
 
-      <div class="step-box" style="margin-top:14px;">
-        <h3 style="color:var(--accent); margin-top:0;">${q.title}</h3>
-        <p style="font-size:1.05rem; font-weight:600; margin:14px 0;">${q.prompt}</p>
+  // Update SVG container
+  const svgBox = document.getElementById('beamSvgBox');
+  if (svgBox) svgBox.innerHTML = res.svg;
 
-        <div class="options-list">
-          ${q.options.map((opt, optIdx) => `
-            <button class="option-btn ${chosen === optIdx ? 'correct' : ''}" onclick="selectExamAnswer(${examCurrentIdx}, ${optIdx})">
-              ${opt.text}
-            </button>
-          `).join('')}
-        </div>
-      </div>
-
-      <div style="display:flex; justify-content:space-between; margin-top:24px; align-items:center;">
-        <button class="hud-btn" onclick="prevExamQuestion()" ${examCurrentIdx === 0 ? 'disabled' : ''}>⬅ Previous</button>
-        <button class="hud-btn reset-btn" onclick="submitExamEarly()">Finish & Grade Exam</button>
-        <button class="btn-primary" style="margin-top:0;" onclick="nextExamQuestion()">${examCurrentIdx === EXAM_SIMULATOR_QUESTIONS.length - 1 ? 'Finish Exam ➔' : 'Next Question ➔'}</button>
-      </div>
-    </div>
-  `;
-
-  startExamTimer();
+  // Update metrics
+  const raEl = document.getElementById('metric_RA');
+  const rbEl = document.getElementById('metric_RB');
+  const mEl = document.getElementById('metric_Mmax');
+  const defEl = document.getElementById('metric_Def');
+  if (raEl) raEl.innerText = res.R_A.toFixed(1) + ' kN';
+  if (rbEl) rbEl.innerText = res.R_B.toFixed(1) + ' kN';
+  if (mEl) mEl.innerText = res.M_max.toFixed(1) + ' kN·m (x=' + res.x_max.toFixed(2) + 'm)';
+  if (defEl) defEl.innerText = (res.delta_max).toFixed(1) + ' / EI';
 }
 
-function startExamTimer() {
-  if (examTimer) return;
-  examTimer = setInterval(() => {
-    if (examTimeSeconds > 0) {
-      examTimeSeconds--;
-      const badge = document.getElementById('examTimerBadge');
-      if (badge) {
-        badge.innerText = `⏳ Time Left: ${Math.floor(examTimeSeconds / 60)}:${(examTimeSeconds % 60).toString().padStart(2, '0')}`;
-      }
-    } else {
-      clearInterval(examTimer);
-      examTimer = null;
-      submitExamEarly();
-    }
-  }, 1000);
-}
-
-function selectExamAnswer(qIdx, optIdx) {
-  examAnswers[qIdx] = optIdx;
-  renderMainView();
-}
-
-function nextExamQuestion() {
-  if (examCurrentIdx < EXAM_SIMULATOR_QUESTIONS.length - 1) {
-    examCurrentIdx++;
-    renderMainView();
-  } else {
-    submitExamEarly();
-  }
-}
-
-function prevExamQuestion() {
-  if (examCurrentIdx > 0) {
-    examCurrentIdx--;
-    renderMainView();
-  }
-}
-
-function submitExamEarly() {
-  if (examTimer) {
-    clearInterval(examTimer);
-    examTimer = null;
-  }
-  examFinished = true;
-
-  // Log missed questions into userState.errors
-  EXAM_SIMULATOR_QUESTIONS.forEach((q, idx) => {
-    const chosen = examAnswers[idx];
-    const isCorrect = chosen !== undefined && q.options[chosen].correct;
-    if (!isCorrect) {
-      const errKey = `exam_${q.id}`;
-      if (!userState.errors.some(e => e.key === errKey)) {
-        userState.errors.push({
-          key: errKey,
-          title: q.title,
-          prompt: q.prompt,
-          modTitle: q.module,
-          mistake: chosen !== undefined ? q.options[chosen].text : 'Unanswered',
-          correction: q.options.find(o => o.correct).explain
-        });
-      }
-    }
-  });
-
-  saveState();
-  renderMainView();
-}
-
-function restartExam() {
-  examFinished = false;
-  examCurrentIdx = 0;
-  examAnswers = {};
-  examTimeSeconds = 600;
-  startExamTimer();
-  renderMainView();
-}
-
-// =========================================================================
-// 4. ERROR NOTEBOOK (MISTAKE VAULT)
-// =========================================================================
-function renderErrorNotebookView(viewport) {
-  viewport.innerHTML = `
-    <div class="card">
-      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
-        <h2>📓 Personal Error Notebook & Mistake Vault</h2>
-        <span class="stat-pill" style="color:var(--danger)">${userState.errors.length} Missed Concept(s)</span>
-      </div>
-      <p style="color:var(--text-muted); margin: 8px 0 16px;">Targeted active recall of problems you previously missed in the Gauntlet or Exam Simulator. Once you master the concept, clear it!</p>
-
-      ${userState.errors.length === 0 ? `
-        <div class="concept-callout" style="border-left-color:var(--success); font-size:1.05rem;">
-          🎉 <strong>Flawless Record!</strong> Your Error Notebook is completely empty. As you practice and make mistakes, they will automatically be logged here for surgical review.
-        </div>
-      ` : `
-        <div style="display:flex; flex-direction:column; gap:16px;">
-          ${userState.errors.map((err, idx) => `
-            <div class="step-box" style="border-left:4px solid var(--danger);">
-              <div style="display:flex; justify-content:space-between; align-items:center;">
-                <h3 style="color:var(--danger); margin:0;">${err.title}</h3>
-                <button class="hud-btn" style="font-size:0.75rem; border-color:var(--success); color:var(--success);" onclick="clearError(${idx})">Mark Mastered ✅</button>
-              </div>
-              <p style="margin:8px 0; font-weight:600;">${err.prompt}</p>
-              <p style="color:#fca5a5; font-size:0.9rem;"><strong>Previous Misconception:</strong> ${err.mistake}</p>
-              <div style="margin-top:8px; padding:10px; background:var(--bg-input); border-radius:6px; font-size:0.9rem; color:#86efac;">
-                <strong>Correct First-Principles Insight:</strong><br/>${err.correction}
-              </div>
-            </div>
-          `).join('')}
-        </div>
-      `}
-    </div>
-  `;
-}
-
-function clearError(idx) {
-  userState.errors.splice(idx, 1);
-  saveState();
-  renderMainView();
-}
-
-// =========================================================================
-// 5. INTERACTIVE STRUCTURAL SOLVERS
-// =========================================================================
 function renderSolversView(viewport) {
   viewport.innerHTML = `
     <div class="card">
       <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
         <h2>🧮 Interactive Structural Engineering Sandboxes</h2>
-        <div style="display:flex; gap:8px; flex-wrap:wrap;">
-          <button class="hud-btn ${currentSolver === 'determinacy' ? 'active' : ''}" onclick="switchSolver('determinacy')">🔍 Determinacy</button>
-          <button class="hud-btn ${currentSolver === 'threemoment' ? 'active' : ''}" onclick="switchSolver('threemoment')">📐 3-Moment Solver</button>
-          <button class="hud-btn ${currentSolver === 'hardycross' ? 'active' : ''}" onclick="switchSolver('hardycross')">🔄 Hardy Cross</button>
-          <button class="hud-btn ${currentSolver === 'conjugate' ? 'active' : ''}" onclick="switchSolver('conjugate')">🌉 Conjugate Viewer</button>
-        </div>
+        <span class="stat-pill" style="color:var(--accent);">Real-Time Calculations</span>
       </div>
-      <p style="color:var(--text-muted); margin: 8px 0 20px;">Validated simulation sandboxes with real-time SVG load diagrams, SFD/BMD curves, and live moment distribution spreadsheets.</p>
+      <p style="color:var(--text-muted); margin: 6px 0 16px; font-size:0.9rem;">Test structural models, verify reactions, watch deflections morph, and run iterative distributions in real time.</p>
 
-      <div id="solverContainer"></div>
+      <!-- Sandbox Switcher Pills -->
+      <div style="display:flex; gap:6px; overflow-x:auto; margin-bottom:18px; padding-bottom:6px;">
+        <button class="mode-tab ${currentSolver === 'beam' ? 'active' : ''}" onclick="openSandbox('beam')">⚡ Live Beam Playground</button>
+        <button class="mode-tab ${currentSolver === 'determinacy' ? 'active' : ''}" onclick="openSandbox('determinacy')">🔍 Stability & Determinacy</button>
+        <button class="mode-tab ${currentSolver === 'threemoment' ? 'active' : ''}" onclick="openSandbox('threemoment')">📐 2-Span Clapeyron</button>
+        <button class="mode-tab ${currentSolver === 'hardycross' ? 'active' : ''}" onclick="openSandbox('hardycross')">🔄 Hardy Cross Live Engine</button>
+        <button class="mode-tab ${currentSolver === 'conjugate' ? 'active' : ''}" onclick="openSandbox('conjugate')">🌉 Conjugate Beam Transform</button>
+      </div>
+
+      <div id="sandboxActiveContainer"></div>
     </div>
   `;
 
-  renderActiveSolver();
-}
-
-function switchSolver(name) {
-  currentSolver = name;
-  renderSolversView(document.getElementById('viewport'));
-}
-
-function renderActiveSolver() {
-  const container = document.getElementById('solverContainer');
+  const container = document.getElementById('sandboxActiveContainer');
   if (!container) return;
 
-  if (currentSolver === 'determinacy') {
+  if (currentSolver === 'beam') {
+    container.innerHTML = `
+      <div class="sim-control-panel">
+        <h3 style="color:#fff; margin-top:0; font-size:1rem; margin-bottom:12px;">⚡ Live Simply Supported Beam Playground</h3>
+        
+        <div class="sim-slider-row">
+          <div class="sim-slider-group">
+            <label>Span Length (L): <span id="val_L">${beamSimParams.L.toFixed(1)} m</span></label>
+            <input type="range" id="beam_L" min="2" max="12" step="0.5" value="${beamSimParams.L}" oninput="updateBeamSim()" />
+          </div>
+          <div class="sim-slider-group">
+            <label>Point Load Magnitude (P): <span id="val_P">${beamSimParams.P.toFixed(1)} kN</span></label>
+            <input type="range" id="beam_P" min="0" max="100" step="5" value="${beamSimParams.P}" oninput="updateBeamSim()" />
+          </div>
+          <div class="sim-slider-group">
+            <label>Point Load Position (a): <span id="val_a">${beamSimParams.a.toFixed(1)} m</span></label>
+            <input type="range" id="beam_a" min="0" max="${beamSimParams.L}" step="0.2" value="${beamSimParams.a}" oninput="updateBeamSim()" />
+          </div>
+          <div class="sim-slider-group">
+            <label>Uniform Distributed Load (w): <span id="val_w">${beamSimParams.w.toFixed(1)} kN/m</span></label>
+            <input type="range" id="beam_w" min="0" max="40" step="2" value="${beamSimParams.w}" oninput="updateBeamSim()" />
+          </div>
+        </div>
+
+        <div class="sim-toggle-row">
+          <label class="sim-toggle-label">
+            <input type="checkbox" id="chk_def" ${beamSimParams.showDeflection ? 'checked' : ''} onchange="updateBeamSim()" />
+            <span>Show Elastic Deflection Curve (δ)</span>
+          </label>
+          <label class="sim-toggle-label">
+            <input type="checkbox" id="chk_sfd" ${beamSimParams.showSFD ? 'checked' : ''} onchange="updateBeamSim()" />
+            <span>Show Shear Force Diagram (SFD)</span>
+          </label>
+          <label class="sim-toggle-label">
+            <input type="checkbox" id="chk_bmd" ${beamSimParams.showBMD ? 'checked' : ''} onchange="updateBeamSim()" />
+            <span>Show Bending Moment Diagram (BMD)</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Live Diagram Canvas -->
+      <div id="beamSvgBox" style="margin:14px 0;"></div>
+
+      <!-- Live Metrics Pills -->
+      <div class="sim-metrics-pills">
+        <div class="metric-pill-box">
+          <small>Reaction R_A</small>
+          <strong id="metric_RA">--</strong>
+        </div>
+        <div class="metric-pill-box">
+          <small>Reaction R_B</small>
+          <strong id="metric_RB">--</strong>
+        </div>
+        <div class="metric-pill-box">
+          <small>Max Moment M_max</small>
+          <strong id="metric_Mmax">--</strong>
+        </div>
+        <div class="metric-pill-box">
+          <small>Peak Deflection (·EI)</small>
+          <strong id="metric_Def">--</strong>
+        </div>
+      </div>
+    `;
+    updateBeamSim();
+  } else if (currentSolver === 'determinacy') {
     container.innerHTML = `
       <div class="calc-grid">
         <div class="input-group">
-          <label>Structure Classification</label>
-          <select id="detType" onchange="updateDetInputs()">
-            <option value="beam">Continuous Beam</option>
-            <option value="truss">Plane Truss</option>
-            <option value="frame">Rigid Frame</option>
+          <label>Structural Topology</label>
+          <select id="detType" onchange="renderDetInputs()">
+            <option value="beam">2D Beam Framework</option>
+            <option value="truss">2D Plane Truss</option>
+            <option value="frame">2D Rigid Jointed Frame</option>
           </select>
         </div>
-        <div id="detDynamicInputs" style="display:contents;"></div>
       </div>
-      <button class="btn-primary" onclick="runDeterminacySolve()">Analyze Stability & Determinacy</button>
+      <div id="detSpecificInputs" class="calc-grid"></div>
+      <button class="btn-primary" onclick="runDeterminacySolve()">Compute Stability & Determinacy Status</button>
       <div id="detResultBox" style="margin-top:20px; display:none;"></div>
     `;
-    updateDetInputs();
-    runDeterminacySolve();
+    renderDetInputs();
   } else if (currentSolver === 'threemoment') {
     container.innerHTML = `
       <div class="calc-grid">
-        <div class="input-group"><label>Span 1 Length (L₁, m)</label><input type="number" id="tm_L1" value="4.0" step="0.5" /></div>
-        <div class="input-group"><label>Span 1 Load Type</label><select id="tm_loadType1"><option value="point">Point Load (P)</option><option value="udl">Uniform Load (w)</option></select></div>
-        <div class="input-group"><label>Span 1 Load Magnitude</label><input type="number" id="tm_mag1" value="40" step="5" /></div>
-        <div class="input-group"><label>Span 1 Point Load dist from A (m)</label><input type="number" id="tm_a1" value="2.0" step="0.5" /></div>
-
-        <div class="input-group"><label>Span 2 Length (L₂, m)</label><input type="number" id="tm_L2" value="6.0" step="0.5" /></div>
-        <div class="input-group"><label>Span 2 Load Type</label><select id="tm_loadType2"><option value="udl">Uniform Load (w)</option><option value="point">Point Load (P)</option></select></div>
-        <div class="input-group"><label>Span 2 Load Magnitude</label><input type="number" id="tm_mag2" value="10" step="5" /></div>
-        <div class="input-group"><label>Span 2 Point Load dist from C (m)</label><input type="number" id="tm_a2" value="3.0" step="0.5" /></div>
+        <div class="input-group"><label>Span 1 Length L₁ (m)</label><input type="number" id="tm_L1" value="4.0" step="0.5" /></div>
+        <div class="input-group"><label>Span 2 Length L₂ (m)</label><input type="number" id="tm_L2" value="6.0" step="0.5" /></div>
+        <div class="input-group"><label>Span 1 Loading</label><select id="tm_loadType1"><option value="udl">Uniform Load (w₁)</option><option value="point">Point Load (P₁)</option></select></div>
+        <div class="input-group"><label>Span 2 Loading</label><select id="tm_loadType2"><option value="udl">Uniform Load (w₂)</option><option value="point">Point Load (P₂)</option></select></div>
+        <div class="input-group"><label>Load Mag 1 (kN or kN/m)</label><input type="number" id="tm_mag1" value="15.0" /></div>
+        <div class="input-group"><label>Load Mag 2 (kN or kN/m)</label><input type="number" id="tm_mag2" value="20.0" /></div>
+        <div class="input-group"><label>P₁ Distance a₁ (m)</label><input type="number" id="tm_a1" value="2.0" /></div>
+        <div class="input-group"><label>P₂ Distance a₂ (m)</label><input type="number" id="tm_a2" value="3.0" /></div>
       </div>
       <button class="btn-primary" onclick="runThreeMomentSolve()">Solve Two-Span Continuous Beam</button>
       <div id="tmResultBox" style="margin-top:20px; display:none;"></div>
@@ -891,29 +1121,31 @@ function renderActiveSolver() {
   }
 }
 
-function updateDetInputs() {
+function renderDetInputs() {
   const type = document.getElementById('detType').value;
-  const container = document.getElementById('detDynamicInputs');
+  const container = document.getElementById('detSpecificInputs');
+  if (!container) return;
+
   if (type === 'beam') {
     container.innerHTML = `
-      <div class="input-group"><label>Reaction Components (r)</label><input type="number" id="det_r" value="5" min="1" /></div>
+      <div class="input-group"><label>Total Reactions (r)</label><input type="number" id="det_r" value="4" min="0" /></div>
       <div class="input-group"><label>Internal Hinges (s)</label><input type="number" id="det_s" value="1" min="0" /></div>
-      <div class="input-group"><label>All reactions parallel?</label><select id="det_parallel"><option value="false">No (Stable)</option><option value="true">Yes (Unstable Trap!)</option></select></div>
+      <div class="input-group"><label>Parallel Reactions Trap?</label><select id="det_parallel"><option value="false">No (Normal non-parallel)</option><option value="true">YES (All rollers parallel)</option></select></div>
     `;
   } else if (type === 'truss') {
     container.innerHTML = `
-      <div class="input-group"><label>Pin Joints (j)</label><input type="number" id="det_j" value="8" min="3" /></div>
-      <div class="input-group"><label>Members (m)</label><input type="number" id="det_m" value="13" min="3" /></div>
-      <div class="input-group"><label>Reaction Components (r)</label><input type="number" id="det_r" value="3" min="3" /></div>
-      <div class="input-group"><label>Unbraced square panels?</label><select id="det_unbraced"><option value="false">No (Triangulated)</option><option value="true">Yes (Shear Collapse!)</option></select></div>
+      <div class="input-group"><label>Number of Pin Joints (j)</label><input type="number" id="det_j" value="6" min="3" /></div>
+      <div class="input-group"><label>Number of Member Bars (m)</label><input type="number" id="det_m" value="9" min="1" /></div>
+      <div class="input-group"><label>Support Reactions (r)</label><input type="number" id="det_r" value="3" min="0" /></div>
+      <div class="input-group"><label>Unbraced Panel Trap?</label><select id="det_unbraced"><option value="false">No (Fully triangulated)</option><option value="true">YES (Non-triangulated box)</option></select></div>
     `;
   } else if (type === 'frame') {
     container.innerHTML = `
-      <div class="input-group"><label>Rigid Joints (j)</label><input type="number" id="det_j" value="9" min="2" /></div>
-      <div class="input-group"><label>Members (m)</label><input type="number" id="det_m" value="10" min="1" /></div>
-      <div class="input-group"><label>Reaction Components (r)</label><input type="number" id="det_r" value="9" min="3" /></div>
-      <div class="input-group"><label>Special Releases (s)</label><input type="number" id="det_s" value="0" min="0" /></div>
-      <div class="input-group"><label>Closed Cells (n)</label><input type="number" id="det_loops" value="4" min="0" /></div>
+      <div class="input-group"><label>Number of Joints (j)</label><input type="number" id="det_j" value="6" min="2" /></div>
+      <div class="input-group"><label>Number of Members (m)</label><input type="number" id="det_m" value="6" min="1" /></div>
+      <div class="input-group"><label>Support Reactions (r)</label><input type="number" id="det_r" value="6" min="0" /></div>
+      <div class="input-group"><label>Internal Hinge Equations (s)</label><input type="number" id="det_s" value="0" min="0" /></div>
+      <div class="input-group"><label>Closed Cells (n)</label><input type="number" id="det_loops" value="1" min="0" /></div>
     `;
   }
 }
@@ -951,7 +1183,7 @@ function runDeterminacySolve() {
   box.innerHTML = `
     <div class="step-box" style="border-color:${res.isStable ? 'var(--accent)' : 'var(--danger)'}">
       <h3 style="color:${res.isStable ? 'var(--accent)' : 'var(--danger)'}; margin-top:0;">Verdict: ${res.status}</h3>
-      <div class="formula-banner">${res.formula}</div>
+      <div class="formula-banner">${formatFormula(res.formula)}</div>
       ${res.svg ? `<div style="margin:14px 0;">${res.svg}</div>` : ''}
       <ul style="padding-left:20px; margin-top:10px;">
         ${res.notes.map(n => `<li style="margin-bottom:6px;">${n}</li>`).join('')}
@@ -983,7 +1215,7 @@ function runThreeMomentSolve() {
       <h3 style="color:var(--gold); margin-top:0;">Clapeyron Solution Results & Bending Diagrams:</h3>
       ${res.beamSvg}
       <p style="margin-top:14px;"><strong>Load Terms:</strong> Span 1 (6A₁x₁/L₁) = <code>${res.term1} kN·m²</code> | Span 2 (6A₂x₂/L₂) = <code>${res.term2} kN·m²</code></p>
-      <div class="formula-banner">Three-Moment Equation: ${res.coeff_MB} · M_B = ${res.RHS}  ➔  M_B = ${res.M_B} kN·m</div>
+      <div class="formula-banner">Three-Moment Equation: ${res.coeff_MB} · M_B = ${res.RHS} ➔ M_B = ${res.M_B} kN·m</div>
       
       <div class="calc-grid" style="margin-top:16px;">
         <div class="stat-pill" style="text-align:center;">Support Moment M_B: <strong>${res.M_B} kN·m</strong></div>
@@ -1068,7 +1300,268 @@ function runConjugateTransform() {
   `;
 }
 
-// Download Standalone App Single-File Bundler
+// =========================================================================
+// 4. DIAGNOSTIC EXAM SIMULATOR
+// =========================================================================
+function renderExamSimulatorView(viewport) {
+  if (examFinished) {
+    let score = 0;
+    const details = EXAM_SIMULATOR_QUESTIONS.map((q, idx) => {
+      const chosen = examAnswers[idx];
+      const isCorrect = chosen !== undefined && q.options[chosen].correct;
+      if (isCorrect) score++;
+      return { q, chosen, isCorrect };
+    });
+
+    const pct = Math.round((score / EXAM_SIMULATOR_QUESTIONS.length) * 100);
+
+    viewport.innerHTML = `
+      <div class="card">
+        <h2>⏱️ Diagnostic Exam Results & Diagnostic Breakdown</h2>
+        <div style="display:flex; gap:16px; align-items:center; margin:20px 0; flex-wrap:wrap;">
+          <div class="stat-pill" style="font-size:1.2rem; padding:12px 20px; border-color:${pct >= 70 ? 'var(--success)' : 'var(--danger)'}">
+            Score: ${score} / ${EXAM_SIMULATOR_QUESTIONS.length} (${pct}%)
+          </div>
+          <div class="stat-pill" style="font-size:1.1rem; color:var(--gold);">
+            ${pct >= 85 ? '🌟 Master Structural Analyst' : pct >= 70 ? '✅ Ready for University Exam' : '⚠️ Requires Targeted Concept Revision'}
+          </div>
+        </div>
+
+        <h3>Question by Question Diagnostic Breakdown:</h3>
+        <div style="display:flex; flex-direction:column; gap:16px; margin-top:16px;">
+          ${details.map((d, i) => `
+            <div class="step-box" style="border-left:4px solid ${d.isCorrect ? 'var(--success)' : 'var(--danger)'}">
+              <div class="step-header">
+                <span>Q${i + 1}: ${d.q.title}</span>
+                <span>${d.isCorrect ? '✅ Correct (+150 XP)' : '❌ Incorrect'}</span>
+              </div>
+              <p><strong>${d.q.prompt}</strong></p>
+              <p style="color:var(--text-muted); font-size:0.9rem; margin-top:6px;">
+                Your Answer: <em>${d.chosen !== undefined ? d.q.options[d.chosen].text : 'Unanswered'}</em>
+              </p>
+              <div class="concept-callout" style="border-left-color:${d.isCorrect ? 'var(--success)' : 'var(--danger)'}; font-size:0.9rem;">
+                ${d.q.options.find(o => o.correct).explain}
+              </div>
+            </div>
+          `).join('')}
+        </div>
+
+        <div style="margin-top:24px;">
+          <button class="btn-primary" onclick="restartExam()">Retake Diagnostic Simulator ↺</button>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  // Active Exam
+  const min = Math.floor(examTimeSeconds / 60);
+  const sec = examTimeSeconds % 60;
+  const timeStr = `${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
+
+  viewport.innerHTML = `
+    <div class="card">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:16px;">
+        <h2>⏱️ AAU Final Examination Simulator</h2>
+        <div class="stat-pill" style="font-size:1.1rem; border-color:${examTimeSeconds < 120 ? 'var(--danger)' : 'var(--gold)'}; color:${examTimeSeconds < 120 ? 'var(--danger)' : 'var(--gold)'}">
+          ⏳ Time Remaining: ${timeStr}
+        </div>
+      </div>
+      <p style="color:var(--text-muted); margin-bottom:20px;">Strict 10-minute timer. Tests your speed across all 7 lecture notes and foundations. Submit before time runs out!</p>
+
+      <div style="display:flex; flex-direction:column; gap:20px;">
+        ${EXAM_SIMULATOR_QUESTIONS.map((q, idx) => `
+          <div class="step-box">
+            <div class="step-header">
+              <span>Question ${idx + 1} of ${EXAM_SIMULATOR_QUESTIONS.length} — ${q.title}</span>
+            </div>
+            ${q.diagram ? `<div class="blueprint-diagram">${q.diagram}</div>` : ''}
+            <p style="font-weight:600; font-size:1rem; margin:10px 0;">${q.prompt}</p>
+            <div class="options-list">
+              ${q.options.map((opt, optIdx) => `
+                <button class="option-btn ${examAnswers[idx] === optIdx ? 'correct' : ''}" onclick="selectExamAnswer(${idx}, ${optIdx})">
+                  ${opt.text}
+                </button>
+              `).join('')}
+            </div>
+          </div>
+        `).join('')}
+      </div>
+
+      <div style="margin-top:28px; text-align:center;">
+        <button class="btn-primary" style="font-size:1.1rem; padding:14px 32px;" onclick="finishExam()">Submit Final Exam Paper ➔</button>
+      </div>
+    </div>
+  `;
+}
+
+function startExamTimer() {
+  if (examTimer) clearInterval(examTimer);
+  examTimer = setInterval(() => {
+    if (examTimeSeconds > 0) {
+      examTimeSeconds--;
+      if (currentAppView === 'exam' && !examFinished) {
+        const pill = document.querySelector('.card .stat-pill');
+        if (pill) {
+          const min = Math.floor(examTimeSeconds / 60);
+          const sec = examTimeSeconds % 60;
+          pill.innerText = `⏳ Time Remaining: ${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
+        }
+      }
+    } else {
+      finishExam();
+    }
+  }, 1000);
+}
+
+function selectExamAnswer(qIdx, optIdx) {
+  examAnswers[qIdx] = optIdx;
+  renderMainView();
+}
+
+function finishExam() {
+  if (examTimer) clearInterval(examTimer);
+  examFinished = true;
+
+  let score = 0;
+  EXAM_SIMULATOR_QUESTIONS.forEach((q, idx) => {
+    const chosen = examAnswers[idx];
+    if (chosen !== undefined && q.options[chosen].correct) {
+      score++;
+    } else {
+      // Log missed exam question into Error Notebook
+      const key = `exam_q${idx}`;
+      if (!userState.errors.some(e => e.key === key)) {
+        userState.errors.push({
+          key: key,
+          title: `Exam: ${q.title}`,
+          prompt: q.prompt,
+          diagram: q.diagram,
+          options: q.options,
+          timestamp: new Date().toLocaleDateString()
+        });
+      }
+    }
+  });
+
+  userState.xp += score * 150;
+  saveState();
+  renderMainView();
+}
+
+function restartExam() {
+  examFinished = false;
+  examTimeSeconds = 600;
+  examAnswers = {};
+  startExamTimer();
+  renderMainView();
+}
+
+// =========================================================================
+// 5. PERSONAL ERROR NOTEBOOK WITH DIRECT DRILL & RETEST
+// =========================================================================
+function renderErrorNotebookView(viewport) {
+  viewport.innerHTML = `
+    <div class="card">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+        <h2>📓 Personal Error Notebook & Mistake Vault</h2>
+        <span class="stat-pill" style="color:var(--danger)">${userState.errors.length} Missed Concept(s)</span>
+      </div>
+      <p style="color:var(--text-muted); margin: 6px 0 16px; font-size:0.9rem;">Targeted active recall of problems you previously missed in the Gauntlet or Exam Simulator. Retest them directly here until mastered!</p>
+
+      ${userState.errors.length === 0 ? `
+        <div class="concept-callout" style="border-left-color:var(--success); font-size:1.02rem;">
+          🎉 <strong>Flawless Record!</strong> Your Error Notebook is completely empty. As you make mistakes during practice, they are logged here automatically for surgical review.
+        </div>
+        <div style="margin-top:16px;">
+          <button class="btn-primary" onclick="switchAppView('dashboard')">Back to Cockpit ➔</button>
+        </div>
+      ` : `
+        <div style="display:flex; flex-direction:column; gap:16px;">
+          ${userState.errors.map((err, idx) => `
+            <div class="step-box" style="border-left:4px solid var(--danger);" id="err_box_${idx}">
+              <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                <h3 style="color:var(--danger); margin:0; font-size:1.02rem;">${err.title}</h3>
+                <div style="display:flex; gap:8px;">
+                  <button class="hud-btn" style="border-color:var(--accent); color:var(--accent);" onclick="toggleRetestError(${idx})">⚔️ Retest Now</button>
+                  <button class="hud-btn" style="border-color:var(--success); color:var(--success);" onclick="clearError(${idx})">Mark Mastered ✅</button>
+                </div>
+              </div>
+              <p style="font-weight:600; margin:10px 0;">${err.prompt}</p>
+              ${err.diagram ? `<div class="blueprint-diagram">${err.diagram}</div>` : ''}
+
+              <!-- Retest Inline Panel -->
+              <div id="retest_panel_${idx}" style="display:none; margin-top:12px; padding-top:12px; border-top:1px solid rgba(255,255,255,0.08);">
+                <div class="options-list">
+                  ${err.options ? err.options.map((opt, oIdx) => `
+                    <button class="option-btn" onclick="checkErrorRetestAnswer(${idx}, ${oIdx})">
+                      ${opt.text}
+                    </button>
+                  `).join('') : '<p style="color:var(--text-muted);">Self-review mode</p>'}
+                </div>
+                <div class="feedback-banner" id="err_feedback_${idx}"></div>
+              </div>
+
+              <div style="font-size:0.8rem; color:var(--text-dim); margin-top:8px;">Logged on: ${err.timestamp || 'Recent'}</div>
+            </div>
+          `).join('')}
+        </div>
+      `}
+    </div>
+  `;
+}
+
+function toggleRetestError(idx) {
+  const panel = document.getElementById(`retest_panel_${idx}`);
+  if (panel) {
+    panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+  }
+}
+
+function checkErrorRetestAnswer(errIdx, optIdx) {
+  const err = userState.errors[errIdx];
+  if (!err || !err.options) return;
+  const chosen = err.options[optIdx];
+  const feedback = document.getElementById(`err_feedback_${errIdx}`);
+  if (!feedback) return;
+
+  feedback.style.display = 'block';
+  if (chosen.correct) {
+    userState.xp += 150;
+    userState.streak += 1;
+    feedback.className = 'feedback-banner';
+    feedback.style.background = 'rgba(16, 185, 129, 0.2)';
+    feedback.style.border = '1px solid var(--success)';
+    feedback.style.color = '#a7f3d0';
+    feedback.innerHTML = `<strong>✅ Concept Conquered (+150 XP)!</strong><br/>${chosen.explain}<br/><em>(Clearing from error notebook in 1.5s...)</em>`;
+
+    setTimeout(() => {
+      userState.errors.splice(errIdx, 1);
+      saveState();
+      renderMainView();
+    }, 1500);
+  } else {
+    feedback.className = 'feedback-banner';
+    feedback.style.background = 'rgba(244, 63, 94, 0.2)';
+    feedback.style.border = '1px solid var(--danger)';
+    feedback.style.color = '#fecdd3';
+    feedback.innerHTML = `<strong>❌ Still Trapped:</strong><br/>${chosen.explain}`;
+  }
+
+  setTimeout(function() {
+    renderMathInDOM(feedback);
+  }, 10);
+}
+
+function clearError(idx) {
+  userState.errors.splice(idx, 1);
+  saveState();
+  renderMainView();
+}
+
+// =========================================================================
+// DOWNLOAD OFFLINE APP (STANDALONE HTML SINGLE-FILE BUNDLE)
+// =========================================================================
 function exportStandaloneHTML() {
   const link = document.createElement('a');
   link.href = './standalone.html';
@@ -1079,10 +1572,11 @@ function exportStandaloneHTML() {
 }
 
 // =========================================================================
-// INITIALIZATION
+// APP INITIALIZATION
 // =========================================================================
 window.addEventListener('DOMContentLoaded', () => {
   loadState();
+  startExamTimer();
   renderSidebar();
   renderMainView();
 

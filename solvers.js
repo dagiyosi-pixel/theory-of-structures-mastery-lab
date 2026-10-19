@@ -3,6 +3,274 @@
 
 const StructureSolvers = {
   // =========================================================================
+  // 0. LIVE INTERACTIVE BEAM & DEFLECTION SIMULATOR (REAL-TIME ENGINE)
+  // =========================================================================
+  simulateBeam: function(params) {
+    const L = Math.max(1, parseFloat(params.L) || 6.0);
+    const hasPoint = params.hasPoint !== false;
+    const P = hasPoint ? Math.max(0, parseFloat(params.P) || 0) : 0;
+    const a = Math.min(L, Math.max(0, parseFloat(params.a) || L / 2));
+    const hasUDL = params.hasUDL !== false;
+    const w = hasUDL ? Math.max(0, parseFloat(params.w) || 0) : 0;
+
+    const showDeflection = params.showDeflection !== false;
+    const showSFD = params.showSFD !== false;
+    const showBMD = params.showBMD !== false;
+
+    const b = L - a;
+    const R_A_point = L > 0 ? (P * b) / L : 0;
+    const R_B_point = L > 0 ? (P * a) / L : 0;
+    const R_A_udl = (w * L) / 2;
+    const R_B_udl = (w * L) / 2;
+
+    const R_A = R_A_point + R_A_udl;
+    const R_B = R_B_point + R_B_udl;
+
+    // Zero shear point
+    let x_max = a;
+    if (w > 0) {
+      const x_z1 = R_A / w;
+      if (x_z1 <= a) {
+        x_max = x_z1;
+      } else {
+        const x_z2 = (R_A - P) / w;
+        if (x_z2 >= a) {
+          x_max = x_z2;
+        } else {
+          x_max = a;
+        }
+      }
+    } else {
+      x_max = a;
+    }
+    x_max = Math.max(0, Math.min(L, x_max));
+
+    function calcM(x) {
+      let m = R_A * x - (w * x * x) / 2;
+      if (x > a) m -= P * (x - a);
+      return Math.max(0, m);
+    }
+    const M_max = calcM(x_max);
+
+    // Deflection (1/EI units)
+    function calcV(x) {
+      let v_p = 0;
+      if (P > 0) {
+        if (x <= a) {
+          v_p = (P * b * x / (6 * L)) * (L * L - b * b - x * x);
+        } else {
+          v_p = (P * a * (L - x) / (6 * L)) * (L * L - a * a - (L - x) * (L - x));
+        }
+      }
+      let v_w = 0;
+      if (w > 0) {
+        v_w = (w * x / 24) * (Math.pow(L, 3) - 2 * L * x * x + Math.pow(x, 3));
+      }
+      return v_p + v_w;
+    }
+
+    let delta_max = 0;
+    let x_delta_max = L / 2;
+    const numSamples = 50;
+    const samples = [];
+    let maxV_val = 0;
+    let maxM_val = 0;
+
+    for (let i = 0; i <= numSamples; i++) {
+      const x = (i / numSamples) * L;
+      const def = calcV(x);
+      if (def > delta_max) {
+        delta_max = def;
+        x_delta_max = x;
+      }
+
+      let shear = R_A - w * x;
+      if (x > a) shear -= P;
+      if (Math.abs(shear) > maxV_val) maxV_val = Math.abs(shear);
+
+      const moment = calcM(x);
+      if (moment > maxM_val) maxM_val = moment;
+
+      samples.push({ x, def, shear, moment });
+    }
+
+    // Generate responsive high-contrast SVG diagram
+    const svgW = 680;
+    const svgH = (showSFD && showBMD) ? 380 : (showSFD || showBMD) ? 280 : 180;
+    const padX = 70;
+    const beamW = svgW - 2 * padX;
+    const beamY = 70;
+
+    function toScreenX(x) {
+      return padX + (x / L) * beamW;
+    }
+
+    let svg = `<svg class="eng-svg" viewBox="0 0 ${svgW} ${svgH}" width="100%" height="${svgH}" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <pattern id="beamHatch" width="6" height="6" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
+          <line x1="0" y1="0" x2="0" y2="6" stroke="#334155" stroke-width="1.2" />
+        </pattern>
+        <linearGradient id="sfdGradPos" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#22c55e" stop-opacity="0.35"/>
+          <stop offset="100%" stop-color="#22c55e" stop-opacity="0.05"/>
+        </linearGradient>
+        <linearGradient id="sfdGradNeg" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#ef4444" stop-opacity="0.05"/>
+          <stop offset="100%" stop-color="#ef4444" stop-opacity="0.35"/>
+        </linearGradient>
+        <linearGradient id="bmdGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.45"/>
+          <stop offset="100%" stop-color="#38bdf8" stop-opacity="0.05"/>
+        </linearGradient>
+      </defs>
+      <rect width="${svgW}" height="${svgH}" fill="#050a17" rx="10" stroke="#1e293b" stroke-width="1" />
+    `;
+
+    // 1. UDL Load Block
+    if (w > 0) {
+      svg += `
+        <rect x="${padX}" y="${beamY - 28}" width="${beamW}" height="28" fill="rgba(245, 158, 11, 0.15)" stroke="#f59e0b" stroke-width="1.2" stroke-dasharray="3,3" />
+        <text x="${padX + beamW / 2}" y="${beamY - 34}" fill="#f59e0b" font-size="11" font-weight="bold" font-family="sans-serif" text-anchor="middle">w = ${w.toFixed(1)} kN/m</text>
+      `;
+      for (let i = 0; i <= 8; i++) {
+        const arrowX = padX + (i / 8) * beamW;
+        svg += `
+          <line x1="${arrowX}" y1="${beamY - 26}" x2="${arrowX}" y2="${beamY - 3}" stroke="#f59e0b" stroke-width="1.5" />
+          <polygon points="${arrowX - 3},${beamY - 8} ${arrowX + 3},${beamY - 8} ${arrowX},${beamY - 2}" fill="#f59e0b" />
+        `;
+      }
+    }
+
+    // 2. Point Load Arrow
+    if (P > 0) {
+      const pX = toScreenX(a);
+      svg += `
+        <line x1="${pX}" y1="${beamY - 48}" x2="${pX}" y2="${beamY - 5}" stroke="#facc15" stroke-width="3" />
+        <polygon points="${pX - 5},${beamY - 14} ${pX + 5},${beamY - 14} ${pX},${beamY - 3}" fill="#facc15" />
+        <rect x="${pX - 32}" y="${beamY - 64}" width="64" height="18" rx="4" fill="#0b1329" stroke="#facc15" stroke-width="1" />
+        <text x="${pX}" y="${beamY - 51}" fill="#facc15" font-size="11" font-weight="bold" font-family="monospace" text-anchor="middle">P=${P.toFixed(1)}kN</text>
+      `;
+    }
+
+    // 3. Elastic Beam Member
+    svg += `<line x1="${padX}" y1="${beamY}" x2="${padX + beamW}" y2="${beamY}" stroke="#38bdf8" stroke-width="6" stroke-linecap="round" />`;
+
+    // 4. Deflected Elastic Curve
+    if (showDeflection && delta_max > 0) {
+      const maxDefPix = 24;
+      const defPath = samples.map((s, idx) => {
+        const sx = toScreenX(s.x);
+        const sy = beamY + (s.def / delta_max) * maxDefPix;
+        return (idx === 0 ? 'M ' : 'L ') + sx.toFixed(1) + ' ' + sy.toFixed(1);
+      }).join(' ');
+
+      svg += `
+        <path d="${defPath}" fill="none" stroke="#06b6d4" stroke-width="2" stroke-dasharray="4,3" opacity="0.9" />
+        <circle cx="${toScreenX(x_delta_max)}" cy="${beamY + maxDefPix}" r="3.5" fill="#f43f5e" />
+        <text x="${toScreenX(x_delta_max)}" y="${beamY + maxDefPix + 14}" fill="#06b6d4" font-size="10" font-family="monospace" text-anchor="middle">δ_max</text>
+      `;
+    }
+
+    // 5. Supports (Pin at left, Roller at right)
+    // Left Pin
+    svg += `
+      <polygon points="${padX},${beamY} ${padX - 12},${beamY + 18} ${padX + 12},${beamY + 18}" fill="#1e293b" stroke="#38bdf8" stroke-width="2" />
+      <line x1="${padX - 16}" y1="${beamY + 18}" x2="${padX + 16}" y2="${beamY + 18}" stroke="#94a3b8" stroke-width="2" />
+      <rect x="${padX - 16}" y="${beamY + 18}" width="32" height="5" fill="url(#beamHatch)" />
+      <text x="${padX}" y="${beamY + 34}" fill="#22c55e" font-size="11" font-weight="bold" font-family="monospace" text-anchor="middle">R_A=${R_A.toFixed(1)}kN</text>
+    `;
+
+    // Right Roller
+    const rX = padX + beamW;
+    svg += `
+      <polygon points="${rX},${beamY} ${rX - 10},${beamY + 14} ${rX + 10},${beamY + 14}" fill="#1e293b" stroke="#38bdf8" stroke-width="2" />
+      <circle cx="${rX - 6}" cy="${beamY + 17}" r="3" fill="#94a3b8" />
+      <circle cx="${rX + 6}" cy="${beamY + 17}" r="3" fill="#94a3b8" />
+      <line x1="${rX - 16}" y1="${beamY + 20}" x2="${rX + 16}" y2="${beamY + 20}" stroke="#94a3b8" stroke-width="2" />
+      <rect x="${rX - 16}" y="${beamY + 20}" width="32" height="5" fill="url(#beamHatch)" />
+      <text x="${rX}" y="${beamY + 34}" fill="#22c55e" font-size="11" font-weight="bold" font-family="monospace" text-anchor="middle">R_B=${R_B.toFixed(1)}kN</text>
+    `;
+
+    // Dimension Bar
+    svg += `
+      <line x1="${padX}" y1="${beamY - 4}" x2="${padX}" y2="${beamY - 14}" stroke="#64748b" stroke-width="1" />
+      <line x1="${padX + beamW}" y1="${beamY - 4}" x2="${padX + beamW}" y2="${beamY - 14}" stroke="#64748b" stroke-width="1" />
+      <line x1="${padX}" y1="${beamY - 10}" x2="${padX + beamW}" y2="${beamY - 10}" stroke="#64748b" stroke-width="1" stroke-dasharray="2,2" />
+      <text x="${padX + beamW / 2}" y="${beamY - 14}" fill="#94a3b8" font-size="10" font-family="monospace" text-anchor="middle">Span L = ${L.toFixed(1)} m</text>
+    `;
+
+    let currentY = beamY + 50;
+
+    // 6. Shear Force Diagram (SFD)
+    if (showSFD) {
+      const sfdBaseY = currentY + 45;
+      const sfdMaxH = 35;
+      const vScale = maxV_val > 0 ? sfdMaxH / maxV_val : 1;
+
+      svg += `
+        <line x1="${padX}" y1="${sfdBaseY}" x2="${padX + beamW}" y2="${sfdBaseY}" stroke="#475569" stroke-width="1" />
+        <text x="${padX - 8}" y="${sfdBaseY + 4}" fill="#f59e0b" font-size="11" font-weight="bold" font-family="sans-serif" text-anchor="end">SFD (V)</text>
+      `;
+
+      // Build SFD path
+      let sfdPath = `M ${padX} ${sfdBaseY} `;
+      // Start at +R_A
+      sfdPath += `L ${padX} ${(sfdBaseY - R_A * vScale).toFixed(1)} `;
+      // Slope down to a
+      const vLeftA = R_A - w * a;
+      sfdPath += `L ${toScreenX(a).toFixed(1)} ${(sfdBaseY - vLeftA * vScale).toFixed(1)} `;
+      // Step drop of P at a
+      const vRightA = vLeftA - P;
+      sfdPath += `L ${toScreenX(a).toFixed(1)} ${(sfdBaseY - vRightA * vScale).toFixed(1)} `;
+      // Slope down to L (-R_B)
+      sfdPath += `L ${(padX + beamW).toFixed(1)} ${(sfdBaseY + R_B * vScale).toFixed(1)} `;
+      sfdPath += `L ${(padX + beamW).toFixed(1)} ${sfdBaseY} Z`;
+
+      svg += `
+        <path d="${sfdPath}" fill="url(#sfdGradPos)" stroke="#f59e0b" stroke-width="1.8" />
+        <circle cx="${toScreenX(x_max)}" cy="${sfdBaseY}" r="3" fill="#22c55e" />
+        <text x="${toScreenX(x_max)}" y="${sfdBaseY - 6}" fill="#22c55e" font-size="9" font-family="monospace" text-anchor="middle">V=0</text>
+      `;
+
+      currentY += 95;
+    }
+
+    // 7. Bending Moment Diagram (BMD)
+    if (showBMD) {
+      const bmdBaseY = currentY + 15;
+      const bmdMaxH = 45;
+      const mScale = maxM_val > 0 ? bmdMaxH / maxM_val : 1;
+
+      svg += `
+        <line x1="${padX}" y1="${bmdBaseY}" x2="${padX + beamW}" y2="${bmdBaseY}" stroke="#475569" stroke-width="1" />
+        <text x="${padX - 8}" y="${bmdBaseY + 4}" fill="#38bdf8" font-size="11" font-weight="bold" font-family="sans-serif" text-anchor="end">BMD (M)</text>
+      `;
+
+      let bmdPath = `M ${padX} ${bmdBaseY} `;
+      samples.forEach(s => {
+        const sx = toScreenX(s.x);
+        // Sagging positive plotted downwards or upwards (standard structural display: sagging plotted on tension side)
+        const sy = bmdBaseY + s.moment * mScale;
+        bmdPath += `L ${sx.toFixed(1)} ${sy.toFixed(1)} `;
+      });
+      bmdPath += `L ${padX + beamW} ${bmdBaseY} Z`;
+
+      svg += `
+        <path d="${bmdPath}" fill="url(#bmdGrad)" stroke="#38bdf8" stroke-width="2" />
+        <circle cx="${toScreenX(x_max)}" cy="${(bmdBaseY + M_max * mScale).toFixed(1)}" r="4" fill="#38bdf8" />
+        <rect x="${toScreenX(x_max) - 45}" y="${(bmdBaseY + M_max * mScale + 6).toFixed(1)}" width="90" height="18" rx="4" fill="#0b1329" stroke="#38bdf8" stroke-width="1" />
+        <text x="${toScreenX(x_max)}" y="${(bmdBaseY + M_max * mScale + 19).toFixed(1)}" fill="#38bdf8" font-size="10" font-weight="bold" font-family="monospace" text-anchor="middle">M_max = ${M_max.toFixed(1)} kN·m</text>
+      `;
+    }
+
+    svg += `</svg>`;
+
+    return {
+      L, P, a, w, R_A, R_B, M_max, x_max, delta_max, x_delta_max, svg
+    };
+  },
+
+  // =========================================================================
   // 1. DETERMINACY & STABILITY ENGINE
   // =========================================================================
   analyzeDeterminacy: function(type, inputs) {
