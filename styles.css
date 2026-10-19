@@ -1298,3 +1298,264 @@ html, body {
     scroll-behavior: auto !important;
   }
 }
+
+/* =========================================================================
+   PRODUCTIVITY SUITE: SEARCH MODAL, SCRATCHPAD, FOCUS TIMER & PRINT
+   ========================================================================= */
+
+/* Spotlight Search Modal */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(3, 7, 18, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 2000;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 60px 16px 20px;
+  animation: modalFadeIn 0.15s ease-out;
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; transform: scale(0.98); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.search-modal-box {
+  background: #090e1d;
+  border: 1px solid var(--border-light);
+  border-radius: 14px;
+  width: 100%;
+  max-width: 640px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), 0 0 25px rgba(56, 189, 248, 0.2);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.search-modal-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(15, 23, 42, 0.8);
+}
+
+.search-modal-header input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 1.05rem;
+  outline: none;
+  font-weight: 500;
+}
+
+.search-results-list {
+  max-height: 400px;
+  overflow-y: auto;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.search-result-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.5);
+  border: 1px solid transparent;
+  color: #e2e8f0;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.search-result-item:hover, .search-result-item.selected {
+  background: rgba(56, 189, 248, 0.15);
+  border-color: var(--accent);
+  color: #fff;
+  transform: translateX(3px);
+}
+
+.search-result-tag {
+  font-size: 0.72rem;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: rgba(15, 23, 42, 0.9);
+  color: var(--accent);
+  border: 1px solid var(--border);
+}
+
+/* Floating Engineering Scratchpad Drawer */
+.scratchpad-drawer {
+  position: fixed;
+  bottom: 74px;
+  right: 18px;
+  width: 360px;
+  height: 480px;
+  max-width: calc(100vw - 36px);
+  max-height: calc(100vh - 120px);
+  background: #090e1d;
+  border: 1px solid var(--border-light);
+  border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(56, 189, 248, 0.15);
+  z-index: 1500;
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+  animation: slideDrawer 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideDrawer {
+  from { opacity: 0; transform: translateY(20px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.scratchpad-header {
+  padding: 12px 14px;
+  background: rgba(15, 23, 42, 0.9);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.scratchpad-calc-bar {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  background: rgba(3, 7, 18, 0.7);
+  border-bottom: 1px solid var(--border);
+  gap: 8px;
+}
+
+.scratchpad-calc-bar input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: #38bdf8;
+  font-family: var(--font-mono);
+  font-size: 0.88rem;
+  outline: none;
+}
+
+.scratchpad-calc-res {
+  font-family: var(--font-mono);
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--success);
+}
+
+.scratchpad-textarea {
+  flex: 1;
+  background: transparent;
+  border: none;
+  padding: 12px 14px;
+  color: #f1f5f9;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  line-height: 1.5;
+  resize: none;
+  outline: none;
+}
+
+/* Floating Focus Timer Sprint Widget */
+.focus-sprint-widget {
+  position: fixed;
+  bottom: 74px;
+  left: 18px;
+  background: rgba(9, 14, 29, 0.95);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  padding: 8px 16px;
+  display: none;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5), 0 0 15px var(--accent-glow);
+  z-index: 1500;
+  animation: slideDrawer 0.2s ease-out;
+}
+
+.focus-time-display {
+  font-family: var(--font-mono);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #fff;
+  min-width: 52px;
+}
+
+/* Formula Interactive Quick Calculator */
+.formula-calc-panel {
+  background: rgba(3, 7, 18, 0.75);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin-top: 10px;
+  display: none;
+}
+
+.formula-calc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.formula-calc-input {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.formula-calc-input label {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
+.formula-calc-input input {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 8px;
+  color: #fff;
+  font-size: 0.85rem;
+  font-family: var(--font-mono);
+  outline: none;
+}
+
+/* Print-Friendly Stylesheet */
+@media print {
+  body {
+    background: #fff !important;
+    color: #000 !important;
+  }
+  .hud-header, .sidebar, .bottom-mobile-nav, .mode-tabs-bar, .hud-btn, .btn-primary, .focus-sprint-widget, .scratchpad-drawer, .modal-overlay {
+    display: none !important;
+  }
+  .main-content, .card {
+    box-shadow: none !important;
+    border: none !important;
+    background: #fff !important;
+    color: #000 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  .formula-banner, .concept-callout, .step-box {
+    background: #f8fafc !important;
+    border: 1px solid #ccc !important;
+    color: #000 !important;
+    box-shadow: none !important;
+  }
+  .katex {
+    color: #000 !important;
+  }
+}

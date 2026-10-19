@@ -721,6 +721,91 @@ function checkArenaAnswer(modId, qIdx, optIdx) {
 // =========================================================================
 // 2. FORMULA ATLAS & ACTIVE RECALL ENGINE
 // =========================================================================
+
+// Interactive Plug & Chug Quick Calculators for Governing Formulas
+function getFormulaCalcHTML(fId) {
+  if (fId === 'f-0-3') {
+    return `
+      <div id="calc_panel_${fId}" class="formula-calc-panel">
+        <h4 style="color:var(--accent); font-size:0.82rem; margin-bottom:8px;">🔢 Interactive Plug & Chug Calculator (ΔL = NL / EA)</h4>
+        <div class="formula-calc-grid">
+          <div class="formula-calc-input"><label>N (Axial Force, kN)</label><input type="number" id="input_f03_N" value="120" /></div>
+          <div class="formula-calc-input"><label>L (Length, m)</label><input type="number" id="input_f03_L" value="4.5" /></div>
+          <div class="formula-calc-input"><label>E (Modulus, kN/m²)</label><input type="number" id="input_f03_E" value="200000000" /></div>
+          <div class="formula-calc-input"><label>A (Area, m²)</label><input type="number" id="input_f03_A" value="0.003" step="0.0005" /></div>
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+          <button class="primary-btn" style="padding:6px 14px; font-size:0.8rem;" onclick="calculateFormulaVal('${fId}')">⚡ Compute Elongation ΔL</button>
+          <span id="calc_res_${fId}" style="font-family:var(--font-mono); font-size:0.85rem; color:var(--accent);">Result: ΔL = <strong>0.900 mm</strong></span>
+        </div>
+      </div>
+    `;
+  } else if (fId === 'f-0-6') {
+    return `
+      <div id="calc_panel_${fId}" class="formula-calc-panel">
+        <h4 style="color:var(--accent); font-size:0.82rem; margin-bottom:8px;">🔢 Interactive Plug & Chug Calculator (σ = My / I)</h4>
+        <div class="formula-calc-grid">
+          <div class="formula-calc-input"><label>M (Bending Moment, kN·m)</label><input type="number" id="input_f06_M" value="85" /></div>
+          <div class="formula-calc-input"><label>y (Distance to fiber, m)</label><input type="number" id="input_f06_y" value="0.25" step="0.01" /></div>
+          <div class="formula-calc-input"><label>I (Moment of Inertia, m⁴)</label><input type="number" id="input_f06_I" value="0.0016" step="0.0001" /></div>
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+          <button class="primary-btn" style="padding:6px 14px; font-size:0.8rem;" onclick="calculateFormulaVal('${fId}')">⚡ Compute Bending Stress σ</button>
+          <span id="calc_res_${fId}" style="font-family:var(--font-mono); font-size:0.85rem; color:var(--accent);">Result: σ = <strong>13281.25 kN/m²</strong></span>
+        </div>
+      </div>
+    `;
+  } else if (fId === 'f-1-2') {
+    return `
+      <div id="calc_panel_${fId}" class="formula-calc-panel">
+        <h4 style="color:var(--accent); font-size:0.82rem; margin-bottom:8px;">🔢 Interactive Plug & Chug Calculator (D = (m + r) - 2j)</h4>
+        <div class="formula-calc-grid">
+          <div class="formula-calc-input"><label>m (Truss Members)</label><input type="number" id="input_f12_m" value="13" /></div>
+          <div class="formula-calc-input"><label>r (Support Reactions)</label><input type="number" id="input_f12_r" value="3" /></div>
+          <div class="formula-calc-input"><label>j (Joints)</label><input type="number" id="input_f12_j" value="8" /></div>
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+          <button class="primary-btn" style="padding:6px 14px; font-size:0.8rem;" onclick="calculateFormulaVal('${fId}')">⚡ Evaluate Determinacy D</button>
+          <span id="calc_res_${fId}" style="font-family:var(--font-mono); font-size:0.85rem; color:var(--accent);">Result: D = <strong>0 (Determinate)</strong></span>
+        </div>
+      </div>
+    `;
+  } else if (fId === 'f-5-2') {
+    return `
+      <div id="calc_panel_${fId}" class="formula-calc-panel">
+        <h4 style="color:var(--accent); font-size:0.82rem; margin-bottom:8px;">🔢 Interactive Plug & Chug Calculator (6Ax/L = wL³ / 4)</h4>
+        <div class="formula-calc-grid">
+          <div class="formula-calc-input"><label>w (Uniform Load, kN/m)</label><input type="number" id="input_f52_w" value="18" /></div>
+          <div class="formula-calc-input"><label>L (Span Length, m)</label><input type="number" id="input_f52_L" value="6" /></div>
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+          <button class="primary-btn" style="padding:6px 14px; font-size:0.8rem;" onclick="calculateFormulaVal('${fId}')">⚡ Compute Load Term (wL³/4)</button>
+          <span id="calc_res_${fId}" style="font-family:var(--font-mono); font-size:0.85rem; color:var(--accent);">Result: 6Ax/L = <strong>972.00 kN·m²</strong></span>
+        </div>
+      </div>
+    `;
+  } else if (fId === 'f-6-1') {
+    return `
+      <div id="calc_panel_${fId}" class="formula-calc-panel">
+        <h4 style="color:var(--accent); font-size:0.82rem; margin-bottom:8px;">🔢 Interactive Plug & Chug Calculator (M_AB = M_F - 2EK(2θ_A + θ_B - 3Δ/L))</h4>
+        <div class="formula-calc-grid">
+          <div class="formula-calc-input"><label>M_F (Fixed-End Moment, kN·m)</label><input type="number" id="input_f61_MF" value="30" /></div>
+          <div class="formula-calc-input"><label>EK (Stiffness = EI/L)</label><input type="number" id="input_f61_EK" value="2500" /></div>
+          <div class="formula-calc-input"><label>θ_A (Near Rotation, rad)</label><input type="number" id="input_f61_tA" value="0.002" step="0.0005" /></div>
+          <div class="formula-calc-input"><label>θ_B (Far Rotation, rad)</label><input type="number" id="input_f61_tB" value="-0.001" step="0.0005" /></div>
+          <div class="formula-calc-input"><label>Δ/L (Chord Rotation)</label><input type="number" id="input_f61_dL" value="0" step="0.001" /></div>
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+          <button class="primary-btn" style="padding:6px 14px; font-size:0.8rem;" onclick="calculateFormulaVal('${fId}')">⚡ Compute Member End Moment M_AB</button>
+          <span id="calc_res_${fId}" style="font-family:var(--font-mono); font-size:0.85rem; color:var(--accent);">Result: M_AB = <strong>15.00 kN·m</strong></span>
+        </div>
+      </div>
+    `;
+  }
+  return '';
+}
+
+
 function renderFormulaAtlasView(viewport) {
   let filtered = FORMULA_ATLAS;
 
@@ -741,17 +826,20 @@ function renderFormulaAtlasView(viewport) {
   viewport.innerHTML = `
     <div class="card">
       <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
-        <h2>📜 Formula Vault & Active Recall Engine</h2>
-        <div style="display:flex; gap:8px;">
+        <div>
+          <h2>📜 Formula Vault & Active Recall Engine</h2>
+          <p style="color:var(--text-muted); margin: 4px 0 0; font-size:0.88rem;">28 verified governing structural formulas across all 8 modules (COTM 3101 AAU notes).</p>
+        </div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <button class="hud-btn" onclick="printStudyGuide()" title="Print Full Study Guide / Export Clean PDF">🖨️ Print Exam Guide</button>
           <button class="hud-btn ${atlasMode === 'browse' ? 'active' : ''}" onclick="setAtlasMode('browse')">🔍 Browse All (${filtered.length})</button>
           <button class="hud-btn ${atlasMode === 'flashcards' ? 'active' : ''}" onclick="setAtlasMode('flashcards')">🃏 Spaced Flashcards</button>
         </div>
       </div>
-      <p style="color:var(--text-muted); margin: 6px 0 16px; font-size:0.9rem;">28 verified governing structural formulas across all 8 modules (COTM 3101 Addis Ababa University notes).</p>
 
       ${atlasMode === 'browse' ? `
         <!-- Filter and Search Controls -->
-        <div style="display:flex; gap:10px; margin-bottom:18px; flex-wrap:wrap;">
+        <div style="display:flex; gap:10px; margin: 18px 0; flex-wrap:wrap;">
           <input type="text" id="atlasSearchInput" placeholder="🔍 Search formulas (e.g. Clapeyron, Slope-Deflection, Vereshchagin, Hooke)..." value="${atlasSearch}" oninput="searchAtlas(this.value)" style="flex:1; min-width:240px; padding:10px 14px; background:var(--bg-input); border:1px solid var(--border); border-radius:8px; color:#fff; font-size:0.92rem;" />
           <select onchange="filterAtlas(this.value)" style="padding:10px 14px; background:var(--bg-input); border:1px solid var(--border); border-radius:8px; color:#fff; font-size:0.92rem;">
             <option value="all" ${atlasFilter === 'all' ? 'selected' : ''}>All Chapters (28 Formulas)</option>
@@ -767,7 +855,7 @@ function renderFormulaAtlasView(viewport) {
         </div>
 
         <div style="display:flex; flex-direction:column; gap:16px;">
-          ${filtered.length === 0 ? '<p style="color:var(--text-muted);">No formulas match your search query.</p>' : ''}
+          ${filtered.length === 0 ? '<p style="color:var(--text-muted); padding:20px; text-align:center;">No formulas match your search query.</p>' : ''}
           ${filtered.map(f => `
             <div class="step-box" style="border-left:4px solid var(--accent);">
               <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
@@ -777,10 +865,17 @@ function renderFormulaAtlasView(viewport) {
               <div class="formula-banner math-display-card">
                 <div class="math-card-header">
                   <span class="math-badge">FORMULA ATLAS</span>
-                  <button class="copy-latex-btn" onclick="copyFormulaLatex('${encodeURIComponent(f.formula)}', this)">📋 Copy LaTeX</button>
+                  <div style="display:flex; gap:6px; align-items:center;">
+                    ${['f-0-3', 'f-0-6', 'f-1-2', 'f-5-2', 'f-6-1'].includes(f.id) ? `
+                      <button class="hud-btn" style="padding:2px 8px; font-size:0.75rem;" onclick="toggleFormulaCalculator('${f.id}')">🔢 Quick Calc</button>
+                    ` : ''}
+                    <button class="copy-latex-btn" onclick="copyFormulaLatex('${encodeURIComponent(f.formula)}', this)">📋 Copy LaTeX</button>
+                  </div>
                 </div>
                 <div class="math-card-body">${formatFormula(f.formula)}</div>
               </div>
+
+              ${getFormulaCalcHTML(f.id)}
               
               <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:12px; margin-top:8px;">
                 <div>
@@ -1572,6 +1667,326 @@ function exportStandaloneHTML() {
 }
 
 // =========================================================================
+
+// =========================================================================
+// PRODUCTIVITY SUITE: SPOTLIGHT SEARCH, SCRATCHPAD, FOCUS SPRINT & PRINT
+// =========================================================================
+
+// Focus Sprint State
+let focusSeconds = 1500; // 25 minutes
+let focusRunning = false;
+let focusInterval = null;
+let focusMode = 'focus'; // 'focus' or 'break'
+
+function toggleFocusSprint() {
+  const widget = document.getElementById('focusWidget');
+  if (!widget) return;
+  const isHidden = widget.style.display === 'none' || !widget.style.display;
+  widget.style.display = isHidden ? 'flex' : 'none';
+}
+
+function toggleFocusModeType() {
+  if (focusRunning) toggleFocusTimer();
+  focusMode = focusMode === 'focus' ? 'break' : 'focus';
+  focusSeconds = focusMode === 'focus' ? 1500 : 300;
+  updateFocusDisplay();
+}
+
+function toggleFocusTimer() {
+  const playBtn = document.getElementById('focusPlayBtn');
+  if (focusRunning) {
+    clearInterval(focusInterval);
+    focusRunning = false;
+    if (playBtn) playBtn.innerText = '▶';
+  } else {
+    focusRunning = true;
+    if (playBtn) playBtn.innerText = '⏸';
+    focusInterval = setInterval(() => {
+      if (focusSeconds > 0) {
+        focusSeconds--;
+        updateFocusDisplay();
+      } else {
+        clearInterval(focusInterval);
+        focusRunning = false;
+        if (playBtn) playBtn.innerText = '▶';
+
+        if (focusMode === 'focus') {
+          userState.xp += 100;
+          userState.streak += 1;
+          saveState();
+          alert("🎉 Engineering Focus Sprint Complete! (+100 XP awarded). Take a 5-minute breather!");
+          focusMode = 'break';
+          focusSeconds = 300;
+        } else {
+          alert("⚡ Break concluded! Ready to jump into the next structural problem?");
+          focusMode = 'focus';
+          focusSeconds = 1500;
+        }
+        updateFocusDisplay();
+      }
+    }, 1000);
+  }
+}
+
+function resetFocusTimer() {
+  if (focusRunning) toggleFocusTimer();
+  focusSeconds = focusMode === 'focus' ? 1500 : 300;
+  updateFocusDisplay();
+}
+
+function updateFocusDisplay() {
+  const timeEl = document.getElementById('focusTimeDisplay');
+  const badgeEl = document.getElementById('focusModeBadge');
+  if (!timeEl) return;
+  const min = Math.floor(focusSeconds / 60);
+  const sec = focusSeconds % 60;
+  timeEl.innerText = `${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
+  if (badgeEl) {
+    badgeEl.innerText = focusMode === 'focus' ? '⚡ 25m Focus' : '☕ 5m Break';
+    badgeEl.style.color = focusMode === 'focus' ? 'var(--accent)' : 'var(--gold)';
+  }
+}
+
+// Global Spotlight Search (Ctrl+K)
+function toggleSpotlightSearch() {
+  const modal = document.getElementById('searchModal');
+  const input = document.getElementById('globalSearchInput');
+  if (!modal) return;
+  const isHidden = modal.style.display === 'none' || !modal.style.display;
+  modal.style.display = isHidden ? 'flex' : 'none';
+  if (isHidden && input) {
+    input.value = '';
+    handleGlobalSearch('');
+    setTimeout(() => input.focus(), 50);
+  }
+}
+
+function handleSearchOverlayClick(e) {
+  if (e.target.id === 'searchModal') {
+    toggleSpotlightSearch();
+  }
+}
+
+function handleSearchKeydown(e) {
+  if (e.key === 'Escape') {
+    toggleSpotlightSearch();
+  }
+}
+
+function handleGlobalSearch(query) {
+  const list = document.getElementById('searchResultsList');
+  if (!list) return;
+
+  const q = query.trim().toLowerCase();
+  const results = [];
+
+  // Search Modules
+  COURSE_MODULES.forEach((m, idx) => {
+    if (!q || m.shortTitle.toLowerCase().includes(q) || m.fullTitle.toLowerCase().includes(q)) {
+      results.push({
+        type: 'Chapter',
+        title: m.shortTitle,
+        desc: m.prerequisites,
+        action: `selectModule(${idx}); toggleSpotlightSearch();`
+      });
+    }
+  });
+
+  // Search Formulas
+  FORMULA_ATLAS.forEach((f) => {
+    if (!q || f.name.toLowerCase().includes(q) || f.formula.toLowerCase().includes(q) || f.moduleTitle.toLowerCase().includes(q)) {
+      results.push({
+        type: 'Formula',
+        title: f.name,
+        desc: f.formula,
+        action: `switchAppView('atlas'); searchAtlas('${f.name}'); toggleSpotlightSearch();`
+      });
+    }
+  });
+
+  // Search Solvers
+  const solversList = [
+    { name: 'Live Beam Playground', key: 'beam' },
+    { name: 'Stability & Determinacy', key: 'determinacy' },
+    { name: '2-Span Clapeyron Solver', key: 'threemoment' },
+    { name: 'Hardy Cross Engine', key: 'hardycross' },
+    { name: 'Conjugate Beam Transform', key: 'conjugate' }
+  ];
+  solversList.forEach(s => {
+    if (!q || s.name.toLowerCase().includes(q)) {
+      results.push({
+        type: 'Solver',
+        title: s.name,
+        desc: 'Real-time structural engineering sandbox',
+        action: `openSandbox('${s.key}'); toggleSpotlightSearch();`
+      });
+    }
+  });
+
+  list.innerHTML = results.slice(0, 10).map((r, i) => `
+    <div class="search-result-item" onclick="${r.action}">
+      <div>
+        <strong style="color:#fff; font-size:0.92rem;">${r.title}</strong>
+        <p style="color:var(--text-muted); font-size:0.78rem; font-family:var(--font-mono); margin-top:2px;">${r.desc}</p>
+      </div>
+      <span class="search-result-tag">${r.type}</span>
+    </div>
+  `).join('') || '<p style="color:var(--text-muted); text-align:center; padding:16px;">No structural topics found.</p>';
+}
+
+// Persistent Engineering Scratchpad
+function toggleScratchpad() {
+  const drawer = document.getElementById('scratchpadDrawer');
+  if (!drawer) return;
+  const isHidden = drawer.style.display === 'none' || !drawer.style.display;
+  drawer.style.display = isHidden ? 'flex' : 'none';
+  if (isHidden) {
+    loadScratchpad();
+  }
+}
+
+function loadScratchpad() {
+  const textEl = document.getElementById('scratchpadText');
+  if (textEl) {
+    textEl.value = localStorage.getItem('structures_scratchpad') || '';
+  }
+}
+
+function saveScratchpad() {
+  const textEl = document.getElementById('scratchpadText');
+  if (textEl) {
+    localStorage.setItem('structures_scratchpad', textEl.value);
+  }
+}
+
+function clearScratchpadText() {
+  if (confirm('Clear scratchpad notes?')) {
+    const textEl = document.getElementById('scratchpadText');
+    if (textEl) {
+      textEl.value = '';
+      saveScratchpad();
+    }
+  }
+}
+
+function copyScratchpadText() {
+  const textEl = document.getElementById('scratchpadText');
+  if (textEl && navigator.clipboard) {
+    navigator.clipboard.writeText(textEl.value).then(() => alert('Notes copied to clipboard! ✓'));
+  }
+}
+
+function evalScratchpadCalc(expr) {
+  const resEl = document.getElementById('scratchCalcResult');
+  if (!resEl) return;
+  const clean = expr.replace(/[^0-9+\-*/().^% ]/g, '');
+  if (!clean.trim()) {
+    resEl.innerText = '= 0.00';
+    return;
+  }
+  try {
+    const evaluated = Function('"use strict"; return (' + clean + ')')();
+    if (typeof evaluated === 'number' && !isNaN(evaluated)) {
+      resEl.innerText = '= ' + evaluated.toFixed(2);
+      resEl.style.color = 'var(--success)';
+    }
+  } catch (e) {
+    resEl.innerText = '= ...';
+    resEl.style.color = 'var(--text-dim)';
+  }
+}
+
+// Formula Interactive Quick Calculators
+function toggleFormulaCalculator(formId) {
+  const panel = document.getElementById('calc_panel_' + formId);
+  if (panel) {
+    panel.style.display = panel.style.display === 'none' || !panel.style.display ? 'block' : 'none';
+  }
+}
+
+function calculateFormulaVal(formId) {
+  const outEl = document.getElementById('calc_res_' + formId);
+  if (!outEl) return;
+
+  if (formId === 'f-0-3') {
+    // Hooke: NL / EA
+    const N = parseFloat(document.getElementById('input_f03_N').value) || 0;
+    const L = parseFloat(document.getElementById('input_f03_L').value) || 0;
+    const E = parseFloat(document.getElementById('input_f03_E').value) || 1;
+    const A = parseFloat(document.getElementById('input_f03_A').value) || 1;
+    const delta = (N * L) / (E * A);
+    outEl.innerHTML = 'Result: ΔL = <strong>' + (delta * 1000).toFixed(3) + ' mm</strong> (' + delta.toExponential(3) + ' m)';
+  } else if (formId === 'f-0-6') {
+    // Flexure: My / I
+    const M = parseFloat(document.getElementById('input_f06_M').value) || 0;
+    const y = parseFloat(document.getElementById('input_f06_y').value) || 0;
+    const I = parseFloat(document.getElementById('input_f06_I').value) || 1;
+    const sigma = (M * y) / I;
+    outEl.innerHTML = 'Result: σ = <strong>' + sigma.toFixed(2) + ' kN/m² (kPa)</strong>';
+  } else if (formId === 'f-1-2') {
+    // Truss: (m + r) - 2j
+    const m = parseInt(document.getElementById('input_f12_m').value) || 0;
+    const r = parseInt(document.getElementById('input_f12_r').value) || 0;
+    const j = parseInt(document.getElementById('input_f12_j').value) || 0;
+    const D = (m + r) - 2 * j;
+    outEl.innerHTML = 'Result: D = <strong>' + D + '</strong> ' + (D === 0 ? '(Determinate)' : D > 0 ? '(Indeterminate to degree ' + D + ')' : '(Unstable Mechanism)');
+  } else if (formId === 'f-5-2') {
+    // 6Ax/L UDL: wL^3 / 4
+    const w = parseFloat(document.getElementById('input_f52_w').value) || 0;
+    const L = parseFloat(document.getElementById('input_f52_L').value) || 0;
+    const term = (w * Math.pow(L, 3)) / 4;
+    outEl.innerHTML = 'Result: 6Ax/L = <strong>' + term.toFixed(2) + ' kN·m²</strong>';
+  } else if (formId === 'f-6-1') {
+    // Slope-Deflection: M_AB = M_F - 2EK(2 theta_A + theta_B - 3 delta / L)
+    const MF = parseFloat(document.getElementById('input_f61_MF').value) || 0;
+    const EK = parseFloat(document.getElementById('input_f61_EK').value) || 1;
+    const tA = parseFloat(document.getElementById('input_f61_tA').value) || 0;
+    const tB = parseFloat(document.getElementById('input_f61_tB').value) || 0;
+    const dL = parseFloat(document.getElementById('input_f61_dL').value) || 0;
+    const M = MF - 2 * EK * (2 * tA + tB - 3 * dL);
+    outEl.innerHTML = 'Result: M_AB = <strong>' + M.toFixed(2) + ' kN·m</strong>';
+  }
+}
+
+// Print Exam Study Guide
+function printStudyGuide() {
+  window.print();
+}
+
+// Global Keyboard Shortcuts
+window.addEventListener('keydown', (e) => {
+  // Ignore inside inputs
+  if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) {
+    if (e.key === 'Escape') {
+      const modal = document.getElementById('searchModal');
+      if (modal && modal.style.display === 'flex') toggleSpotlightSearch();
+    }
+    return;
+  }
+
+  if ((e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'K')) {
+    e.preventDefault();
+    toggleSpotlightSearch();
+  } else if (e.key === '/') {
+    e.preventDefault();
+    toggleSpotlightSearch();
+  } else if (e.altKey && (e.key === 's' || e.key === 'S')) {
+    e.preventDefault();
+    toggleScratchpad();
+  } else if (e.altKey && (e.key === 'f' || e.key === 'F')) {
+    e.preventDefault();
+    toggleFocusSprint();
+  } else if (e.key >= '1' && e.key <= '5' && currentAppView === 'module') {
+    const tabs = ['theory', 'guided', 'shortcuts', 'arena', 'cheatsheet'];
+    switchModuleTab(tabs[parseInt(e.key) - 1]);
+  } else if (e.key === 'Escape') {
+    const modal = document.getElementById('searchModal');
+    if (modal && modal.style.display === 'flex') toggleSpotlightSearch();
+    const drawer = document.getElementById('scratchpadDrawer');
+    if (drawer && drawer.style.display === 'flex') toggleScratchpad();
+  }
+});
+
 // APP INITIALIZATION
 // =========================================================================
 window.addEventListener('DOMContentLoaded', () => {

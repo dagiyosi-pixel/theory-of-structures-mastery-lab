@@ -35,6 +35,9 @@
     </nav>
 
     <div class="hud-stats">
+      <button class="hud-btn" onclick="toggleSpotlightSearch()" title="Global Quick Search (Ctrl+K)">🔍 <span class="hide-mobile">Search</span></button>
+      <button class="hud-btn" onclick="toggleFocusSprint()" title="Pomodoro Focus Sprint Timer">⏱️ <span class="hide-mobile">Focus</span></button>
+      <button class="hud-btn" onclick="toggleScratchpad()" title="Engineering Scratchpad & Calc">📝 <span class="hide-mobile">Notes</span></button>
       <div class="stat-pill pill-rank" id="rankBadge">🎖️ Apprentice</div>
       <div class="stat-pill pill-xp" id="xpBadge">⚡ 0 XP</div>
       <div class="stat-pill pill-streak" id="streakBadge">🔥 Streak: 0</div>
@@ -139,6 +142,47 @@
       <span>Exam</span>
     </button>
   </nav>
+
+  <!-- GLOBAL SPOTLIGHT SEARCH MODAL -->
+  <div id="searchModal" class="modal-overlay" onclick="handleSearchOverlayClick(event)">
+    <div class="search-modal-box">
+      <div class="search-modal-header">
+        <span style="color:var(--accent); font-size:1.15rem;">🔍</span>
+        <input type="text" id="globalSearchInput" placeholder="Quick find formulas, chapters, methods, solvers... (Esc to close)" oninput="handleGlobalSearch(this.value)" onkeydown="handleSearchKeydown(event)" />
+        <span style="font-size:0.75rem; color:var(--text-dim); background:#1e293b; padding:2px 6px; border-radius:4px;">ESC</span>
+      </div>
+      <div id="searchResultsList" class="search-results-list"></div>
+    </div>
+  </div>
+
+  <!-- FLOATING ENGINEERING SCRATCHPAD DRAWER -->
+  <div id="scratchpadDrawer" class="scratchpad-drawer">
+    <div class="scratchpad-header">
+      <strong style="color:#fff; font-size:0.85rem; display:flex; align-items:center; gap:6px;">
+        <span>📝</span> Scratchpad & Quick Calc
+      </strong>
+      <div style="display:flex; gap:6px;">
+        <button class="hud-btn" style="padding:2px 7px; font-size:0.72rem;" onclick="copyScratchpadText()" title="Copy Notes">📋</button>
+        <button class="hud-btn" style="padding:2px 7px; font-size:0.72rem;" onclick="clearScratchpadText()" title="Clear Notes">↺</button>
+        <button class="hud-btn" style="padding:2px 7px; font-size:0.72rem;" onclick="toggleScratchpad()" title="Close">✕</button>
+      </div>
+    </div>
+    <div class="scratchpad-calc-bar">
+      <span style="font-size:0.75rem; color:var(--text-muted); font-family:var(--font-mono);">Calc:</span>
+      <input type="text" id="scratchCalcInput" placeholder="e.g. 40*2.5*3.5/6 + 10*6/2" oninput="evalScratchpadCalc(this.value)" />
+      <span id="scratchCalcResult" class="scratchpad-calc-res">= 0.00</span>
+    </div>
+    <textarea id="scratchpadText" class="scratchpad-textarea" placeholder="Jot down equilibrium sums, cut section notes, or homework steps... (Autosaved)" oninput="saveScratchpad()"></textarea>
+  </div>
+
+  <!-- FLOATING FOCUS SPRINT WIDGET -->
+  <div id="focusWidget" class="focus-sprint-widget">
+    <span style="cursor:pointer; font-size:0.82rem; font-weight:600; color:var(--accent);" onclick="toggleFocusModeType()" id="focusModeBadge" title="Click to toggle Focus / Break">⚡ 25m Focus</span>
+    <span id="focusTimeDisplay" class="focus-time-display">25:00</span>
+    <button class="hud-btn" id="focusPlayBtn" style="padding:4px 8px; font-size:0.75rem;" onclick="toggleFocusTimer()">▶</button>
+    <button class="hud-btn" style="padding:4px 8px; font-size:0.75rem;" onclick="resetFocusTimer()">↺</button>
+    <button class="hud-btn" style="padding:4px 8px; font-size:0.75rem;" onclick="toggleFocusSprint()">✕</button>
+  </div>
 
   <!-- Script Architecture -->
   <script src="math_engine.js"></script>
