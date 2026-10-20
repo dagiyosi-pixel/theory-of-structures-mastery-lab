@@ -1996,8 +1996,9 @@ window.addEventListener('DOMContentLoaded', () => {
   renderMainView();
 
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js').then(() => {
-      console.log('PWA Service Worker Active - 100% Offline Ready!');
+    navigator.serviceWorker.register('./sw.js').then((reg) => {
+      reg.update();
+      console.log('PWA Service Worker Active (v6) - 100% Offline Ready!');
     }).catch(e => console.log('SW registration note:', e));
   }
 });

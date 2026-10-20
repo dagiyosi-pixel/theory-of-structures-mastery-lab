@@ -1,7 +1,7 @@
-// COTM 3101: Theory of Structures Mastery Lab - Service Worker
-// Enables 100% offline access with full KaTeX math font assets cached.
+// COTM 3101: Theory of Structures Mastery Lab - Service Worker (v6)
+// Mobile-First, Network-First for instant live updates with 100% offline fallback.
 
-const CACHE_NAME = 'structures-mastery-v5';
+const CACHE_NAME = 'structures-mastery-v6';
 
 const ASSETS = [
   './',
@@ -41,7 +41,11 @@ const ASSETS = [
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.addAll(ASSETS).catch((err) => {
+        console.warn('Non-fatal SW precache note:', err);
+      });
+    })
   );
   self.skipWaiting();
 });
@@ -50,17 +54,39 @@ self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) => {
       return Promise.all(
-        keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))
+        keys.filter((key) => key !== CACHE_NAME).map((key) => {
+          console.log('Purging legacy cache:', key);
+          return caches.delete(key);
+        })
       );
     })
   );
   self.clients.claim();
 });
 
+// Network-First with Cache Fallback for instant updates when online
 self.addEventListener('fetch', (event) => {
+  if (event.request.method !== 'GET') return;
+
   event.respondWith(
-    caches.match(event.request).then((cached) => {
-      return cached || fetch(event.request).catch(() => caches.match('./index.html'));
-    })
+    fetch(event.request)
+      .then((networkResponse) => {
+        if (networkResponse && networkResponse.status === 200) {
+          const resClone = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, resClone);
+          });
+        }
+        return networkResponse;
+      })
+      .catch(() => {
+        return caches.match(event.request).then((cached) => {
+          if (cached) return cached;
+          if (event.request.mode === 'navigate') {
+            return caches.match('./index.html');
+          }
+          return null;
+        });
+      })
   );
 });

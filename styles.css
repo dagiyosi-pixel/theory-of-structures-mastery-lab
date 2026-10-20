@@ -256,10 +256,14 @@ html, body {
 
 .workspace {
   display: flex;
-  max-width: 1440px;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   margin: 0 auto;
   min-height: calc(100vh - var(--nav-height));
-  padding-bottom: 70px; /* spacing for mobile nav */
+  padding-bottom: calc(75px + env(safe-area-inset-bottom, 0px));
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 .sidebar {
@@ -353,6 +357,7 @@ html, body {
   margin: 0 auto;
   width: 100%;
   box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 .viewport {
@@ -360,6 +365,7 @@ html, body {
   max-width: 100%;
   min-width: 0;
   box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 .mode-tabs, .mode-tabs-bar {
@@ -819,6 +825,10 @@ html, body {
   margin-bottom: 12px;
   overflow: hidden;
   transition: border-color 0.15s ease;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .collapsible-card:hover {
@@ -831,11 +841,22 @@ html, body {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 10px;
   font-size: 0.95rem;
   font-weight: 650;
   color: #fff;
   background: rgba(15, 23, 42, 0.6);
   user-select: none;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.collapsible-header > span:first-child {
+  flex: 1 1 auto;
+  min-width: 0;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 .collapsible-header:hover {
@@ -846,6 +867,7 @@ html, body {
   font-size: 0.8rem;
   color: var(--accent);
   transition: transform 0.2s ease;
+  flex-shrink: 0;
 }
 
 .collapsible-card.open .collapsible-toggle-icon {
@@ -857,6 +879,13 @@ html, body {
   border-top: 1px solid rgba(255, 255, 255, 0.05);
   font-size: 0.92rem;
   color: #cbd5e1;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  overflow-x: hidden;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 /* =========================================================================
@@ -951,14 +980,23 @@ html, body {
   font-size: 1.25rem;
   scrollbar-width: thin;
 }
-  font-size: 1.25rem;
-}
 
 /* KaTeX custom theme override */
 .katex {
-  font-size: 1.15em !important;
+  font-size: 1.05em !important;
   color: #f1f5f9 !important;
   text-rendering: optimizeLegibility;
+  max-width: 100%;
+}
+
+.katex-html {
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+}
+.katex-html::-webkit-scrollbar {
+  display: none;
 }
 
 .katex-display {
@@ -966,6 +1004,8 @@ html, body {
   overflow-x: auto;
   overflow-y: hidden;
   padding: 4px 0;
+  max-width: 100%;
+  -webkit-overflow-scrolling: touch;
 }
 
 .katex-display > .katex {
