@@ -371,7 +371,7 @@ function renderDashboardView(viewport) {
     </div>
 
     <!-- 8-MODULE CURRICULUM ROADMAP -->
-    <div style="display:flex; justify-content:space-between; align-items:center; margin: 24px 0 12px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin: 24px 0 12px;">
       <h3 style="margin:0; font-size:1.15rem; color:#fff;">📚 8-Module Curriculum Roadmap</h3>
       <span style="font-size:0.82rem; color:var(--text-muted);">${solvedCount} / ${totalChallenges} Challenges Mastered</span>
     </div>
@@ -499,7 +499,7 @@ function renderModuleView(viewport) {
           `).join('')}
         </div>
 
-        <div style="margin-top:24px; padding-top:16px; border-top:1px solid var(--border); display:flex; justify-content:space-between;">
+        <div style="margin-top:24px; padding-top:16px; border-top:1px solid var(--border); display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;">
           <button class="hud-btn" onclick="switchAppView('dashboard')">⬅ Back to Cockpit</button>
           <button class="btn-primary" onclick="switchModuleTab('guided')">Next: Guided Worked Examples ➔</button>
         </div>
@@ -542,7 +542,7 @@ function renderModuleView(viewport) {
           </div>
         `).join('')}
 
-        <div style="margin-top:20px; display:flex; justify-content:space-between;">
+        <div style="margin-top:20px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;">
           <button class="hud-btn" onclick="switchModuleTab('theory')">⬅ Theory</button>
           <button class="btn-primary" onclick="switchModuleTab('shortcuts')">Next: Speed Tricks ➔</button>
         </div>
@@ -578,7 +578,7 @@ function renderModuleView(viewport) {
           <div class="math-card-body" style="font-size:1.05rem;">${mod.mnemonics}</div>
         </div>
 
-        <div style="margin-top:20px; display:flex; justify-content:space-between;">
+        <div style="margin-top:20px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;">
           <button class="hud-btn" onclick="switchModuleTab('guided')">⬅ Worked Examples</button>
           <button class="btn-primary" onclick="switchModuleTab('arena')">Next: Challenge Gauntlet ➔</button>
         </div>
@@ -613,7 +613,7 @@ function renderModuleView(viewport) {
           `;
         }).join('')}
 
-        <div style="margin-top:20px; display:flex; justify-content:space-between;">
+        <div style="margin-top:20px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;">
           <button class="hud-btn" onclick="switchModuleTab('shortcuts')">⬅ Speed Tricks</button>
           <button class="btn-primary" onclick="switchModuleTab('cheatsheet')">Next: Formula Vault ➔</button>
         </div>
@@ -840,8 +840,8 @@ function renderFormulaAtlasView(viewport) {
       ${atlasMode === 'browse' ? `
         <!-- Filter and Search Controls -->
         <div style="display:flex; gap:10px; margin: 18px 0; flex-wrap:wrap;">
-          <input type="text" id="atlasSearchInput" placeholder="🔍 Search formulas (e.g. Clapeyron, Slope-Deflection, Vereshchagin, Hooke)..." value="${atlasSearch}" oninput="searchAtlas(this.value)" style="flex:1; min-width:240px; padding:10px 14px; background:var(--bg-input); border:1px solid var(--border); border-radius:8px; color:#fff; font-size:0.92rem;" />
-          <select onchange="filterAtlas(this.value)" style="padding:10px 14px; background:var(--bg-input); border:1px solid var(--border); border-radius:8px; color:#fff; font-size:0.92rem;">
+          <input type="text" id="atlasSearchInput" placeholder="🔍 Search formulas (e.g. Clapeyron, Slope-Deflection, Vereshchagin, Hooke)..." value="${atlasSearch}" oninput="searchAtlas(this.value)" style="flex:1; min-width:140px; max-width:100%; padding:10px 14px; background:var(--bg-input); border:1px solid var(--border); border-radius:8px; color:#fff; font-size:0.92rem;" />
+          <select onchange="filterAtlas(this.value)" style="padding:10px 14px; background:var(--bg-input); border:1px solid var(--border); border-radius:8px; color:#fff; font-size:0.92rem; max-width:100%;">
             <option value="all" ${atlasFilter === 'all' ? 'selected' : ''}>All Chapters (28 Formulas)</option>
             <option value="mod0" ${atlasFilter === 'mod0' ? 'selected' : ''}>Module 0: Core Foundations</option>
             <option value="mod1" ${atlasFilter === 'mod1' ? 'selected' : ''}>Module 1: Stability & Determinacy</option>
@@ -961,7 +961,7 @@ function renderFlashcardDeck() {
         <button class="hud-btn" style="border-color:var(--success); color:var(--success);" onclick="rateFlashcard('${card.id}', 'easy')">🔵 Easy (+150 XP)</button>
       </div>
 
-      <div style="display:flex; justify-content:space-between; margin-top:18px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-top:18px;">
         <button class="hud-btn" onclick="prevFlashcard()">⬅ Previous Card</button>
         <button class="btn-primary" style="margin-top:0;" onclick="nextFlashcard()">Next Card ➔</button>
       </div>

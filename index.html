@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>COTM 3101: Theory of Structures — Complete Mastery Lab</title>
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#030712" />
@@ -42,8 +42,8 @@
       <div class="stat-pill pill-xp" id="xpBadge">⚡ 0 XP</div>
       <div class="stat-pill pill-streak" id="streakBadge">🔥 Streak: 0</div>
       <div class="stat-pill" id="masteryBadge">📊 0% Mastered</div>
-      <button class="hud-btn" onclick="exportStandaloneHTML()" title="Download single standalone HTML file for phone or offline PC">📲 Save Offline App</button>
-      <button class="hud-btn reset-btn" onclick="resetProgress()" title="Reset Saved Progress">↺ Reset</button>
+      <button class="hud-btn" onclick="exportStandaloneHTML()" title="Download single standalone HTML file for phone or offline PC">📲 <span class="hide-mobile">Save App</span></button>
+      <button class="hud-btn reset-btn" onclick="resetProgress()" title="Reset Saved Progress">↺ <span class="hide-mobile">Reset</span></button>
     </div>
   </header>
 
