@@ -2607,3 +2607,41 @@ html, body {
   border-radius: 8px;
   padding: 14px;
 }
+
+
+/* Mobile Solidification for Method Decider & Combat Trainer */
+@media (max-width: 600px) {
+  .trainer-main-card {
+    padding: 14px 10px;
+  }
+  .trainer-tabs-bar {
+    gap: 4px;
+    padding-bottom: 6px;
+  }
+  .trainer-tab-btn {
+    padding: 6px 10px;
+    font-size: 0.78rem;
+  }
+  .givens-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .triage-stat-row {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .triage-chip {
+    padding: 5px 8px;
+    font-size: 0.78rem;
+  }
+  .scenario-dossier-card {
+    padding: 12px 10px;
+  }
+  .scenario-challenge-box {
+    padding: 10px;
+  }
+  .trainer-cta-banner {
+    padding: 12px 14px;
+    gap: 10px;
+  }
+}
