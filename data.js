@@ -3335,3 +3335,705 @@ const EXAM_SIMULATOR_QUESTIONS = [
     ]
   }
 ];
+
+
+// =========================================================================
+// METHOD DECIDER & TACTICAL PROBLEM TRAINER DATASET (COTM 3101)
+// =========================================================================
+const METHOD_TRAINER_SCENARIOS = [
+  {
+    "id": "scen-1",
+    "title": "Scenario 1: Multi-Span Continuous Girder with Support Settlement",
+    "structureType": "Continuous Beam (3 Spans, Varying EI)",
+    "problemText": "A 3-span continuous bridge beam ABCD is built-in (fixed) at A, with roller supports at B, C, and D. Spans: AB = 4m (EI), BC = 6m (2EI), CD = 3m (EI). Loads: UDL w = 20 kN/m on AB, concentrated load 60 kN at center of BC. Geotechnical settlement: Support B settles vertically downwards by Δ_B = 10 mm. Calculate support moments.",
+    "givens": [
+      {
+        "key": "Support A is Fixed",
+        "implication": "Requires imaginary span L0 = 0 with EI0 = ∞ to enforce zero slope. M_A is non-zero."
+      },
+      {
+        "key": "Support B sinks by 10mm",
+        "implication": "Δ_B = -0.010 m. Because middle support sinks downwards, it relieves negative hogging moment at B and increases positive sagging moments in spans AB and BC."
+      },
+      {
+        "key": "Span BC has stiffness 2EI",
+        "implication": "Divide terms by 2: (L/EI)_BC = 6/(2EI) = 3/EI. Do not forget to scale the load term: 6A2x2 / (L2 · EI2) = 810 / (2EI)."
+      },
+      {
+        "key": "Exterior support D is a simple roller with no overhang",
+        "implication": "M_D = 0 statically. Leaves exactly 3 unknown support moments: M_A, M_B, M_C."
+      }
+    ],
+    "triage": {
+      "Ds": "3 (Statically indeterminate to 3rd degree)",
+      "Dk": "3 (Kinematic rotations θ_B, θ_C, θ_D)",
+      "recommendedMethod": "Three-Moment Equation (Clapeyron)",
+      "whyBest": "Direct row-by-row equation assembly. Each equation couples only 3 adjacent support moments (tridiagonal matrix). Solving a 3x3 tridiagonal system takes 2 minutes with elimination, whereas Slope-Deflection requires setting up 6 member equations plus joint balance equations.",
+      "deadlyTrap": "Settlement term sign: 6EI[(Δ_l - Δ_c)/L_l + (Δ_r - Δ_c)/L_r]. When B is the center support c (Δ_c = -0.010), (Δ_l - Δ_c) = 0 - (-0.010) = +0.010 (POSITIVE!). Reversing this sign is the #1 mistake."
+    },
+    "formulaArsenal": [
+      {
+        "name": "Clapeyron General Form",
+        "latex": "M_l \\left(\\frac{L}{EI}\\right)_l + 2 M_c \\left[\\left(\\frac{L}{EI}\\right)_l + \\left(\\frac{L}{EI}\\right)_r\\right] + M_r \\left(\\frac{L}{EI}\\right)_r = -\\left(\\frac{6A_l x_l}{L_l EI_l} + \\frac{6A_r x_r}{L_r EI_r}\\right) + 6 \\left[\\frac{\\Delta_l - \\Delta_c}{L_l} + \\frac{\\Delta_r - \\Delta_c}{L_r}\\right]"
+      },
+      {
+        "name": "UDL Load Term",
+        "latex": "\\frac{6Ax}{L} = \\frac{w L^3}{4}"
+      },
+      {
+        "name": "Midspan Point Load Term",
+        "latex": "\\frac{6Ax}{L} = \\frac{3}{8} P L^2"
+      }
+    ],
+    "questions": [
+      {
+        "prompt": "Which method is the most efficient and least error-prone for this 3-span beam?",
+        "options": [
+          {
+            "text": "Force Method (Consistent Deformations) releasing 3 redundant vertical reactions.",
+            "correct": false,
+            "explain": "Releasing 3 reactions requires a 13-member table and inverting a dense 3x3 flexibility matrix where every term is non-zero."
+          },
+          {
+            "text": "Three-Moment Equation (Clapeyron) with an imaginary zero span L0 at support A.",
+            "correct": true,
+            "explain": "Correct! Clapeyron's equation produces a banded tridiagonal system that isolates support moments directly in 3 equations with zero kinematic overhead."
+          },
+          {
+            "text": "Conjugate Beam Method.",
+            "correct": false,
+            "explain": "Conjugate beam method is designed for determinate structures, not 3rd-degree indeterminate continuous beams."
+          },
+          {
+            "text": "Double Integration Method.",
+            "correct": false,
+            "explain": "Requires 8 integration constants and solving an 8x8 linear system."
+          }
+        ]
+      },
+      {
+        "prompt": "What is the numerical value and sign of the settlement term at junction A-B-C where support B sinks by Δ_B = -10 mm (EI = 36,000 kN·m²)?",
+        "options": [
+          {
+            "text": "+900 kN·m²",
+            "correct": true,
+            "explain": "Correct! Settlement term = 6EI[(Δ_A - Δ_B)/L_AB + (Δ_C - Δ_B)/L_BC] = 6(36,000)[(0 - (-0.010))/4.0 + (0 - (-0.010))/6.0] = 6(36,000)[0.0025 + 0.001667] = +900 kN·m²."
+          },
+          {
+            "text": "-900 kN·m²",
+            "correct": false,
+            "explain": "Watch the double negative: (Δ_l - Δ_c) = 0 - (-0.010) = +0.010."
+          },
+          {
+            "text": "0 kN·m² because support settlements only matter in trusses.",
+            "correct": false,
+            "explain": "Support settlement produces huge secondary bending moments in continuous beams."
+          },
+          {
+            "text": "+540 kN·m²",
+            "correct": false,
+            "explain": "That is the term for junction 0-A-B, not A-B-C."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "scen-2",
+    "title": "Scenario 2: Side-Sway Portal Frame with Unequal Column Heights",
+    "structureType": "Rigid Portal Frame (Unbraced, Side-Sway Permitted)",
+    "problemText": "A rigid rectangular frame ABCD has fixed base supports at A and D. Column AB has height h1 = 3.0m (I). Horizontal girder BC has span L = 3.0m (2I) with a vertical load P = 40 kN at mid-span. Column CD has height h2 = 2.0m (I). A horizontal wind force P_lat = 30 kN acts at joint B to the right. Determine the member end moments.",
+    "givens": [
+      {
+        "key": "Base supports A and D are Fixed",
+        "implication": "Boundary conditions: θ_A = 0, θ_D = 0. Deflections at base are zero."
+      },
+      {
+        "key": "Unbraced frame with lateral load",
+        "implication": "The frame WILL SWAY laterally by unknown displacement Δ to the right. Both columns rotate."
+      },
+      {
+        "key": "Unequal column heights: h1 = 3m, h2 = 2m",
+        "implication": "CRITICAL: Chord rotation ψ = Δ/h differs! ψ_AB = Δ/3.0, but ψ_CD = Δ/2.0 = 1.5 ψ_AB. Do not equate column chord rotations!"
+      },
+      {
+        "key": "Girder BC has stiffness 2I",
+        "implication": "K_BC = 2I / 3.0 = 2 K. Column AB has K_AB = I / 3.0 = K. Column CD has K_CD = I / 2.0 = 1.5 K."
+      }
+    ],
+    "triage": {
+      "Ds": "3 (Statically indeterminate to 3rd degree)",
+      "Dk": "3 (Kinematic unknowns: θ_B, θ_C, and lateral sway Δ)",
+      "recommendedMethod": "Slope-Deflection Method (with COTM 3101 Minus Sign Convention)",
+      "whyBest": "Direct formulation: 2 joint moment balance equations (∑ M_B = 0, ∑ M_C = 0) plus 1 column horizontal shear equilibrium equation (H_A + H_D + 30 = 0). Solves θ_B, θ_C, Δ in a clean 3x3 system.",
+      "deadlyTrap": "Two major traps: (1) Forgetting that ψ_CD = 1.5 ψ_AB due to the shorter column height; (2) In COTM 3101, the slope-deflection equation has a MINUS sign: M_AB = M_AB^F - 2EK(2θ_A + θ_B - 3ψ)."
+    },
+    "formulaArsenal": [
+      {
+        "name": "COTM 3101 Slope-Deflection Equation",
+        "latex": "M_{ij} = M_{ij}^F - 2EK(2\\theta_i + \\theta_j - 3\\psi)"
+      },
+      {
+        "name": "Column Shear Equilibrium",
+        "latex": "\\sum F_x = 0 \\implies \\frac{M_{AB} + M_{BA}}{h_{AB}} + \\frac{M_{CD} + M_{DC}}{h_{CD}} + P_{lat} = 0"
+      },
+      {
+        "name": "Chord Rotation Relation",
+        "latex": "\\psi_{AB} = \\frac{\\Delta}{h_{AB}}, \\quad \\psi_{CD} = \\frac{\\Delta}{h_{CD}} = \\psi_{AB} \\left(\\frac{h_{AB}}{h_{CD}}\\right)"
+      }
+    ],
+    "questions": [
+      {
+        "prompt": "Why must the chord rotations ψ_AB and ψ_CD be treated as different variables in the Slope-Deflection equations?",
+        "options": [
+          {
+            "text": "Because column AB is made of concrete and column CD is steel.",
+            "correct": false,
+            "explain": "Both columns are part of the same structural model."
+          },
+          {
+            "text": "Because column AB is 3m tall while column CD is 2m tall, so the same horizontal sway Δ produces ψ_CD = 1.5 ψ_AB.",
+            "correct": true,
+            "explain": "Master insight! Chord rotation is defined as transverse relative displacement divided by length: ψ = Δ / h. A shorter column rotates through a larger angle for the exact same roof sway Δ!"
+          },
+          {
+            "text": "Because only column AB carries lateral load.",
+            "correct": false,
+            "explain": "Both columns resist lateral shear regardless of which joint is loaded."
+          },
+          {
+            "text": "They can actually be assumed equal with negligible error.",
+            "correct": false,
+            "explain": "Assuming them equal leads to over 40% error in bending moments!"
+          }
+        ]
+      },
+      {
+        "prompt": "Under the AAU COTM 3101 statical sign convention, what is the fixed-end moment M_BC^F on girder BC of span 3m under point load P = 40 kN at mid-span?",
+        "options": [
+          {
+            "text": "-15.0 kN·m",
+            "correct": true,
+            "explain": "Correct! In COTM 3101, counter-clockwise moment on the member is POSITIVE (+). Transverse gravity load causes clockwise fixity reaction on the member at left joint B, so M_BC^F = -PL/8 = -40(3)/8 = -15 kN·m."
+          },
+          {
+            "text": "+15.0 kN·m",
+            "correct": false,
+            "explain": "Clockwise moment on member is negative in COTM 3101 statical sign convention."
+          },
+          {
+            "text": "+30.0 kN·m",
+            "correct": false,
+            "explain": "FEM for midspan point load is PL/8, not PL/4."
+          },
+          {
+            "text": "0 kN·m",
+            "correct": false,
+            "explain": "Unloaded members have 0 FEM, not loaded beams."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "scen-3",
+    "title": "Scenario 3: Non-Sway Continuous Beam with Exterior Hinged End",
+    "structureType": "2-Span Continuous Beam with Far-End Hinged",
+    "problemText": "A 2-span beam ABC has a fixed support at A, roller support at B, and hinged (pin) support at C. Span AB = 4m (I), span BC = 6m (I). Span AB carries a uniform load w = 15 kN/m; span BC carries a point load P = 40 kN at its center. Find the support moment at interior support B using the fastest method.",
+    "givens": [
+      {
+        "key": "Support A is Fixed",
+        "implication": "Distribution Factor DF_AB = 0. Carry-over factor from B to A is 1/2."
+      },
+      {
+        "key": "Exterior support C is Hinged/Roller",
+        "implication": "CRITICAL SPEED SHORTCUT: Bending moment M_C = 0. Use modified stiffness K_BC = 3/4 (I/L) and Carry-Over Factor COF = 0 from B to C!"
+      },
+      {
+        "key": "Interior support B is continuous",
+        "implication": "Joint B connects members BA and BC. Moments must balance: M_BA + M_BC = 0."
+      }
+    ],
+    "triage": {
+      "Ds": "2 (Indeterminate to 2nd degree)",
+      "Dk": "2 (Rotations θ_B, θ_C)",
+      "recommendedMethod": "Moment Distribution (Hardy Cross) with 3/4 Modified Stiffness",
+      "whyBest": "By using modified stiffness K = 3/4 (I/L) for span BC, joint C is NEVER balanced and NEVER receives carry-over. The entire distribution solves in exactly ONE single distribution cycle at Joint B!",
+      "deadlyTrap": "Using standard K = I/L for span BC and carrying over moments back and forth between B and C. That wastes 4 cycles of calculation and increases the chance of arithmetic error by 500%."
+    },
+    "formulaArsenal": [
+      {
+        "name": "Modified Stiffness for Far End Hinged",
+        "latex": "K = \\frac{3}{4} \\left(\\frac{I}{L}\\right)"
+      },
+      {
+        "name": "Modified Fixed-End Moment for Far End Hinged",
+        "latex": "M_{BA}^{F,\\text{mod}} = M_{BA}^F - \\frac{1}{2} M_{AB}^F"
+      },
+      {
+        "name": "Distribution Factor",
+        "latex": "DF_i = \\frac{K_i}{\\sum K}"
+      }
+    ],
+    "questions": [
+      {
+        "prompt": "Why does using K_BC = 3/4 (I/L) allow you to solve this problem in just ONE distribution cycle?",
+        "options": [
+          {
+            "text": "Because the carry-over factor from Joint B to hinged support C becomes ZERO, eliminating all feedback loops.",
+            "correct": true,
+            "explain": "Exact theory! By releasing the hinge C initially and modifying stiffness to 3/4 K, any moment distributed at B produces zero carry-over to C. Thus, balancing Joint B once finishes the problem completely!"
+          },
+          {
+            "text": "Because the beam becomes statically determinate.",
+            "correct": false,
+            "explain": "The beam remains indeterminate; the modified stiffness simply incorporates the hinge boundary condition analytically."
+          },
+          {
+            "text": "Because the load on span BC is ignored.",
+            "correct": false,
+            "explain": "Load on BC is included in the initial modified FEM."
+          },
+          {
+            "text": "Because the distribution factor at B becomes 1.0.",
+            "correct": false,
+            "explain": "DF at B splits between BA and BC based on their relative stiffness."
+          }
+        ]
+      },
+      {
+        "prompt": "What is the relative distribution factor DF_BA at Joint B if K_BA = I/4 = 0.25 I and K_BC = (3/4)(I/6) = 0.125 I?",
+        "options": [
+          {
+            "text": "DF_BA = 0.25 / (0.25 + 0.125) = 2/3 ≈ 0.667",
+            "correct": true,
+            "explain": "Correct! Total joint stiffness ∑ K = 0.25I + 0.125I = 0.375I. DF_BA = 0.25 / 0.375 = 2/3 (66.7%), and DF_BC = 0.125 / 0.375 = 1/3 (33.3%)."
+          },
+          {
+            "text": "DF_BA = 0.500 (equal split)",
+            "correct": false,
+            "explain": "Spans have different lengths and boundary conditions, so stiffnesses are unequal."
+          },
+          {
+            "text": "DF_BA = 0.333",
+            "correct": false,
+            "explain": "Span BA is stiffer than BC, so it takes 66.7% of the unbalanced moment."
+          },
+          {
+            "text": "DF_BA = 1.000",
+            "correct": false,
+            "explain": "Only true if BC had zero stiffness."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "scen-4",
+    "title": "Scenario 4: 2-Degree Indeterminate Truss with Support & Member Redundants",
+    "structureType": "Plane Pin-Connected Truss",
+    "problemText": "An 8-member Pratt-type truss of height 3m and span 8m (two 4m bays) is supported by a Pin at A, Roller at B, and Roller at C. It has an internal diagonal counter-member BF in the left panel. A vertical load 40 kN acts downwards at joint E. Find the reaction R_B and bar force in BF.",
+    "givens": [
+      {
+        "key": "Total members m = 10, joints j = 6, reactions r = 4",
+        "implication": "Degree of Indeterminacy: D = (m + r) - 2j = (10 + 4) - 12 = 2. Requires releasing 2 redundants."
+      },
+      {
+        "key": "One extra roller support B",
+        "implication": "Select R_B as External Redundant 1. Releasing it creates a simply supported 8m span."
+      },
+      {
+        "key": "One cross-diagonal member BF",
+        "implication": "Select internal axial force X_BF as Internal Redundant 2. Cutting member BF creates an internally determinate triangulated truss."
+      },
+      {
+        "key": "Members have different cross-sectional areas",
+        "implication": "Chords have A = 20 cm², web members have A = 15 cm². Must divide each member's nNL term by its own specific area!"
+      }
+    ],
+    "triage": {
+      "Ds": "2 (1 External + 1 Internal)",
+      "Dk": "8 (All joint coordinates can displace)",
+      "recommendedMethod": "Force Method (Consistent Deformations) with Tabular Summation",
+      "whyBest": "Displacement methods are virtually impossible by hand for trusses (requires solving an 8x8 stiffness matrix). Force Method requires only a clean 7-column table summing (n N L / A) and solving a 2x2 system.",
+      "deadlyTrap": "Unit Load State 2 (Internal Member Redundant): When applying the unit load pair in cut member BF, amateurs often mistakenly compute support reactions at A and C. In reality, a self-equilibrating internal pair produces ZERO external support reactions!"
+    },
+    "formulaArsenal": [
+      {
+        "name": "Flexibility Matrix Equation",
+        "latex": "\\begin{bmatrix} \\delta_{11} & \\delta_{12} \\\\ \\delta_{21} & \\delta_{22} \\end{bmatrix} \\begin{Bmatrix} R_1 \\\\ R_2 \\end{Bmatrix} + \\begin{Bmatrix} \\Delta_{10} \\\\ \\Delta_{20} \\end{Bmatrix} = \\begin{Bmatrix} 0 \\\\ 0 \\end{Bmatrix}"
+      },
+      {
+        "name": "Displacement Coefficient",
+        "latex": "\\Delta_{i0} = \\sum \\frac{N n_i L}{E A}"
+      },
+      {
+        "name": "Flexibility Coefficient",
+        "latex": "\\delta_{ij} = \\sum \\frac{n_i n_j L}{E A}"
+      }
+    ],
+    "questions": [
+      {
+        "prompt": "Why do external support reactions at A and C equal ZERO in State 2 (when a unit tensile pair is applied to cut member BF)?",
+        "options": [
+          {
+            "text": "Because the pair of unit loads acts in opposite directions along the member axis, forming a self-equilibrating internal force with zero net external resultant.",
+            "correct": true,
+            "explain": "Fundamental statics law! An internal cut member pair consists of two equal, opposite, collinear 1 kN forces. Their resultant vector sum and moment about any point in the universe are identically zero. Therefore, external reactions are zero!"
+          },
+          {
+            "text": "Because supports A and C are on frictionless rollers.",
+            "correct": false,
+            "explain": "A is a pin support; the zero reaction is due to internal equilibrium, not boundary friction."
+          },
+          {
+            "text": "Because the truss is symmetrical.",
+            "correct": false,
+            "explain": "True for any truss regardless of symmetry."
+          },
+          {
+            "text": "It is an approximation that ignores higher-order terms.",
+            "correct": false,
+            "explain": "It is an EXACT equilibrium fact."
+          }
+        ]
+      },
+      {
+        "prompt": "If δ_12 is computed as -0.0526 / E, what is the value of δ_21 without doing any extra calculations?",
+        "options": [
+          {
+            "text": "-0.0526 / E, guaranteed by Maxwell-Betti Reciprocal Theorem.",
+            "correct": true,
+            "explain": "Exact law! Maxwell-Betti theorem states that for any linearly elastic structure, the flexibility matrix is symmetric: δ_12 ≡ δ_21. Never recompute the cross-term from scratch!"
+          },
+          {
+            "text": "+0.0526 / E (opposite sign).",
+            "correct": false,
+            "explain": "Off-diagonal terms in flexibility matrices have the exact same sign."
+          },
+          {
+            "text": "1 / (-0.0526 / E) (reciprocal).",
+            "correct": false,
+            "explain": "They are equal, not inverse."
+          },
+          {
+            "text": "Zero.",
+            "correct": false,
+            "explain": "They are non-zero when the coordinates are coupled."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "scen-5",
+    "title": "Scenario 5: Multi-Body Beam with Internal Hinge Deflection",
+    "structureType": "Determinate Compound Beam with Internal Release",
+    "problemText": "A compound beam has a pin support at B, an internal hinge at C, an interior roller at D, and free overhang tips at A and E. Point loads act on the overhangs, and a UDL acts on span DE. You are required to calculate the slope and deflection at the internal hinge C.",
+    "givens": [
+      {
+        "key": "Internal hinge at C",
+        "implication": "Bending moment is identically zero at C: M_C = 0. Slope θ_C is discontinuous (a kink exists: θ_C^- ≠ θ_C^+)."
+      },
+      {
+        "key": "Determinate beam requiring slopes and deflections",
+        "implication": "Conjugate Beam Method is the #1 tool for beams with internal releases."
+      },
+      {
+        "key": "Support transformation duality",
+        "implication": "Real internal hinge C becomes a Conjugate Interior Roller C*! Real interior roller D becomes a Conjugate Internal Hinge D*!"
+      }
+    ],
+    "triage": {
+      "Ds": "0 (Statically Determinate due to hinge release)",
+      "Dk": "Multiple slopes and deflections",
+      "recommendedMethod": "Conjugate Beam Method",
+      "whyBest": "Direct geometric duality transforms internal hinges into standard supports and interior rollers into hinges, allowing you to compute slopes as shears and deflections as moments using simple statics.",
+      "deadlyTrap": "Assuming the real slope at the internal hinge is single-valued. In reality, an internal hinge allows adjacent members to rotate independently: θ_C^- (left of hinge) ≠ θ_C^+ (right of hinge). The kink angle is Δθ = θ_C^+ - θ_C^-."
+    },
+    "formulaArsenal": [
+      {
+        "name": "Conjugate Beam Duality",
+        "latex": "V^*(x) = \\theta(x), \\quad M^*(x) = v(x)"
+      },
+      {
+        "name": "Conjugate Load",
+        "latex": "w^*(x) = \\frac{M(x)}{EI} \\quad [\\text{Sagging: Upward (+), Hogging: Downward (-)}]"
+      }
+    ],
+    "questions": [
+      {
+        "prompt": "In the conjugate beam, what represents the relative rotation kink angle Δθ across the real internal hinge C?",
+        "options": [
+          {
+            "text": "The concentrated reaction force R_C* at the conjugate roller support C*.",
+            "correct": true,
+            "explain": "Brilliant conjugate duality! In the conjugate beam, hinge C is an interior roller support C*. The reaction force R_C* causes a step jump in the conjugate shear diagram: ΔV* = R_C*. Since V* = θ, the reaction R_C* exactly equals the kink angle Δθ!"
+          },
+          {
+            "text": "The bending moment at C*.",
+            "correct": false,
+            "explain": "Bending moment M* represents deflection v, not slope difference."
+          },
+          {
+            "text": "Zero, because slopes must be continuous.",
+            "correct": false,
+            "explain": "An internal hinge allows slope discontinuity."
+          },
+          {
+            "text": "The deflection at mid-span.",
+            "correct": false,
+            "explain": "Irrelevant."
+          }
+        ]
+      }
+    ]
+  }
+];
+
+
+// =========================================================================
+// GIVENS SCANNER & EXAM MATHEMATICAL DECODER DATABASE (COTM 3101)
+// =========================================================================
+const GIVENS_DECODER_DATABASE = [
+  {
+    id: "g-settle-mid",
+    title: "Interior Support Sinks Downwards (Middle Support)",
+    examPhrase: "Support B settles / sinks vertically downward by \u0394_B = 10 mm",
+    category: "settlement",
+    categoryName: "Settlement & Support Shifts",
+    mathCondition: "\\Delta_c = -\\delta, \\quad (\\Delta_l - \\Delta_c) = 0 - (-\\delta) = +\\delta > 0",
+    signLock: "Center sinking \u0394_c < 0 makes the bracket (\u0394_l - \u0394_c) strictly POSITIVE! Reversing this sign reverses the whole moment diagram.",
+    rules: [
+      "Three-Moment: The settlement term +6[(\\Delta_l - \\Delta_c)/L_l + (\\Delta_r - \\Delta_c)/L_r] becomes strongly POSITIVE (+). This relieves hogging moment over B and increases sagging moments in spans AB and BC.",
+      "Slope-Deflection: Member chord rotations are \\psi_{AB} = -\\Delta_B / L_{AB} (clockwise) and \\psi_{BC} = +\\Delta_B / L_{BC} (counter-clockwise).",
+      "Virtual Work (Determinate): Determinate structures experience zero internal stress from settlement! External work \\sum R_i \\Delta_i = 0 directly gives deflections."
+    ],
+    trapMnemonic: "Sinking middle support relieves tension on top! Hogging moment at B decreases algebraically."
+  },
+  {
+    id: "g-settle-end",
+    title: "Exterior Support Sinks Downwards (End Support)",
+    examPhrase: "Left-end support A sinks vertically downward by \u0394_A = 12 mm",
+    category: "settlement",
+    categoryName: "Settlement & Support Shifts",
+    mathCondition: "\\Delta_l = -\\delta, \\quad \\Delta_c = 0 \\implies (\\Delta_l - \\Delta_c) = -\\delta < 0",
+    signLock: "End sinking makes (\u0394_l - \u0394_c) NEGATIVE. This drags the beam down at the end and INCREASES hogging at the adjacent interior support B.",
+    rules: [
+      "Three-Moment: At support junction A-B-C, the term is +6[(-\\delta)/L_AB + 0] = -6\\delta / L_AB (NEGATIVE).",
+      "Slope-Deflection: Member chord rotation \\psi_{AB} = +\\Delta_A / L_{AB} (counter-clockwise).",
+      "Hardy Cross: Induced Fixed End Moment FEM_{AB} = FEM_{BA} = -6EI\\Delta / L^2 (or -3EI\\Delta/L^2 if far end is hinged)."
+    ],
+    trapMnemonic: "End support sinking drags down the outer tip and increases hogging over the first interior pier."
+  },
+  {
+    id: "g-far-pinned",
+    title: "Far-End Pinned or Roller Support (No Overhang)",
+    examPhrase: "Beam or frame ends with a simple pin / roller at D with no cantilever overhang",
+    category: "supports",
+    categoryName: "Support Boundary Conditions",
+    mathCondition: "M_{far} = 0, \\quad \\theta_{far} \\ne 0 \\text{ (free rotation)}",
+    signLock: "Exterior moment is unconditionally 0. In Slope-Deflection, eliminate \u03b8_{far} directly using the hinged-end equation.",
+    rules: [
+      "Hardy Cross: Apply modified member stiffness K = (3/4)(I/L) and lock Carry-Over Factor COF = 0! Never distribute back to a pin.",
+      "Slope-Deflection: Deploy modified equation: M_{near} = (M_{near}^F - M_{far}^F/2) - 3EK(\\theta_{near} - \\psi). Eliminates 1 entire equation from your system!",
+      "Three-Moment: No imaginary span needed at end D; simply plug M_D = 0 directly into the last 3-moment span equation."
+    ],
+    trapMnemonic: "3/4 Stiffness Rule: Cut stiffness to 3/4 and NEVER carry over to an exterior pin!"
+  },
+  {
+    id: "g-fixed-end",
+    title: "Built-In / Rigidly Clamped Support (Fixed Base)",
+    examPhrase: "Support A is built-in / fixed / rigidly encased into the abutment",
+    category: "supports",
+    categoryName: "Support Boundary Conditions",
+    mathCondition: "\\theta_A = 0, \\quad \\Delta_A = 0, \\quad M_A \\ne 0",
+    signLock: "Zero slope lock. Member rotation \u03b8_A = 0 eliminates a kinematic degree of freedom.",
+    rules: [
+      "Three-Moment: Add an imaginary zero-length outer span L_0 = 0 with flexural rigidity EI_0 = \\infty so that (L_0/EI_0) = 0 and 6A_0 x_0 / L_0 = 0. This provides the boundary equation for M_A.",
+      "Slope-Deflection: Substitute \\theta_A = 0 into member equations M_{AB} and M_{BA}.",
+      "Hardy Cross: Distribution Factor DF = 0 at fixed support (it acts as an infinite moment sink, absorbing carry-over without releasing)."
+    ],
+    trapMnemonic: "Fixed support is an infinite sink: DF = 0, rotation \u03b8 = 0, requires imaginary zero-span L_0 in 3-Moment."
+  },
+  {
+    id: "g-internal-hinge",
+    title: "Internal Hinge in Beam or Girder",
+    examPhrase: "Beam has an internal hinge at intermediate joint C (compound beam)",
+    category: "hinges",
+    categoryName: "Internal Releases & Hinges",
+    mathCondition: "M_C = 0, \\quad \\theta_C^- \\ne \\theta_C^+ \\text{ (discontinuous slope / kink angle exists)}",
+    signLock: "Bending moment is identically ZERO at the hinge. Slope has a discontinuity / kink \u0394\u03b8 = \u03b8_C^+ - \u03b8_C^-.",
+    rules: [
+      "Conjugate Beam Duality: Real internal hinge C transforms into a Conjugate Interior Roller C*! The vertical reaction R_C* at this conjugate roller equals the physical kink angle \u0394\u03b8.",
+      "Conjugate Deflection: The conjugate bending moment M_C* gives the true vertical deflection v_C at the hinge.",
+      "Statics Release: In determinacy, adds 1 special condition equation s = 1 (or c = 1) for \\sum M_C^{left} = 0."
+    ],
+    trapMnemonic: "Real hinge \u2192 Conjugate interior roller! Real roller \u2192 Conjugate internal hinge!"
+  },
+  {
+    id: "g-interior-roller-conj",
+    title: "Real Interior Continuous Roller Support",
+    examPhrase: "Beam rests continuously over an interior roller support B",
+    category: "hinges",
+    categoryName: "Internal Releases & Hinges",
+    mathCondition: "v_B = 0 \\implies M_B^* = 0, \\quad \\theta_B \\text{ is continuous}",
+    signLock: "Zero vertical deflection in real beam corresponds to zero bending moment in conjugate beam.",
+    rules: [
+      "Conjugate Beam Duality: Real interior roller transforms into a Conjugate Internal Hinge B*!",
+      "Conjugate Verification: Because a hinge cannot transmit bending moment, M_B^* = 0 automatically satisfies the boundary condition v_B = 0.",
+      "Conjugate Shear: The continuous conjugate shear V_B^* across the hinge gives the real continuous slope \u03b8_B."
+    ],
+    trapMnemonic: "Interior roller becomes conjugate hinge: enforces zero deflection (M* = 0) while permitting slope (V*)."
+  },
+  {
+    id: "g-free-end-conj",
+    title: "Real Free End Tip (Cantilever Overhang)",
+    examPhrase: "Free cantilever tip at point A (unsupported end)",
+    category: "supports",
+    categoryName: "Support Boundary Conditions",
+    mathCondition: "M_A = 0, \\quad V_A = 0, \\quad \\theta_A \\ne 0, \\quad v_A \\ne 0",
+    signLock: "Real beam has zero moment and zero shear at free tip.",
+    rules: [
+      "Conjugate Beam Duality: Real free end transforms into a Completely Fixed Conjugate Support A*!",
+      "Conjugate Reactions: The conjugate fixed reaction moment M_A^* gives the tip deflection v_A; the conjugate shear reaction V_A^* gives the tip slope \u03b8_A.",
+      "Dual Inversion: Real Fixed \u2194 Conjugate Free; Real Free \u2194 Conjugate Fixed."
+    ],
+    trapMnemonic: "Real Free Tip \u2192 Conjugate Fixed Support! Conjugate reaction moment is real deflection."
+  },
+  {
+    id: "g-truss-fab-error",
+    title: "Truss Member Fabrication Error (Lack of Fit)",
+    examPhrase: "Member CD was fabricated \u03b4L = 3 mm too long (or short)",
+    category: "trusses",
+    categoryName: "Trusses & Axial Systems",
+    mathCondition: "\\delta L > 0 \\text{ (too long / elongation)}, \\quad \\delta L < 0 \\text{ (too short / shrinkage)}",
+    signLock: "Fabrication error \u03b4L enters ONLY the misfabricated member. Tension unit virtual force n > 0; compression n < 0.",
+    rules: [
+      "Determinate Truss Deflection: 1 \\cdot \\Delta = \\sum n \\cdot \\delta L (summed only over misfabricated bars).",
+      "Indeterminate Truss (Force Method): Lack of fit enters the flexibility load displacement \\Delta_{10} = \\sum n_1 \\frac{N_0 L}{EA} + \\sum n_1 \\delta L.",
+      "Self-Stress: If redundant is the misfabricated bar itself (n_1 = +1), it induces redundant force X_1 = -\\delta L / \\delta_{11}."
+    ],
+    trapMnemonic: "Only misfabricated bars enter the \u2211 n \u03b4L sum! Stresses occur ONLY if the truss is indeterminate."
+  },
+  {
+    id: "g-truss-temp",
+    title: "Truss Temperature Differential",
+    examPhrase: "Top chord members experience a temperature rise of \u0394T = +35\u00b0C (\u03b1 = 12 \u00d7 10\u207b\u2076 /\u00b0C)",
+    category: "trusses",
+    categoryName: "Trusses & Axial Systems",
+    mathCondition: "\\delta L_{temp} = \\alpha (\\Delta T) L, \\quad \\Delta T > 0 \\implies \\text{expansion}",
+    signLock: "Temperature increase produces elongation (+). Temperature drop produces shortening (-).",
+    rules: [
+      "Determinate Truss Deflection: 1 \\cdot \\Delta = \\sum n \\alpha (\\Delta T) L. Notice EA does not appear!",
+      "Zero Thermal Stress in Determinate Trusses: Determinate trusses expand freely without ANY internal stress (N = 0).",
+      "Indeterminate Truss Thermal Redundant: Enters compatibility: X_1 = -(\\Delta_{10} + \\Delta_{1T}) / \\delta_{11}, where \\Delta_{1T} = \\sum n_1 \\alpha (\\Delta T) L."
+    ],
+    trapMnemonic: "Determinate trusses feel ZERO thermal stress! They only deflect. Indeterminate trusses develop massive stresses."
+  },
+  {
+    id: "g-truss-internal-cut",
+    title: "Pure Internal Redundant Bar Cut in Indeterminate Truss",
+    examPhrase: "Select member diagonal CH as the redundant force X_1 using the Force Method",
+    category: "trusses",
+    categoryName: "Trusses & Axial Systems",
+    mathCondition: "X_1 = N_{CH}, \\quad \\text{Cut member CH and apply equal and opposite unit forces } n_1 = +1",
+    signLock: "Internal pair of unit collinear forces equilibrate entirely within the truss joints.",
+    rules: [
+      "Zero Reaction Law: Because the virtual unit load is an INTERNAL pair of forces, ALL external support reactions are identically ZERO! (R_{Ax} = R_{Ay} = R_{By} = 0).",
+      "Flexibility Diagonal: \\delta_{11} = \\sum \\frac{n_1^2 L}{EA} (must include the redundant bar itself: 1^2 \\cdot L / EA).",
+      "Compatibility Equation: \\Delta_{10} + X_1 \\delta_{11} = 0 \\implies X_1 = -\\Delta_{10} / \\delta_{11}."
+    ],
+    trapMnemonic: "Zero-Reaction Law: Pure internal redundants have ZERO external reactions in the virtual system!"
+  },
+  {
+    id: "g-sway-equal-cols",
+    title: "Side-Sway Portal Frame with Equal Column Heights (h_1 = h_2 = h)",
+    examPhrase: "Unbraced portal frame ABCD with vertical columns of identical height h",
+    category: "frames",
+    categoryName: "Rigid Frames & Sway",
+    mathCondition: "\\psi_{AB} = \\psi_{CD} = -\\Delta / h, \\quad \\psi_{BC} = 0 \\text{ (girder does not tilt)}",
+    signLock: "For rightward sidesway (\u0394 > 0), columns lean clockwise \u2192 chord rotation \u03c8 is CLOCKWISE (-). Girder chord rotation is strictly 0.",
+    rules: [
+      "Slope-Deflection Chord Terms: Substitute -3\\Delta/h into column equations: M_{AB} = M_{AB}^F - 2EK_1(2\\theta_A + \\theta_B - 3\\Delta/h).",
+      "Girder Chord Term: Girder has \\psi_{BC} = 0 because columns are parallel and axially rigid (no vertical displacement of B and C).",
+      "Column Shear Equilibrium: \\sum H = 0 \\implies H_A + H_D + P_{lateral} = 0, where H = (M_{near} + M_{far})/h."
+    ],
+    trapMnemonic: "Columns sway together: \u03c8_col = -\u0394/h. Girder DOES NOT TILT: \u03c8_girder = 0!"
+  },
+  {
+    id: "g-sway-unequal-cols",
+    title: "Side-Sway Portal Frame with Unequal Column Heights (h_1 \u2260 h_2)",
+    examPhrase: "Portal frame built on a hillside: left column h_1 = 4m, right column h_2 = 3m",
+    category: "frames",
+    categoryName: "Rigid Frames & Sway",
+    mathCondition: "\\psi_1 = -\\Delta / h_1, \\quad \\psi_2 = -\\Delta / h_2, \\quad \\psi_1 \\ne \\psi_2",
+    signLock: "Horizontal drift \u0394 is equal at top girder level, but shorter column undergoes larger chord rotation and attracts higher shear!",
+    rules: [
+      "Unequal Chord Rotations: \\psi_{AB} = -\\Delta/4.0, while \\psi_{CD} = -\\Delta/3.0. Do NOT use the same \u03c8!",
+      "Column Shear Equilibrium: Divide each column moment sum by ITS OWN height: \\frac{M_{AB} + M_{BA}}{h_1} + \\frac{M_{CD} + M_{DC}}{h_2} + P_{lat} = 0.",
+      "Stiffness Attraction: The shorter column (h_2 = 3m) is (4/3) times stiffer and attracts significantly more lateral shear."
+    ],
+    trapMnemonic: "Different column heights \u2192 Different chord rotations \u03c8! Shorter column is stiffer and attracts shear."
+  },
+  {
+    id: "g-sway-inclined-legs",
+    title: "Gabled / Inclined-Leg Portal Frame (Instant Center Kinematics)",
+    examPhrase: "Portal frame with battered / inclined legs (angle \u03b1 from vertical)",
+    category: "frames",
+    categoryName: "Rigid Frames & Sway",
+    mathCondition: "\\Delta_{AB} = \\Delta \\sec\\alpha, \\quad \\Delta_{BC} = -\\Delta \\tan\\alpha \\implies \\psi_{girder} \\ne 0",
+    signLock: "Inclined legs force the top girder to displace both horizontally AND vertically!",
+    rules: [
+      "Girder Tilt Law: Girder BC chord rotation is NO LONGER ZERO (\\psi_{BC} \\ne 0)! It rotates by \\psi_{BC} = -(\\Delta \\tan\\alpha) / L_{BC}.",
+      "Kinematic Instant Center: Find the intersection point O of the inclined column axes to write virtual displacement or equilibrium equations.",
+      "Moment Equilibrium: Take moments about the instant center O so column axial thrusts do not enter the sway equilibrium equation."
+    ],
+    trapMnemonic: "Inclined legs tilt the girder! Girder chord rotation \u03c8_girder is non-zero. Use instant center O."
+  },
+  {
+    id: "g-symmetry-loading",
+    title: "Symmetrical Frame Under Symmetrical Gravity Loading",
+    examPhrase: "Symmetrical portal frame with central point load P or uniform UDL w",
+    category: "frames",
+    categoryName: "Symmetry & Fast Reductions",
+    mathCondition: "\\Delta = 0 \\text{ (no sidesway)}, \\quad \\theta_B = -\\theta_C",
+    signLock: "Sidesway is strictly prohibited by symmetry! Joint rotations at mirror joints are equal and opposite.",
+    rules: [
+      "Slope-Deflection Speedup: Sway \\Delta drops to 0. With \\theta_C = -\\theta_B, the problem collapses from 3 unknowns (\\theta_B, \\theta_C, \\Delta) to just ONE unknown (\\theta_B)!",
+      "Hardy Cross Half-Frame: Modify beam stiffness at centerline: for symmetrical rotation, beam stiffness is K_{sym} = 2EI/L (or analyze half span with guided roller).",
+      "Zero Shear Equation Needed: Completely skip the column shear equilibrium equation!"
+    ],
+    trapMnemonic: "Symmetry kills sidesway! Reduces 3 simultaneous equations to 1 single equation."
+  },
+  {
+    id: "g-antisymmetry-loading",
+    title: "Symmetrical Frame Under Anti-Symmetrical Lateral Loading",
+    examPhrase: "Symmetrical frame with lateral horizontal wind load at girder level",
+    category: "frames",
+    categoryName: "Symmetry & Fast Reductions",
+    mathCondition: "\\theta_B = +\\theta_C, \\quad \\Delta \\ne 0, \\quad v_{mid} = 0, \\quad M_{mid} = 0",
+    signLock: "Joint rotations are equal in magnitude and sign. Middle of girder is a point of inflection (zero moment).",
+    rules: [
+      "Point of Inflection: At the centerline of the girder, bending moment M = 0 and vertical deflection v = 0.",
+      "Half-Span Model: Model only half the frame with an internal pin/roller at mid-span girder.",
+      "Hardy Cross Anti-Symmetry: Modified girder stiffness is K_{anti} = (6EI/L) / 2 = 3EI/L."
+    ],
+    trapMnemonic: "Anti-symmetry creates zero moment at centerline: M_{center} = 0!"
+  },
+  {
+    id: "g-overhang-cantilever",
+    title: "Overhanging Cantilever at Beam or Frame Joint",
+    examPhrase: "Beam extends past support B with an overhang of length a carrying load P",
+    category: "beams",
+    categoryName: "Support Boundary Conditions",
+    mathCondition: "M_{overhang} = -P \\cdot a \\text{ (statically determinate)}",
+    signLock: "Overhang produces hogging negative moment (-Pa). It is a statically determinate boundary condition, NOT an unknown!",
+    rules: [
+      "Three-Moment Equation: Never add an imaginary span for an overhang! Simply set M_B equal to the known overhang moment -Pa in the adjacent span equation.",
+      "Hardy Cross: Cantilever has zero stiffness for distribution (DF_{overhang} = 0). Apply the unbalanced overhang moment directly into joint B as an external fixed moment.",
+      "Slope-Deflection: Joint equilibrium at B: M_{BA} + M_{overhang} = 0 \\implies M_{BA} = +Pa."
+    ],
+    trapMnemonic: "Overhang moments are KNOWN before you start! Never treat them as redundant unknowns."
+  }
+];

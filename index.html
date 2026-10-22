@@ -31,6 +31,7 @@
       <button class="top-nav-btn" data-view="solvers" onclick="switchAppView('solvers')">🧮 Solvers</button>
       <button class="top-nav-btn" data-view="atlas" onclick="switchAppView('atlas')">📜 Formula Vault</button>
       <button class="top-nav-btn" data-view="exam" onclick="switchAppView('exam')">⏱️ Exam Sim</button>
+      <button class="top-nav-btn" data-view="trainer" onclick="switchAppView('trainer')">🥋 Method Decider</button>
       <button class="top-nav-btn" data-view="errors" onclick="switchAppView('errors')">📓 Error Notebook</button>
     </nav>
 
@@ -82,6 +83,9 @@
 
       <div class="sidebar-section-title" style="margin-top:24px;">🎓 ACTIVE RECALL & DRILLS</div>
       <div class="module-nav">
+        <button class="nav-item" id="sidebarTrainerBtn" onclick="switchAppView('trainer')">
+          <span>🥋 Method Decider & Combat Trainer</span>
+        </button>
         <button class="nav-item" onclick="openModuleVideos(currentModuleIdx)">
           <span>🎥 Video Masterclasses</span>
         </button>
@@ -135,6 +139,10 @@
     <button class="mob-nav-btn" data-view="module" onclick="switchAppView('module')">
       <span class="mob-icon">📚</span>
       <span>Modules</span>
+    </button>
+    <button class="mob-nav-btn" data-view="trainer" onclick="switchAppView('trainer')">
+      <span class="mob-icon">🥋</span>
+      <span>Decider</span>
     </button>
     <button class="mob-nav-btn" data-view="solvers" onclick="switchAppView('solvers')">
       <span class="mob-icon">🧮</span>

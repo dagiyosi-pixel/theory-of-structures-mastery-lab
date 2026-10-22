@@ -2251,6 +2251,377 @@ html, body {
   }
 }
 
+
+/* =========================================================================
+   🥋 METHOD DECIDER & TACTICAL COMBAT TRAINER STYLES
+   ========================================================================= */
+
+.trainer-main-card {
+  background: rgba(11, 19, 41, 0.95);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+}
+
+.trainer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 14px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 16px;
+}
+
+.trainer-header-stats {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Trainer Sub-Tabs Navigation */
+.trainer-tabs-bar {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  margin-bottom: 18px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  -webkit-overflow-scrolling: touch;
+}
+
+.trainer-tab-btn {
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.trainer-tab-btn:hover {
+  color: #fff;
+  border-color: rgba(56, 189, 248, 0.4);
+  background: rgba(30, 41, 59, 0.9);
+}
+
+.trainer-tab-btn.active {
+  background: rgba(56, 189, 248, 0.15);
+  color: var(--accent);
+  border-color: var(--accent);
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.25);
+}
+
+/* Cockpit CTA Banner */
+.trainer-cta-banner {
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.15), rgba(99, 102, 241, 0.15));
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.trainer-cta-banner:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent);
+  box-shadow: 0 6px 24px rgba(56, 189, 248, 0.25);
+}
+
+.trainer-cta-content {
+  flex: 1;
+  min-width: 260px;
+}
+
+.trainer-cta-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--accent);
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
+
+.trainer-cta-content h3 {
+  margin: 0 0 4px;
+  font-size: 1.15rem;
+  color: #fff;
+}
+
+.trainer-cta-content p {
+  margin: 0;
+  font-size: 0.86rem;
+  color: var(--text-muted);
+  line-height: 1.45;
+}
+
+/* Statical Triage Grid */
+.triage-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.25fr;
+  gap: 20px;
+}
+
+@media (max-width: 860px) {
+  .triage-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.triage-control-card {
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+}
+
+.control-label {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 6px;
+}
+
+.triage-select {
+  width: 100%;
+  background: rgba(3, 7, 18, 0.8);
+  border: 1px solid var(--border);
+  color: #fff;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.triage-select:focus {
+  border-color: var(--accent);
+}
+
+.triage-chip-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.triage-chip {
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.triage-chip:hover {
+  border-color: rgba(56, 189, 248, 0.4);
+  color: #fff;
+}
+
+.triage-chip.active {
+  background: rgba(56, 189, 248, 0.15);
+  border-color: var(--accent);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.triage-chip.modifier-active {
+  background: rgba(16, 185, 129, 0.15);
+  border-color: var(--success);
+  color: #a7f3d0;
+}
+
+.triage-result-card {
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  border-radius: 10px;
+  padding: 18px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.triage-stat-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.triage-stat-box {
+  background: rgba(3, 7, 18, 0.6);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+.triage-stat-label {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 2px;
+}
+
+.triage-stat-value {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+/* Givens Scanner & Decoder Grid */
+.givens-filter-bar {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  margin-bottom: 16px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.givens-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px;
+}
+
+.givens-card {
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.givens-card:hover {
+  border-color: rgba(56, 189, 248, 0.35);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.exam-phrase-quote {
+  background: rgba(3, 7, 18, 0.6);
+  border-left: 3px solid var(--gold);
+  border-radius: 4px;
+  padding: 8px 10px;
+  font-size: 0.84rem;
+  color: var(--text-main);
+  font-style: italic;
+  margin-bottom: 8px;
+}
+
+/* Scenario Combat Arena */
+.scenario-nav-bar {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  margin-bottom: 16px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.scenario-nav-btn {
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 12px;
+  color: var(--text-muted);
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.scenario-nav-btn:hover {
+  border-color: rgba(56, 189, 248, 0.4);
+  color: #fff;
+}
+
+.scenario-nav-btn.active {
+  background: rgba(56, 189, 248, 0.15);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.scenario-status-badge {
+  font-size: 0.72rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.scenario-status-badge.badge-done {
+  background: rgba(16, 185, 129, 0.2);
+  color: var(--success);
+}
+
+.scenario-dossier-card {
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px;
+}
+
+.combat-accordion {
+  background: rgba(11, 19, 41, 0.7);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.combat-summary {
+  padding: 10px 14px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #fff;
+  background: rgba(15, 23, 42, 0.8);
+  outline: none;
+  user-select: none;
+}
+
+.combat-summary:hover {
+  color: var(--accent);
+}
+
+.combat-body {
+  padding: 12px 14px;
+  border-top: 1px solid var(--border);
+}
+
+.scenario-challenge-box {
+  background: rgba(11, 19, 41, 0.8);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px;
+}
+
 </style>
   
 </head>
@@ -2272,6 +2643,7 @@ html, body {
       <button class="top-nav-btn" data-view="solvers" onclick="switchAppView('solvers')">🧮 Solvers</button>
       <button class="top-nav-btn" data-view="atlas" onclick="switchAppView('atlas')">📜 Formula Vault</button>
       <button class="top-nav-btn" data-view="exam" onclick="switchAppView('exam')">⏱️ Exam Sim</button>
+      <button class="top-nav-btn" data-view="trainer" onclick="switchAppView('trainer')">🥋 Method Decider</button>
       <button class="top-nav-btn" data-view="errors" onclick="switchAppView('errors')">📓 Error Notebook</button>
     </nav>
 
@@ -2323,6 +2695,9 @@ html, body {
 
       <div class="sidebar-section-title" style="margin-top:24px;">🎓 ACTIVE RECALL & DRILLS</div>
       <div class="module-nav">
+        <button class="nav-item" id="sidebarTrainerBtn" onclick="switchAppView('trainer')">
+          <span>🥋 Method Decider & Combat Trainer</span>
+        </button>
         <button class="nav-item" onclick="openModuleVideos(currentModuleIdx)">
           <span>🎥 Video Masterclasses</span>
         </button>
@@ -2376,6 +2751,10 @@ html, body {
     <button class="mob-nav-btn" data-view="module" onclick="switchAppView('module')">
       <span class="mob-icon">📚</span>
       <span>Modules</span>
+    </button>
+    <button class="mob-nav-btn" data-view="trainer" onclick="switchAppView('trainer')">
+      <span class="mob-icon">🥋</span>
+      <span>Decider</span>
     </button>
     <button class="mob-nav-btn" data-view="solvers" onclick="switchAppView('solvers')">
       <span class="mob-icon">🧮</span>
@@ -7022,6 +7401,708 @@ const EXAM_SIMULATOR_QUESTIONS = [
   }
 ];
 
+
+// =========================================================================
+// METHOD DECIDER & TACTICAL PROBLEM TRAINER DATASET (COTM 3101)
+// =========================================================================
+const METHOD_TRAINER_SCENARIOS = [
+  {
+    "id": "scen-1",
+    "title": "Scenario 1: Multi-Span Continuous Girder with Support Settlement",
+    "structureType": "Continuous Beam (3 Spans, Varying EI)",
+    "problemText": "A 3-span continuous bridge beam ABCD is built-in (fixed) at A, with roller supports at B, C, and D. Spans: AB = 4m (EI), BC = 6m (2EI), CD = 3m (EI). Loads: UDL w = 20 kN/m on AB, concentrated load 60 kN at center of BC. Geotechnical settlement: Support B settles vertically downwards by Δ_B = 10 mm. Calculate support moments.",
+    "givens": [
+      {
+        "key": "Support A is Fixed",
+        "implication": "Requires imaginary span L0 = 0 with EI0 = ∞ to enforce zero slope. M_A is non-zero."
+      },
+      {
+        "key": "Support B sinks by 10mm",
+        "implication": "Δ_B = -0.010 m. Because middle support sinks downwards, it relieves negative hogging moment at B and increases positive sagging moments in spans AB and BC."
+      },
+      {
+        "key": "Span BC has stiffness 2EI",
+        "implication": "Divide terms by 2: (L/EI)_BC = 6/(2EI) = 3/EI. Do not forget to scale the load term: 6A2x2 / (L2 · EI2) = 810 / (2EI)."
+      },
+      {
+        "key": "Exterior support D is a simple roller with no overhang",
+        "implication": "M_D = 0 statically. Leaves exactly 3 unknown support moments: M_A, M_B, M_C."
+      }
+    ],
+    "triage": {
+      "Ds": "3 (Statically indeterminate to 3rd degree)",
+      "Dk": "3 (Kinematic rotations θ_B, θ_C, θ_D)",
+      "recommendedMethod": "Three-Moment Equation (Clapeyron)",
+      "whyBest": "Direct row-by-row equation assembly. Each equation couples only 3 adjacent support moments (tridiagonal matrix). Solving a 3x3 tridiagonal system takes 2 minutes with elimination, whereas Slope-Deflection requires setting up 6 member equations plus joint balance equations.",
+      "deadlyTrap": "Settlement term sign: 6EI[(Δ_l - Δ_c)/L_l + (Δ_r - Δ_c)/L_r]. When B is the center support c (Δ_c = -0.010), (Δ_l - Δ_c) = 0 - (-0.010) = +0.010 (POSITIVE!). Reversing this sign is the #1 mistake."
+    },
+    "formulaArsenal": [
+      {
+        "name": "Clapeyron General Form",
+        "latex": "M_l \\left(\\frac{L}{EI}\\right)_l + 2 M_c \\left[\\left(\\frac{L}{EI}\\right)_l + \\left(\\frac{L}{EI}\\right)_r\\right] + M_r \\left(\\frac{L}{EI}\\right)_r = -\\left(\\frac{6A_l x_l}{L_l EI_l} + \\frac{6A_r x_r}{L_r EI_r}\\right) + 6 \\left[\\frac{\\Delta_l - \\Delta_c}{L_l} + \\frac{\\Delta_r - \\Delta_c}{L_r}\\right]"
+      },
+      {
+        "name": "UDL Load Term",
+        "latex": "\\frac{6Ax}{L} = \\frac{w L^3}{4}"
+      },
+      {
+        "name": "Midspan Point Load Term",
+        "latex": "\\frac{6Ax}{L} = \\frac{3}{8} P L^2"
+      }
+    ],
+    "questions": [
+      {
+        "prompt": "Which method is the most efficient and least error-prone for this 3-span beam?",
+        "options": [
+          {
+            "text": "Force Method (Consistent Deformations) releasing 3 redundant vertical reactions.",
+            "correct": false,
+            "explain": "Releasing 3 reactions requires a 13-member table and inverting a dense 3x3 flexibility matrix where every term is non-zero."
+          },
+          {
+            "text": "Three-Moment Equation (Clapeyron) with an imaginary zero span L0 at support A.",
+            "correct": true,
+            "explain": "Correct! Clapeyron's equation produces a banded tridiagonal system that isolates support moments directly in 3 equations with zero kinematic overhead."
+          },
+          {
+            "text": "Conjugate Beam Method.",
+            "correct": false,
+            "explain": "Conjugate beam method is designed for determinate structures, not 3rd-degree indeterminate continuous beams."
+          },
+          {
+            "text": "Double Integration Method.",
+            "correct": false,
+            "explain": "Requires 8 integration constants and solving an 8x8 linear system."
+          }
+        ]
+      },
+      {
+        "prompt": "What is the numerical value and sign of the settlement term at junction A-B-C where support B sinks by Δ_B = -10 mm (EI = 36,000 kN·m²)?",
+        "options": [
+          {
+            "text": "+900 kN·m²",
+            "correct": true,
+            "explain": "Correct! Settlement term = 6EI[(Δ_A - Δ_B)/L_AB + (Δ_C - Δ_B)/L_BC] = 6(36,000)[(0 - (-0.010))/4.0 + (0 - (-0.010))/6.0] = 6(36,000)[0.0025 + 0.001667] = +900 kN·m²."
+          },
+          {
+            "text": "-900 kN·m²",
+            "correct": false,
+            "explain": "Watch the double negative: (Δ_l - Δ_c) = 0 - (-0.010) = +0.010."
+          },
+          {
+            "text": "0 kN·m² because support settlements only matter in trusses.",
+            "correct": false,
+            "explain": "Support settlement produces huge secondary bending moments in continuous beams."
+          },
+          {
+            "text": "+540 kN·m²",
+            "correct": false,
+            "explain": "That is the term for junction 0-A-B, not A-B-C."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "scen-2",
+    "title": "Scenario 2: Side-Sway Portal Frame with Unequal Column Heights",
+    "structureType": "Rigid Portal Frame (Unbraced, Side-Sway Permitted)",
+    "problemText": "A rigid rectangular frame ABCD has fixed base supports at A and D. Column AB has height h1 = 3.0m (I). Horizontal girder BC has span L = 3.0m (2I) with a vertical load P = 40 kN at mid-span. Column CD has height h2 = 2.0m (I). A horizontal wind force P_lat = 30 kN acts at joint B to the right. Determine the member end moments.",
+    "givens": [
+      {
+        "key": "Base supports A and D are Fixed",
+        "implication": "Boundary conditions: θ_A = 0, θ_D = 0. Deflections at base are zero."
+      },
+      {
+        "key": "Unbraced frame with lateral load",
+        "implication": "The frame WILL SWAY laterally by unknown displacement Δ to the right. Both columns rotate."
+      },
+      {
+        "key": "Unequal column heights: h1 = 3m, h2 = 2m",
+        "implication": "CRITICAL: Chord rotation ψ = Δ/h differs! ψ_AB = Δ/3.0, but ψ_CD = Δ/2.0 = 1.5 ψ_AB. Do not equate column chord rotations!"
+      },
+      {
+        "key": "Girder BC has stiffness 2I",
+        "implication": "K_BC = 2I / 3.0 = 2 K. Column AB has K_AB = I / 3.0 = K. Column CD has K_CD = I / 2.0 = 1.5 K."
+      }
+    ],
+    "triage": {
+      "Ds": "3 (Statically indeterminate to 3rd degree)",
+      "Dk": "3 (Kinematic unknowns: θ_B, θ_C, and lateral sway Δ)",
+      "recommendedMethod": "Slope-Deflection Method (with COTM 3101 Minus Sign Convention)",
+      "whyBest": "Direct formulation: 2 joint moment balance equations (∑ M_B = 0, ∑ M_C = 0) plus 1 column horizontal shear equilibrium equation (H_A + H_D + 30 = 0). Solves θ_B, θ_C, Δ in a clean 3x3 system.",
+      "deadlyTrap": "Two major traps: (1) Forgetting that ψ_CD = 1.5 ψ_AB due to the shorter column height; (2) In COTM 3101, the slope-deflection equation has a MINUS sign: M_AB = M_AB^F - 2EK(2θ_A + θ_B - 3ψ)."
+    },
+    "formulaArsenal": [
+      {
+        "name": "COTM 3101 Slope-Deflection Equation",
+        "latex": "M_{ij} = M_{ij}^F - 2EK(2\\theta_i + \\theta_j - 3\\psi)"
+      },
+      {
+        "name": "Column Shear Equilibrium",
+        "latex": "\\sum F_x = 0 \\implies \\frac{M_{AB} + M_{BA}}{h_{AB}} + \\frac{M_{CD} + M_{DC}}{h_{CD}} + P_{lat} = 0"
+      },
+      {
+        "name": "Chord Rotation Relation",
+        "latex": "\\psi_{AB} = \\frac{\\Delta}{h_{AB}}, \\quad \\psi_{CD} = \\frac{\\Delta}{h_{CD}} = \\psi_{AB} \\left(\\frac{h_{AB}}{h_{CD}}\\right)"
+      }
+    ],
+    "questions": [
+      {
+        "prompt": "Why must the chord rotations ψ_AB and ψ_CD be treated as different variables in the Slope-Deflection equations?",
+        "options": [
+          {
+            "text": "Because column AB is made of concrete and column CD is steel.",
+            "correct": false,
+            "explain": "Both columns are part of the same structural model."
+          },
+          {
+            "text": "Because column AB is 3m tall while column CD is 2m tall, so the same horizontal sway Δ produces ψ_CD = 1.5 ψ_AB.",
+            "correct": true,
+            "explain": "Master insight! Chord rotation is defined as transverse relative displacement divided by length: ψ = Δ / h. A shorter column rotates through a larger angle for the exact same roof sway Δ!"
+          },
+          {
+            "text": "Because only column AB carries lateral load.",
+            "correct": false,
+            "explain": "Both columns resist lateral shear regardless of which joint is loaded."
+          },
+          {
+            "text": "They can actually be assumed equal with negligible error.",
+            "correct": false,
+            "explain": "Assuming them equal leads to over 40% error in bending moments!"
+          }
+        ]
+      },
+      {
+        "prompt": "Under the AAU COTM 3101 statical sign convention, what is the fixed-end moment M_BC^F on girder BC of span 3m under point load P = 40 kN at mid-span?",
+        "options": [
+          {
+            "text": "-15.0 kN·m",
+            "correct": true,
+            "explain": "Correct! In COTM 3101, counter-clockwise moment on the member is POSITIVE (+). Transverse gravity load causes clockwise fixity reaction on the member at left joint B, so M_BC^F = -PL/8 = -40(3)/8 = -15 kN·m."
+          },
+          {
+            "text": "+15.0 kN·m",
+            "correct": false,
+            "explain": "Clockwise moment on member is negative in COTM 3101 statical sign convention."
+          },
+          {
+            "text": "+30.0 kN·m",
+            "correct": false,
+            "explain": "FEM for midspan point load is PL/8, not PL/4."
+          },
+          {
+            "text": "0 kN·m",
+            "correct": false,
+            "explain": "Unloaded members have 0 FEM, not loaded beams."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "scen-3",
+    "title": "Scenario 3: Non-Sway Continuous Beam with Exterior Hinged End",
+    "structureType": "2-Span Continuous Beam with Far-End Hinged",
+    "problemText": "A 2-span beam ABC has a fixed support at A, roller support at B, and hinged (pin) support at C. Span AB = 4m (I), span BC = 6m (I). Span AB carries a uniform load w = 15 kN/m; span BC carries a point load P = 40 kN at its center. Find the support moment at interior support B using the fastest method.",
+    "givens": [
+      {
+        "key": "Support A is Fixed",
+        "implication": "Distribution Factor DF_AB = 0. Carry-over factor from B to A is 1/2."
+      },
+      {
+        "key": "Exterior support C is Hinged/Roller",
+        "implication": "CRITICAL SPEED SHORTCUT: Bending moment M_C = 0. Use modified stiffness K_BC = 3/4 (I/L) and Carry-Over Factor COF = 0 from B to C!"
+      },
+      {
+        "key": "Interior support B is continuous",
+        "implication": "Joint B connects members BA and BC. Moments must balance: M_BA + M_BC = 0."
+      }
+    ],
+    "triage": {
+      "Ds": "2 (Indeterminate to 2nd degree)",
+      "Dk": "2 (Rotations θ_B, θ_C)",
+      "recommendedMethod": "Moment Distribution (Hardy Cross) with 3/4 Modified Stiffness",
+      "whyBest": "By using modified stiffness K = 3/4 (I/L) for span BC, joint C is NEVER balanced and NEVER receives carry-over. The entire distribution solves in exactly ONE single distribution cycle at Joint B!",
+      "deadlyTrap": "Using standard K = I/L for span BC and carrying over moments back and forth between B and C. That wastes 4 cycles of calculation and increases the chance of arithmetic error by 500%."
+    },
+    "formulaArsenal": [
+      {
+        "name": "Modified Stiffness for Far End Hinged",
+        "latex": "K = \\frac{3}{4} \\left(\\frac{I}{L}\\right)"
+      },
+      {
+        "name": "Modified Fixed-End Moment for Far End Hinged",
+        "latex": "M_{BA}^{F,\\text{mod}} = M_{BA}^F - \\frac{1}{2} M_{AB}^F"
+      },
+      {
+        "name": "Distribution Factor",
+        "latex": "DF_i = \\frac{K_i}{\\sum K}"
+      }
+    ],
+    "questions": [
+      {
+        "prompt": "Why does using K_BC = 3/4 (I/L) allow you to solve this problem in just ONE distribution cycle?",
+        "options": [
+          {
+            "text": "Because the carry-over factor from Joint B to hinged support C becomes ZERO, eliminating all feedback loops.",
+            "correct": true,
+            "explain": "Exact theory! By releasing the hinge C initially and modifying stiffness to 3/4 K, any moment distributed at B produces zero carry-over to C. Thus, balancing Joint B once finishes the problem completely!"
+          },
+          {
+            "text": "Because the beam becomes statically determinate.",
+            "correct": false,
+            "explain": "The beam remains indeterminate; the modified stiffness simply incorporates the hinge boundary condition analytically."
+          },
+          {
+            "text": "Because the load on span BC is ignored.",
+            "correct": false,
+            "explain": "Load on BC is included in the initial modified FEM."
+          },
+          {
+            "text": "Because the distribution factor at B becomes 1.0.",
+            "correct": false,
+            "explain": "DF at B splits between BA and BC based on their relative stiffness."
+          }
+        ]
+      },
+      {
+        "prompt": "What is the relative distribution factor DF_BA at Joint B if K_BA = I/4 = 0.25 I and K_BC = (3/4)(I/6) = 0.125 I?",
+        "options": [
+          {
+            "text": "DF_BA = 0.25 / (0.25 + 0.125) = 2/3 ≈ 0.667",
+            "correct": true,
+            "explain": "Correct! Total joint stiffness ∑ K = 0.25I + 0.125I = 0.375I. DF_BA = 0.25 / 0.375 = 2/3 (66.7%), and DF_BC = 0.125 / 0.375 = 1/3 (33.3%)."
+          },
+          {
+            "text": "DF_BA = 0.500 (equal split)",
+            "correct": false,
+            "explain": "Spans have different lengths and boundary conditions, so stiffnesses are unequal."
+          },
+          {
+            "text": "DF_BA = 0.333",
+            "correct": false,
+            "explain": "Span BA is stiffer than BC, so it takes 66.7% of the unbalanced moment."
+          },
+          {
+            "text": "DF_BA = 1.000",
+            "correct": false,
+            "explain": "Only true if BC had zero stiffness."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "scen-4",
+    "title": "Scenario 4: 2-Degree Indeterminate Truss with Support & Member Redundants",
+    "structureType": "Plane Pin-Connected Truss",
+    "problemText": "An 8-member Pratt-type truss of height 3m and span 8m (two 4m bays) is supported by a Pin at A, Roller at B, and Roller at C. It has an internal diagonal counter-member BF in the left panel. A vertical load 40 kN acts downwards at joint E. Find the reaction R_B and bar force in BF.",
+    "givens": [
+      {
+        "key": "Total members m = 10, joints j = 6, reactions r = 4",
+        "implication": "Degree of Indeterminacy: D = (m + r) - 2j = (10 + 4) - 12 = 2. Requires releasing 2 redundants."
+      },
+      {
+        "key": "One extra roller support B",
+        "implication": "Select R_B as External Redundant 1. Releasing it creates a simply supported 8m span."
+      },
+      {
+        "key": "One cross-diagonal member BF",
+        "implication": "Select internal axial force X_BF as Internal Redundant 2. Cutting member BF creates an internally determinate triangulated truss."
+      },
+      {
+        "key": "Members have different cross-sectional areas",
+        "implication": "Chords have A = 20 cm², web members have A = 15 cm². Must divide each member's nNL term by its own specific area!"
+      }
+    ],
+    "triage": {
+      "Ds": "2 (1 External + 1 Internal)",
+      "Dk": "8 (All joint coordinates can displace)",
+      "recommendedMethod": "Force Method (Consistent Deformations) with Tabular Summation",
+      "whyBest": "Displacement methods are virtually impossible by hand for trusses (requires solving an 8x8 stiffness matrix). Force Method requires only a clean 7-column table summing (n N L / A) and solving a 2x2 system.",
+      "deadlyTrap": "Unit Load State 2 (Internal Member Redundant): When applying the unit load pair in cut member BF, amateurs often mistakenly compute support reactions at A and C. In reality, a self-equilibrating internal pair produces ZERO external support reactions!"
+    },
+    "formulaArsenal": [
+      {
+        "name": "Flexibility Matrix Equation",
+        "latex": "\\begin{bmatrix} \\delta_{11} & \\delta_{12} \\\\ \\delta_{21} & \\delta_{22} \\end{bmatrix} \\begin{Bmatrix} R_1 \\\\ R_2 \\end{Bmatrix} + \\begin{Bmatrix} \\Delta_{10} \\\\ \\Delta_{20} \\end{Bmatrix} = \\begin{Bmatrix} 0 \\\\ 0 \\end{Bmatrix}"
+      },
+      {
+        "name": "Displacement Coefficient",
+        "latex": "\\Delta_{i0} = \\sum \\frac{N n_i L}{E A}"
+      },
+      {
+        "name": "Flexibility Coefficient",
+        "latex": "\\delta_{ij} = \\sum \\frac{n_i n_j L}{E A}"
+      }
+    ],
+    "questions": [
+      {
+        "prompt": "Why do external support reactions at A and C equal ZERO in State 2 (when a unit tensile pair is applied to cut member BF)?",
+        "options": [
+          {
+            "text": "Because the pair of unit loads acts in opposite directions along the member axis, forming a self-equilibrating internal force with zero net external resultant.",
+            "correct": true,
+            "explain": "Fundamental statics law! An internal cut member pair consists of two equal, opposite, collinear 1 kN forces. Their resultant vector sum and moment about any point in the universe are identically zero. Therefore, external reactions are zero!"
+          },
+          {
+            "text": "Because supports A and C are on frictionless rollers.",
+            "correct": false,
+            "explain": "A is a pin support; the zero reaction is due to internal equilibrium, not boundary friction."
+          },
+          {
+            "text": "Because the truss is symmetrical.",
+            "correct": false,
+            "explain": "True for any truss regardless of symmetry."
+          },
+          {
+            "text": "It is an approximation that ignores higher-order terms.",
+            "correct": false,
+            "explain": "It is an EXACT equilibrium fact."
+          }
+        ]
+      },
+      {
+        "prompt": "If δ_12 is computed as -0.0526 / E, what is the value of δ_21 without doing any extra calculations?",
+        "options": [
+          {
+            "text": "-0.0526 / E, guaranteed by Maxwell-Betti Reciprocal Theorem.",
+            "correct": true,
+            "explain": "Exact law! Maxwell-Betti theorem states that for any linearly elastic structure, the flexibility matrix is symmetric: δ_12 ≡ δ_21. Never recompute the cross-term from scratch!"
+          },
+          {
+            "text": "+0.0526 / E (opposite sign).",
+            "correct": false,
+            "explain": "Off-diagonal terms in flexibility matrices have the exact same sign."
+          },
+          {
+            "text": "1 / (-0.0526 / E) (reciprocal).",
+            "correct": false,
+            "explain": "They are equal, not inverse."
+          },
+          {
+            "text": "Zero.",
+            "correct": false,
+            "explain": "They are non-zero when the coordinates are coupled."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "scen-5",
+    "title": "Scenario 5: Multi-Body Beam with Internal Hinge Deflection",
+    "structureType": "Determinate Compound Beam with Internal Release",
+    "problemText": "A compound beam has a pin support at B, an internal hinge at C, an interior roller at D, and free overhang tips at A and E. Point loads act on the overhangs, and a UDL acts on span DE. You are required to calculate the slope and deflection at the internal hinge C.",
+    "givens": [
+      {
+        "key": "Internal hinge at C",
+        "implication": "Bending moment is identically zero at C: M_C = 0. Slope θ_C is discontinuous (a kink exists: θ_C^- ≠ θ_C^+)."
+      },
+      {
+        "key": "Determinate beam requiring slopes and deflections",
+        "implication": "Conjugate Beam Method is the #1 tool for beams with internal releases."
+      },
+      {
+        "key": "Support transformation duality",
+        "implication": "Real internal hinge C becomes a Conjugate Interior Roller C*! Real interior roller D becomes a Conjugate Internal Hinge D*!"
+      }
+    ],
+    "triage": {
+      "Ds": "0 (Statically Determinate due to hinge release)",
+      "Dk": "Multiple slopes and deflections",
+      "recommendedMethod": "Conjugate Beam Method",
+      "whyBest": "Direct geometric duality transforms internal hinges into standard supports and interior rollers into hinges, allowing you to compute slopes as shears and deflections as moments using simple statics.",
+      "deadlyTrap": "Assuming the real slope at the internal hinge is single-valued. In reality, an internal hinge allows adjacent members to rotate independently: θ_C^- (left of hinge) ≠ θ_C^+ (right of hinge). The kink angle is Δθ = θ_C^+ - θ_C^-."
+    },
+    "formulaArsenal": [
+      {
+        "name": "Conjugate Beam Duality",
+        "latex": "V^*(x) = \\theta(x), \\quad M^*(x) = v(x)"
+      },
+      {
+        "name": "Conjugate Load",
+        "latex": "w^*(x) = \\frac{M(x)}{EI} \\quad [\\text{Sagging: Upward (+), Hogging: Downward (-)}]"
+      }
+    ],
+    "questions": [
+      {
+        "prompt": "In the conjugate beam, what represents the relative rotation kink angle Δθ across the real internal hinge C?",
+        "options": [
+          {
+            "text": "The concentrated reaction force R_C* at the conjugate roller support C*.",
+            "correct": true,
+            "explain": "Brilliant conjugate duality! In the conjugate beam, hinge C is an interior roller support C*. The reaction force R_C* causes a step jump in the conjugate shear diagram: ΔV* = R_C*. Since V* = θ, the reaction R_C* exactly equals the kink angle Δθ!"
+          },
+          {
+            "text": "The bending moment at C*.",
+            "correct": false,
+            "explain": "Bending moment M* represents deflection v, not slope difference."
+          },
+          {
+            "text": "Zero, because slopes must be continuous.",
+            "correct": false,
+            "explain": "An internal hinge allows slope discontinuity."
+          },
+          {
+            "text": "The deflection at mid-span.",
+            "correct": false,
+            "explain": "Irrelevant."
+          }
+        ]
+      }
+    ]
+  }
+];
+
+
+// =========================================================================
+// GIVENS SCANNER & EXAM MATHEMATICAL DECODER DATABASE (COTM 3101)
+// =========================================================================
+const GIVENS_DECODER_DATABASE = [
+  {
+    id: "g-settle-mid",
+    title: "Interior Support Sinks Downwards (Middle Support)",
+    examPhrase: "Support B settles / sinks vertically downward by \u0394_B = 10 mm",
+    category: "settlement",
+    categoryName: "Settlement & Support Shifts",
+    mathCondition: "\\Delta_c = -\\delta, \\quad (\\Delta_l - \\Delta_c) = 0 - (-\\delta) = +\\delta > 0",
+    signLock: "Center sinking \u0394_c < 0 makes the bracket (\u0394_l - \u0394_c) strictly POSITIVE! Reversing this sign reverses the whole moment diagram.",
+    rules: [
+      "Three-Moment: The settlement term +6[(\\Delta_l - \\Delta_c)/L_l + (\\Delta_r - \\Delta_c)/L_r] becomes strongly POSITIVE (+). This relieves hogging moment over B and increases sagging moments in spans AB and BC.",
+      "Slope-Deflection: Member chord rotations are \\psi_{AB} = -\\Delta_B / L_{AB} (clockwise) and \\psi_{BC} = +\\Delta_B / L_{BC} (counter-clockwise).",
+      "Virtual Work (Determinate): Determinate structures experience zero internal stress from settlement! External work \\sum R_i \\Delta_i = 0 directly gives deflections."
+    ],
+    trapMnemonic: "Sinking middle support relieves tension on top! Hogging moment at B decreases algebraically."
+  },
+  {
+    id: "g-settle-end",
+    title: "Exterior Support Sinks Downwards (End Support)",
+    examPhrase: "Left-end support A sinks vertically downward by \u0394_A = 12 mm",
+    category: "settlement",
+    categoryName: "Settlement & Support Shifts",
+    mathCondition: "\\Delta_l = -\\delta, \\quad \\Delta_c = 0 \\implies (\\Delta_l - \\Delta_c) = -\\delta < 0",
+    signLock: "End sinking makes (\u0394_l - \u0394_c) NEGATIVE. This drags the beam down at the end and INCREASES hogging at the adjacent interior support B.",
+    rules: [
+      "Three-Moment: At support junction A-B-C, the term is +6[(-\\delta)/L_AB + 0] = -6\\delta / L_AB (NEGATIVE).",
+      "Slope-Deflection: Member chord rotation \\psi_{AB} = +\\Delta_A / L_{AB} (counter-clockwise).",
+      "Hardy Cross: Induced Fixed End Moment FEM_{AB} = FEM_{BA} = -6EI\\Delta / L^2 (or -3EI\\Delta/L^2 if far end is hinged)."
+    ],
+    trapMnemonic: "End support sinking drags down the outer tip and increases hogging over the first interior pier."
+  },
+  {
+    id: "g-far-pinned",
+    title: "Far-End Pinned or Roller Support (No Overhang)",
+    examPhrase: "Beam or frame ends with a simple pin / roller at D with no cantilever overhang",
+    category: "supports",
+    categoryName: "Support Boundary Conditions",
+    mathCondition: "M_{far} = 0, \\quad \\theta_{far} \\ne 0 \\text{ (free rotation)}",
+    signLock: "Exterior moment is unconditionally 0. In Slope-Deflection, eliminate \u03b8_{far} directly using the hinged-end equation.",
+    rules: [
+      "Hardy Cross: Apply modified member stiffness K = (3/4)(I/L) and lock Carry-Over Factor COF = 0! Never distribute back to a pin.",
+      "Slope-Deflection: Deploy modified equation: M_{near} = (M_{near}^F - M_{far}^F/2) - 3EK(\\theta_{near} - \\psi). Eliminates 1 entire equation from your system!",
+      "Three-Moment: No imaginary span needed at end D; simply plug M_D = 0 directly into the last 3-moment span equation."
+    ],
+    trapMnemonic: "3/4 Stiffness Rule: Cut stiffness to 3/4 and NEVER carry over to an exterior pin!"
+  },
+  {
+    id: "g-fixed-end",
+    title: "Built-In / Rigidly Clamped Support (Fixed Base)",
+    examPhrase: "Support A is built-in / fixed / rigidly encased into the abutment",
+    category: "supports",
+    categoryName: "Support Boundary Conditions",
+    mathCondition: "\\theta_A = 0, \\quad \\Delta_A = 0, \\quad M_A \\ne 0",
+    signLock: "Zero slope lock. Member rotation \u03b8_A = 0 eliminates a kinematic degree of freedom.",
+    rules: [
+      "Three-Moment: Add an imaginary zero-length outer span L_0 = 0 with flexural rigidity EI_0 = \\infty so that (L_0/EI_0) = 0 and 6A_0 x_0 / L_0 = 0. This provides the boundary equation for M_A.",
+      "Slope-Deflection: Substitute \\theta_A = 0 into member equations M_{AB} and M_{BA}.",
+      "Hardy Cross: Distribution Factor DF = 0 at fixed support (it acts as an infinite moment sink, absorbing carry-over without releasing)."
+    ],
+    trapMnemonic: "Fixed support is an infinite sink: DF = 0, rotation \u03b8 = 0, requires imaginary zero-span L_0 in 3-Moment."
+  },
+  {
+    id: "g-internal-hinge",
+    title: "Internal Hinge in Beam or Girder",
+    examPhrase: "Beam has an internal hinge at intermediate joint C (compound beam)",
+    category: "hinges",
+    categoryName: "Internal Releases & Hinges",
+    mathCondition: "M_C = 0, \\quad \\theta_C^- \\ne \\theta_C^+ \\text{ (discontinuous slope / kink angle exists)}",
+    signLock: "Bending moment is identically ZERO at the hinge. Slope has a discontinuity / kink \u0394\u03b8 = \u03b8_C^+ - \u03b8_C^-.",
+    rules: [
+      "Conjugate Beam Duality: Real internal hinge C transforms into a Conjugate Interior Roller C*! The vertical reaction R_C* at this conjugate roller equals the physical kink angle \u0394\u03b8.",
+      "Conjugate Deflection: The conjugate bending moment M_C* gives the true vertical deflection v_C at the hinge.",
+      "Statics Release: In determinacy, adds 1 special condition equation s = 1 (or c = 1) for \\sum M_C^{left} = 0."
+    ],
+    trapMnemonic: "Real hinge \u2192 Conjugate interior roller! Real roller \u2192 Conjugate internal hinge!"
+  },
+  {
+    id: "g-interior-roller-conj",
+    title: "Real Interior Continuous Roller Support",
+    examPhrase: "Beam rests continuously over an interior roller support B",
+    category: "hinges",
+    categoryName: "Internal Releases & Hinges",
+    mathCondition: "v_B = 0 \\implies M_B^* = 0, \\quad \\theta_B \\text{ is continuous}",
+    signLock: "Zero vertical deflection in real beam corresponds to zero bending moment in conjugate beam.",
+    rules: [
+      "Conjugate Beam Duality: Real interior roller transforms into a Conjugate Internal Hinge B*!",
+      "Conjugate Verification: Because a hinge cannot transmit bending moment, M_B^* = 0 automatically satisfies the boundary condition v_B = 0.",
+      "Conjugate Shear: The continuous conjugate shear V_B^* across the hinge gives the real continuous slope \u03b8_B."
+    ],
+    trapMnemonic: "Interior roller becomes conjugate hinge: enforces zero deflection (M* = 0) while permitting slope (V*)."
+  },
+  {
+    id: "g-free-end-conj",
+    title: "Real Free End Tip (Cantilever Overhang)",
+    examPhrase: "Free cantilever tip at point A (unsupported end)",
+    category: "supports",
+    categoryName: "Support Boundary Conditions",
+    mathCondition: "M_A = 0, \\quad V_A = 0, \\quad \\theta_A \\ne 0, \\quad v_A \\ne 0",
+    signLock: "Real beam has zero moment and zero shear at free tip.",
+    rules: [
+      "Conjugate Beam Duality: Real free end transforms into a Completely Fixed Conjugate Support A*!",
+      "Conjugate Reactions: The conjugate fixed reaction moment M_A^* gives the tip deflection v_A; the conjugate shear reaction V_A^* gives the tip slope \u03b8_A.",
+      "Dual Inversion: Real Fixed \u2194 Conjugate Free; Real Free \u2194 Conjugate Fixed."
+    ],
+    trapMnemonic: "Real Free Tip \u2192 Conjugate Fixed Support! Conjugate reaction moment is real deflection."
+  },
+  {
+    id: "g-truss-fab-error",
+    title: "Truss Member Fabrication Error (Lack of Fit)",
+    examPhrase: "Member CD was fabricated \u03b4L = 3 mm too long (or short)",
+    category: "trusses",
+    categoryName: "Trusses & Axial Systems",
+    mathCondition: "\\delta L > 0 \\text{ (too long / elongation)}, \\quad \\delta L < 0 \\text{ (too short / shrinkage)}",
+    signLock: "Fabrication error \u03b4L enters ONLY the misfabricated member. Tension unit virtual force n > 0; compression n < 0.",
+    rules: [
+      "Determinate Truss Deflection: 1 \\cdot \\Delta = \\sum n \\cdot \\delta L (summed only over misfabricated bars).",
+      "Indeterminate Truss (Force Method): Lack of fit enters the flexibility load displacement \\Delta_{10} = \\sum n_1 \\frac{N_0 L}{EA} + \\sum n_1 \\delta L.",
+      "Self-Stress: If redundant is the misfabricated bar itself (n_1 = +1), it induces redundant force X_1 = -\\delta L / \\delta_{11}."
+    ],
+    trapMnemonic: "Only misfabricated bars enter the \u2211 n \u03b4L sum! Stresses occur ONLY if the truss is indeterminate."
+  },
+  {
+    id: "g-truss-temp",
+    title: "Truss Temperature Differential",
+    examPhrase: "Top chord members experience a temperature rise of \u0394T = +35\u00b0C (\u03b1 = 12 \u00d7 10\u207b\u2076 /\u00b0C)",
+    category: "trusses",
+    categoryName: "Trusses & Axial Systems",
+    mathCondition: "\\delta L_{temp} = \\alpha (\\Delta T) L, \\quad \\Delta T > 0 \\implies \\text{expansion}",
+    signLock: "Temperature increase produces elongation (+). Temperature drop produces shortening (-).",
+    rules: [
+      "Determinate Truss Deflection: 1 \\cdot \\Delta = \\sum n \\alpha (\\Delta T) L. Notice EA does not appear!",
+      "Zero Thermal Stress in Determinate Trusses: Determinate trusses expand freely without ANY internal stress (N = 0).",
+      "Indeterminate Truss Thermal Redundant: Enters compatibility: X_1 = -(\\Delta_{10} + \\Delta_{1T}) / \\delta_{11}, where \\Delta_{1T} = \\sum n_1 \\alpha (\\Delta T) L."
+    ],
+    trapMnemonic: "Determinate trusses feel ZERO thermal stress! They only deflect. Indeterminate trusses develop massive stresses."
+  },
+  {
+    id: "g-truss-internal-cut",
+    title: "Pure Internal Redundant Bar Cut in Indeterminate Truss",
+    examPhrase: "Select member diagonal CH as the redundant force X_1 using the Force Method",
+    category: "trusses",
+    categoryName: "Trusses & Axial Systems",
+    mathCondition: "X_1 = N_{CH}, \\quad \\text{Cut member CH and apply equal and opposite unit forces } n_1 = +1",
+    signLock: "Internal pair of unit collinear forces equilibrate entirely within the truss joints.",
+    rules: [
+      "Zero Reaction Law: Because the virtual unit load is an INTERNAL pair of forces, ALL external support reactions are identically ZERO! (R_{Ax} = R_{Ay} = R_{By} = 0).",
+      "Flexibility Diagonal: \\delta_{11} = \\sum \\frac{n_1^2 L}{EA} (must include the redundant bar itself: 1^2 \\cdot L / EA).",
+      "Compatibility Equation: \\Delta_{10} + X_1 \\delta_{11} = 0 \\implies X_1 = -\\Delta_{10} / \\delta_{11}."
+    ],
+    trapMnemonic: "Zero-Reaction Law: Pure internal redundants have ZERO external reactions in the virtual system!"
+  },
+  {
+    id: "g-sway-equal-cols",
+    title: "Side-Sway Portal Frame with Equal Column Heights (h_1 = h_2 = h)",
+    examPhrase: "Unbraced portal frame ABCD with vertical columns of identical height h",
+    category: "frames",
+    categoryName: "Rigid Frames & Sway",
+    mathCondition: "\\psi_{AB} = \\psi_{CD} = -\\Delta / h, \\quad \\psi_{BC} = 0 \\text{ (girder does not tilt)}",
+    signLock: "For rightward sidesway (\u0394 > 0), columns lean clockwise \u2192 chord rotation \u03c8 is CLOCKWISE (-). Girder chord rotation is strictly 0.",
+    rules: [
+      "Slope-Deflection Chord Terms: Substitute -3\\Delta/h into column equations: M_{AB} = M_{AB}^F - 2EK_1(2\\theta_A + \\theta_B - 3\\Delta/h).",
+      "Girder Chord Term: Girder has \\psi_{BC} = 0 because columns are parallel and axially rigid (no vertical displacement of B and C).",
+      "Column Shear Equilibrium: \\sum H = 0 \\implies H_A + H_D + P_{lateral} = 0, where H = (M_{near} + M_{far})/h."
+    ],
+    trapMnemonic: "Columns sway together: \u03c8_col = -\u0394/h. Girder DOES NOT TILT: \u03c8_girder = 0!"
+  },
+  {
+    id: "g-sway-unequal-cols",
+    title: "Side-Sway Portal Frame with Unequal Column Heights (h_1 \u2260 h_2)",
+    examPhrase: "Portal frame built on a hillside: left column h_1 = 4m, right column h_2 = 3m",
+    category: "frames",
+    categoryName: "Rigid Frames & Sway",
+    mathCondition: "\\psi_1 = -\\Delta / h_1, \\quad \\psi_2 = -\\Delta / h_2, \\quad \\psi_1 \\ne \\psi_2",
+    signLock: "Horizontal drift \u0394 is equal at top girder level, but shorter column undergoes larger chord rotation and attracts higher shear!",
+    rules: [
+      "Unequal Chord Rotations: \\psi_{AB} = -\\Delta/4.0, while \\psi_{CD} = -\\Delta/3.0. Do NOT use the same \u03c8!",
+      "Column Shear Equilibrium: Divide each column moment sum by ITS OWN height: \\frac{M_{AB} + M_{BA}}{h_1} + \\frac{M_{CD} + M_{DC}}{h_2} + P_{lat} = 0.",
+      "Stiffness Attraction: The shorter column (h_2 = 3m) is (4/3) times stiffer and attracts significantly more lateral shear."
+    ],
+    trapMnemonic: "Different column heights \u2192 Different chord rotations \u03c8! Shorter column is stiffer and attracts shear."
+  },
+  {
+    id: "g-sway-inclined-legs",
+    title: "Gabled / Inclined-Leg Portal Frame (Instant Center Kinematics)",
+    examPhrase: "Portal frame with battered / inclined legs (angle \u03b1 from vertical)",
+    category: "frames",
+    categoryName: "Rigid Frames & Sway",
+    mathCondition: "\\Delta_{AB} = \\Delta \\sec\\alpha, \\quad \\Delta_{BC} = -\\Delta \\tan\\alpha \\implies \\psi_{girder} \\ne 0",
+    signLock: "Inclined legs force the top girder to displace both horizontally AND vertically!",
+    rules: [
+      "Girder Tilt Law: Girder BC chord rotation is NO LONGER ZERO (\\psi_{BC} \\ne 0)! It rotates by \\psi_{BC} = -(\\Delta \\tan\\alpha) / L_{BC}.",
+      "Kinematic Instant Center: Find the intersection point O of the inclined column axes to write virtual displacement or equilibrium equations.",
+      "Moment Equilibrium: Take moments about the instant center O so column axial thrusts do not enter the sway equilibrium equation."
+    ],
+    trapMnemonic: "Inclined legs tilt the girder! Girder chord rotation \u03c8_girder is non-zero. Use instant center O."
+  },
+  {
+    id: "g-symmetry-loading",
+    title: "Symmetrical Frame Under Symmetrical Gravity Loading",
+    examPhrase: "Symmetrical portal frame with central point load P or uniform UDL w",
+    category: "frames",
+    categoryName: "Symmetry & Fast Reductions",
+    mathCondition: "\\Delta = 0 \\text{ (no sidesway)}, \\quad \\theta_B = -\\theta_C",
+    signLock: "Sidesway is strictly prohibited by symmetry! Joint rotations at mirror joints are equal and opposite.",
+    rules: [
+      "Slope-Deflection Speedup: Sway \\Delta drops to 0. With \\theta_C = -\\theta_B, the problem collapses from 3 unknowns (\\theta_B, \\theta_C, \\Delta) to just ONE unknown (\\theta_B)!",
+      "Hardy Cross Half-Frame: Modify beam stiffness at centerline: for symmetrical rotation, beam stiffness is K_{sym} = 2EI/L (or analyze half span with guided roller).",
+      "Zero Shear Equation Needed: Completely skip the column shear equilibrium equation!"
+    ],
+    trapMnemonic: "Symmetry kills sidesway! Reduces 3 simultaneous equations to 1 single equation."
+  },
+  {
+    id: "g-antisymmetry-loading",
+    title: "Symmetrical Frame Under Anti-Symmetrical Lateral Loading",
+    examPhrase: "Symmetrical frame with lateral horizontal wind load at girder level",
+    category: "frames",
+    categoryName: "Symmetry & Fast Reductions",
+    mathCondition: "\\theta_B = +\\theta_C, \\quad \\Delta \\ne 0, \\quad v_{mid} = 0, \\quad M_{mid} = 0",
+    signLock: "Joint rotations are equal in magnitude and sign. Middle of girder is a point of inflection (zero moment).",
+    rules: [
+      "Point of Inflection: At the centerline of the girder, bending moment M = 0 and vertical deflection v = 0.",
+      "Half-Span Model: Model only half the frame with an internal pin/roller at mid-span girder.",
+      "Hardy Cross Anti-Symmetry: Modified girder stiffness is K_{anti} = (6EI/L) / 2 = 3EI/L."
+    ],
+    trapMnemonic: "Anti-symmetry creates zero moment at centerline: M_{center} = 0!"
+  },
+  {
+    id: "g-overhang-cantilever",
+    title: "Overhanging Cantilever at Beam or Frame Joint",
+    examPhrase: "Beam extends past support B with an overhang of length a carrying load P",
+    category: "beams",
+    categoryName: "Support Boundary Conditions",
+    mathCondition: "M_{overhang} = -P \\cdot a \\text{ (statically determinate)}",
+    signLock: "Overhang produces hogging negative moment (-Pa). It is a statically determinate boundary condition, NOT an unknown!",
+    rules: [
+      "Three-Moment Equation: Never add an imaginary span for an overhang! Simply set M_B equal to the known overhang moment -Pa in the adjacent span equation.",
+      "Hardy Cross: Cantilever has zero stiffness for distribution (DF_{overhang} = 0). Apply the unbalanced overhang moment directly into joint B as an external fixed moment.",
+      "Slope-Deflection: Joint equilibrium at B: M_{BA} + M_{overhang} = 0 \\implies M_{BA} = +Pa."
+    ],
+    trapMnemonic: "Overhang moments are KNOWN before you start! Never treat them as redundant unknowns."
+  }
+];
+
   </script>
   <script>
 // COTM 3101: Theory of Structures - Master Academic Controller & Futuristic Cockpit Engine
@@ -7043,6 +8124,15 @@ let examTimeSeconds = 600; // 10 minutes
 let examAnswers = {};
 let examFinished = false;
 
+// Method Decider & Combat Trainer States
+let currentTrainerTab = 'triage'; // 'triage', 'givens', 'scenarios', 'protocol'
+let trainerTriageStructure = 'cont_beam';
+let trainerTriageObjective = 'moments';
+let trainerTriageModifiers = { settlement: true };
+let trainerGivensSearch = '';
+let trainerGivensFilter = 'all';
+let currentTrainerScenarioIdx = 0;
+
 // User Persistent State
 let userState = {
   xp: 0,
@@ -7063,6 +8153,7 @@ function loadState() {
       if (!userState.errors) userState.errors = [];
       if (!userState.flashcardRatings) userState.flashcardRatings = {};
       if (!userState.watchedVideos) userState.watchedVideos = {};
+      if (!userState.trainerSolved) userState.trainerSolved = {};
     } catch (e) {
       console.error(e);
     }
@@ -7198,6 +8289,10 @@ function renderSidebar() {
   if (cockpitBtn) {
     cockpitBtn.classList.toggle('active', currentAppView === 'dashboard');
   }
+  const trainerBtn = document.getElementById('sidebarTrainerBtn');
+  if (trainerBtn) {
+    trainerBtn.classList.toggle('active', currentAppView === 'trainer');
+  }
   if (!container) return;
 
   container.innerHTML = COURSE_MODULES.map((m, idx) => {
@@ -7239,6 +8334,7 @@ function renderMainView() {
     else if (currentAppView === 'atlas') renderFormulaAtlasView(viewport);
     else if (currentAppView === 'exam') renderExamSimulatorView(viewport);
     else if (currentAppView === 'errors') renderErrorNotebookView(viewport);
+    else if (currentAppView === 'trainer') renderTrainerCombatView(viewport);
   }
 
   updateTopNavUI();
@@ -7351,6 +8447,17 @@ function renderDashboardView(viewport) {
       <button class="btn-primary" style="margin-top:0;" onclick="${recAction}">
         ${recBtn}
       </button>
+    </div>
+
+    
+    <!-- METHOD DECIDER & COMBAT TRAINER FEATURE BANNER -->
+    <div class="trainer-cta-banner" onclick="switchAppView('trainer')">
+      <div class="trainer-cta-content">
+        <div class="trainer-cta-badge">🥋 NEW: EXAM COMBAT SUITE</div>
+        <h3>Method Decider & 1000x Accuracy Combat Trainer</h3>
+        <p>Scan exam givens into boundary conditions, run 5-second statical triage (Ds vs Dk), deploy the exact formula arsenal, and master tricky AAU exam traps.</p>
+      </div>
+      <button class="btn-primary" style="white-space:nowrap;">Enter Combat Arena ➔</button>
     </div>
 
     <!-- 4-METRIC COCKPIT OVERVIEW -->
@@ -9043,6 +10150,770 @@ function clearError(idx) {
 }
 
 // =========================================================================
+
+// =========================================================================
+// 🥋 METHOD DECIDER & TACTICAL COMBAT TRAINER ENGINE (COTM 3101)
+// =========================================================================
+
+function switchTrainerTab(tab) {
+  currentTrainerTab = tab;
+  renderTrainerCombatView(document.getElementById('viewport'));
+}
+
+function setTriageStructure(val) {
+  trainerTriageStructure = val;
+  renderTrainerCombatView(document.getElementById('viewport'));
+}
+
+function setTriageObjective(val) {
+  trainerTriageObjective = val;
+  renderTrainerCombatView(document.getElementById('viewport'));
+}
+
+function toggleTriageModifier(key) {
+  trainerTriageModifiers[key] = !trainerTriageModifiers[key];
+  renderTrainerCombatView(document.getElementById('viewport'));
+}
+
+function filterTrainerGivens(cat) {
+  trainerGivensFilter = cat;
+  renderTrainerCombatView(document.getElementById('viewport'));
+}
+
+function handleTrainerGivensSearch(query) {
+  trainerGivensSearch = query;
+  renderTrainerCombatView(document.getElementById('viewport'));
+}
+
+function selectTrainerScenario(idx) {
+  currentTrainerScenarioIdx = idx;
+  renderTrainerCombatView(document.getElementById('viewport'));
+}
+
+function getTriageRecommendation(structure, objective, modifiers) {
+  modifiers = modifiers || {};
+  let rec = {
+    method: "Three-Moment Equation (Clapeyron)",
+    badge: "⚡ #1 Fastest Path",
+    advantageScore: "95% Speed Advantage",
+    ds: "D_s = 2 (Reactions)",
+    dk: "D_k = 3 (Rotations)",
+    whyBest: "Direct row-by-row equation assembly coupling only 3 adjacent supports in a tridiagonal system. Zero kinematic rotations to calculate.",
+    whyOthersFail: "Force Method requires a 13-member table and dense 3x3 flexibility matrix inversion. Slope-Deflection requires setting up 6 member equations plus joint balance equations.",
+    deadlyTrap: "Middle support settlement sign: when center support sinks (Δ_c < 0), the bracket (Δ_l - Δ_c) becomes POSITIVE (+). Reversing this sign is the #1 exam failure mode!",
+    goldenRule: "Banded tridiagonal matrix: each equation isolates 3 supports directly. Add imaginary span L0 = 0 (EI0 = ∞) for fixed ends.",
+    formulas: [
+      {
+        name: "Clapeyron 3-Moment Equation",
+        latex: "M_l \\left(\\frac{L}{EI}\\right)_l + 2M_c \\left[\\left(\\frac{L}{EI}\\right)_l + \\left(\\frac{L}{EI}\\right)_r\\right] + M_r \\left(\\frac{L}{EI}\\right)_r = -\\left(\\frac{6A_l x_l}{L_l EI_l} + \\frac{6A_r x_r}{L_r EI_r}\\right) + 6\\left[\\frac{\\Delta_l - \\Delta_c}{L_l} + \\frac{\\Delta_r - \\Delta_c}{L_r}\\right]"
+      },
+      {
+        name: "UDL Load Term",
+        latex: "\\frac{6Ax}{L} = \\frac{w L^3}{4}"
+      },
+      {
+        name: "Point Load Term",
+        latex: "\\frac{6Ax}{L} = \\frac{P a (L^2 - a^2)}{L}"
+      }
+    ]
+  };
+
+  if (structure === 'beam_det') {
+    if (objective === 'deflection' || objective === 'slope') {
+      if (modifiers.varying_ei || modifiers.settlement) {
+        rec.method = "Virtual Work (Unit Load Method)";
+        rec.badge = "🎯 Maximum Precision";
+        rec.advantageScore = "Handles Varying EI Directly";
+        rec.ds = "D_s = 0";
+        rec.dk = "N/A (Determinate)";
+        rec.whyBest = "Vereshchagin's graphical multiplication bypasses differential equations entirely. Split non-prismatic sections cleanly: ∫ m (M/EI) dx = ∑ (Am · mc) / EI.";
+        rec.whyOthersFail = "Double integration requires 4 integration constants for stepped beams and leads to algebra errors.";
+        rec.deadlyTrap = "Vereshchagin Centroid Trap: In ∫ m (M/EI) dx = (1/EI) Am · mc, the ordinate mc MUST be read on the linear m diagram under the centroid of M! Never the reverse.";
+        rec.goldenRule = "Linear ordinate mc under curved centroid: Am · mc / EI.";
+        rec.formulas = [
+          { name: "Vereshchagin Multiplication", latex: "1 \\cdot \\Delta = \\int m \\frac{M}{EI} dx = \\sum \\frac{A_M \\cdot m_c}{EI}" }
+        ];
+      } else {
+        rec.method = "Conjugate Beam Method";
+        rec.badge = "🌉 Elegant Statics Duality";
+        rec.advantageScore = "Direct Shear & Moment Analogy";
+        rec.ds = "D_s = 0";
+        rec.dk = "N/A";
+        rec.whyBest = "Replaces calculus with simple statics: Conjugate Shear V* = Real Slope θ; Conjugate Moment M* = Real Deflection v. Load is M/EI diagram.";
+        rec.whyOthersFail = "Moment-Area method requires tedious tangent deviation sketches and geometric subtractions.";
+        rec.deadlyTrap = "Real hinge becomes conjugate roller; Real roller becomes conjugate hinge. Sagging M/EI is UPWARD (+); Hogging M/EI is DOWNWARD (-).";
+        rec.goldenRule = "V* = θ, M* = v. Real support transforms into conjugate dual.";
+        rec.formulas = [
+          { name: "Conjugate Beam Duality", latex: "V^*(x) = \\theta(x), \\quad M^*(x) = v(x), \\quad w^*(x) = \\frac{M(x)}{EI}" }
+        ];
+      }
+    }
+  } else if (structure === 'beam_hinge') {
+    rec.method = "Conjugate Beam Method";
+    rec.badge = "🌉 Unbeatable for Hinged Beams";
+    rec.advantageScore = "99% Faster than Integration";
+    rec.ds = "D_s = 0 (Condition Equation s=1)";
+    rec.dk = "Discontinuous Slope at Hinge";
+    rec.whyBest = "Conjugate duality naturally handles slope kinks: the conjugate reaction R_C* at the conjugate roller gives the kink angle Δθ directly, and M_C* gives deflection v_C.";
+    rec.whyOthersFail = "Slope-Deflection is redundant for determinate structures; double integration splits into multiple coordinate systems.";
+    rec.deadlyTrap = "Assuming slope is continuous across real hinge. The kink angle is Δθ = θ_C^+ - θ_C^- = R_C*. Real internal hinge transforms into conjugate interior roller!";
+    rec.goldenRule = "Real Hinge → Conjugate Roller! Reaction R* = Kink Angle Δθ.";
+    rec.formulas = [
+      { name: "Kink Angle Duality", latex: "\\Delta\\theta = R_C^*, \\quad v_C = M_C^*" }
+    ];
+  } else if (structure === 'truss_det') {
+    rec.method = "Virtual Work (Unit Load Method)";
+    rec.badge = "📐 Pure Deterministic Statics";
+    rec.advantageScore = "Standard Tabular Tabulation";
+    rec.ds = "D_s = 0 (m + r = 2j)";
+    rec.dk = "N/A";
+    rec.whyBest = "Tabular summation (n · N · L / EA) handles mechanical loads, thermal gradients, and fabrication errors simultaneously in 1 table.";
+    rec.whyOthersFail = "Castigliano's theorem requires taking partial derivatives of every member force expression.";
+    rec.deadlyTrap = "Real bar forces N from thermal or fabrication errors in DETERMINATE trusses are ZERO! They do not cause internal stress, only deflection.";
+    rec.goldenRule = "1 · Δ = ∑ (n · N · L / EA) + ∑ n α (ΔT) L + ∑ n δL.";
+    rec.formulas = [
+      { name: "Truss Virtual Work", latex: "1 \\cdot \\Delta = \\sum n \\frac{N L}{E A} + \\sum n \\alpha (\\Delta T) L + \\sum n \\delta L" }
+    ];
+  } else if (structure === 'truss_indet') {
+    rec.method = "Consistent Deformations (Force Method)";
+    rec.badge = "⚡ Tabular Force Inversion";
+    rec.advantageScore = "Isolates Pure Redundant";
+    rec.ds = "D_s = (m + r) - 2j (Typically 1 or 2)";
+    rec.dk = "D_k = 2j - r (High kinematic degrees)";
+    rec.whyBest = "Since D_s << D_k (e.g. D_s=1 vs D_k=8), Force Method requires solving only a 1x1 equation: Δ_10 + X_1 δ_11 = 0.";
+    rec.whyOthersFail = "Displacement/Stiffness method requires setting up an 8x8 matrix by hand on an exam.";
+    rec.deadlyTrap = "When selecting an internal diagonal bar as redundant, virtual reactions are strictly ZERO! Remember to include the redundant bar itself in δ_11.";
+    rec.goldenRule = "Zero-reaction law for internal redundants: X_1 = -Δ_10 / δ_11.";
+    rec.formulas = [
+      { name: "Truss Compatibility", latex: "\\Delta_{10} + X_1 \\delta_{11} = 0 \\implies X_1 = -\\frac{\\Delta_{10}}{\\delta_{11}}, \\quad \\delta_{11} = \\sum \\frac{n_1^2 L}{EA}" }
+    ];
+  } else if (structure === 'frame_nosway') {
+    if (modifiers.pinned_end || modifiers.symmetry) {
+      rec.method = "Hardy Cross (Moment Distribution) with 3/4 Stiffness";
+      rec.badge = "🔄 Zero Equation Inversion";
+      rec.advantageScore = "Solves in 3 Tabular Cycles";
+      rec.ds = "D_s = 3";
+      rec.dk = "D_k = 2 (θ_B, θ_C)";
+      rec.whyBest = "With no sidesway and modified 3/4 stiffness at pinned ends, Hardy Cross converges in 3 simple distribution cycles without writing any simultaneous equations!";
+      rec.whyOthersFail = "Force Method requires 3 redundant cuts and inverting a 3x3 flexibility matrix.";
+      rec.deadlyTrap = "Forgetting to set Carry-Over Factor COF = 0 to a pinned support after using K = (3/4)(I/L)!";
+      rec.goldenRule = "3/4 Rule: Modified stiffness K = (3/4)(I/L) locks COF = 0 forever.";
+      rec.formulas = [
+        { name: "Modified Stiffness", latex: "K_{mod} = \\frac{3}{4}\\frac{I}{L}, \\quad COF = 0, \\quad DF_i = \\frac{K_i}{\\sum K}" }
+      ];
+    } else {
+      rec.method = "Slope-Deflection Method";
+      rec.badge = "📐 Systematic Joint Equilibrium";
+      rec.advantageScore = "Exact Closed-Form Solution";
+      rec.ds = "D_s = 3";
+      rec.dk = "D_k = 2 (θ_B, θ_C)";
+      rec.whyBest = "With Δ = 0, Slope-Deflection gives exactly 2 joint equations (∑ M_B = 0, ∑ M_C = 0) with zero shear equation overhead.";
+      rec.whyOthersFail = "Force Method requires cutting closed loops and computing Vereshchagin integrals for 3 redundants.";
+      rec.deadlyTrap = "Statical sign convention: θ is (+) Clockwise, M is (+) Counter-Clockwise on member! MINUS sign in M_ij = M^F - 2EK(2θ_i + θ_j).";
+      rec.goldenRule = "COTM 3101 Convention: Clockwise θ, Counter-Clockwise member moment.";
+      rec.formulas = [
+        { name: "Slope-Deflection (No Sway)", latex: "M_{ij} = M_{ij}^F - 2EK(2\\theta_i + \\theta_j)" }
+      ];
+    }
+  } else if (structure === 'frame_sway') {
+    rec.method = "Slope-Deflection Method with Column Shear Equation";
+    rec.badge = "🌪️ Rigorous Sidesway Formulation";
+    rec.advantageScore = "Direct Equilibrium Formulation";
+    rec.ds = "D_s = 3";
+    rec.dk = "D_k = 3 (θ_B, θ_C, Δ)";
+    rec.whyBest = "Slope-Deflection handles sway systematically: 2 joint moment equations + 1 horizontal column shear equation (∑ H = 0).";
+    rec.whyOthersFail = "Hardy Cross with sway requires two separate distribution stages (non-sway + unit sway) followed by superposition balancing.";
+    rec.deadlyTrap = "Column chord rotation ψ = -Δ/h (clockwise is negative); Girder chord rotation ψ_girder = 0 for parallel equal columns.";
+    rec.goldenRule = "Column shear: (M_AB + M_BA)/h1 + (M_CD + M_DC)/h2 + P_lat = 0.";
+    rec.formulas = [
+      { name: "Slope-Deflection with Sway", latex: "M_{AB} = M_{AB}^F - 2EK\\left(2\\theta_A + \\theta_B - \\frac{3\\Delta}{h}\\right)" },
+      { name: "Column Shear Equation", latex: "\\sum H = 0 \\implies \\frac{M_{AB} + M_{BA}}{h} + \\frac{M_{CD} + M_{DC}}{h} + P_{lat} = 0" }
+    ];
+  } else if (structure === 'frame_unequal') {
+    rec.method = "Slope-Deflection with Kinematic Instant Centers";
+    rec.badge = "📐 Sloping / Unequal Leg Master";
+    rec.advantageScore = "Coupled Sway Kinematics";
+    rec.ds = "D_s = 3";
+    rec.dk = "D_k = 3 (θ_B, θ_C, Δ)";
+    rec.whyBest = "Unequal columns have different chord rotations: ψ1 = -Δ/h1 ≠ ψ2 = -Δ/h2. Slope-Deflection directly incorporates these distinct rotations.";
+    rec.whyOthersFail = "Hardy Cross sway equations become prohibitively complex with unequal column heights.";
+    rec.deadlyTrap = "Using the same chord rotation for both columns! Shorter column is stiffer and undergoes larger chord rotation.";
+    rec.goldenRule = "ψ1 = -Δ/h1, ψ2 = -Δ/h2. Shorter column attracts more shear.";
+    rec.formulas = [
+      { name: "Unequal Sway Equations", latex: "\\psi_1 = -\\frac{\\Delta}{h_1}, \\quad \\psi_2 = -\\frac{\\Delta}{h_2}" }
+    ];
+  }
+
+  return rec;
+}
+
+function checkTrainerScenarioAnswer(scenIdx, qIdx, optIdx) {
+  const scenario = METHOD_TRAINER_SCENARIOS[scenIdx];
+  if (!scenario) return;
+  const q = scenario.questions[qIdx];
+  if (!q) return;
+  const chosen = q.options[optIdx];
+  const feedbackEl = document.getElementById(`scenFeedback_${scenIdx}_${qIdx}`);
+  if (!feedbackEl) return;
+
+  feedbackEl.style.display = 'block';
+
+  if (chosen.correct) {
+    const key = `${scenario.id}_q${qIdx}`;
+    if (!userState.trainerSolved) userState.trainerSolved = {};
+    const wasAlreadySolved = !!userState.trainerSolved[key];
+
+    if (!wasAlreadySolved) {
+      userState.trainerSolved[key] = true;
+      userState.xp += 100;
+      userState.streak += 1;
+      saveState();
+      updateStatsHUD();
+    }
+
+    feedbackEl.className = 'feedback-banner';
+    feedbackEl.style.background = 'rgba(16, 185, 129, 0.2)';
+    feedbackEl.style.border = '1px solid var(--success)';
+    feedbackEl.style.color = '#a7f3d0';
+    feedbackEl.innerHTML = `
+      <div style="font-weight:700; font-size:0.95rem; margin-bottom:4px; display:flex; align-items:center; gap:6px;">
+        <span>✅</span> Master Tactical Decision! (+100 XP)
+      </div>
+      <div style="font-size:0.88rem; line-height:1.5;">${chosen.explain}</div>
+    `;
+
+    // Check if entire scenario is mastered
+    const allSolved = scenario.questions.every((_, idx) => userState.trainerSolved[`${scenario.id}_q${idx}`]);
+    if (allSolved && typeof triggerConfetti === 'function') {
+      triggerConfetti();
+    }
+  } else {
+    feedbackEl.className = 'feedback-banner';
+    feedbackEl.style.background = 'rgba(244, 63, 94, 0.2)';
+    feedbackEl.style.border = '1px solid var(--danger)';
+    feedbackEl.style.color = '#fecdd3';
+    feedbackEl.innerHTML = `
+      <div style="font-weight:700; font-size:0.95rem; margin-bottom:4px; display:flex; align-items:center; gap:6px;">
+        <span>❌</span> Fatal Exam Trap Detected!
+      </div>
+      <div style="font-size:0.88rem; line-height:1.5;">${chosen.explain}</div>
+    `;
+  }
+
+  setTimeout(() => {
+    renderMathInDOM(feedbackEl);
+  }, 10);
+}
+
+function renderTrainerCombatView(viewport) {
+  if (!viewport) return;
+
+  viewport.innerHTML = `
+    <div class="card trainer-main-card">
+      <div class="trainer-header">
+        <div>
+          <h2 style="display:flex; align-items:center; gap:10px; margin:0 0 6px;">
+            <span style="font-size:1.6rem;">🥋</span> Method Decider & Tactical Combat Trainer
+          </h2>
+          <p style="color:var(--text-muted); font-size:0.92rem; margin:0; line-height:1.5;">
+            The 1000x Accuracy Engine for COTM 3101: Decode exam givens into boundary conditions, run 5-second statical triage (Ds vs Dk), deploy the exact formula arsenal, and conquer hard AAU exam problems.
+          </p>
+        </div>
+        <div class="trainer-header-stats">
+          <span class="stat-pill" style="color:var(--accent); border-color:var(--accent);">
+            ⚡ 5 Combat Scenarios
+          </span>
+          <span class="stat-pill" style="color:var(--gold); border-color:var(--gold);">
+            🔍 16 Exam Decoders
+          </span>
+        </div>
+      </div>
+
+      <!-- TRAINER SUB-NAVIGATION TABS -->
+      <div class="trainer-tabs-bar">
+        <button class="trainer-tab-btn ${currentTrainerTab === 'triage' ? 'active' : ''}" onclick="switchTrainerTab('triage')">
+          ⚡ 1. Statical Triage Decider
+        </button>
+        <button class="trainer-tab-btn ${currentTrainerTab === 'givens' ? 'active' : ''}" onclick="switchTrainerTab('givens')">
+          🔍 2. Givens Scanner & Decoder
+        </button>
+        <button class="trainer-tab-btn ${currentTrainerTab === 'scenarios' ? 'active' : ''}" onclick="switchTrainerTab('scenarios')">
+          ⚔️ 3. Scenario Combat Arena
+        </button>
+        <button class="trainer-tab-btn ${currentTrainerTab === 'protocol' ? 'active' : ''}" onclick="switchTrainerTab('protocol')">
+          🧠 4. 1000x Master Protocol
+        </button>
+      </div>
+
+      <!-- TAB CONTENT CONTAINER -->
+      <div id="trainerTabContent" class="trainer-tab-content">
+        ${renderTrainerTabBody()}
+      </div>
+    </div>
+  `;
+
+  setTimeout(() => {
+    renderMathInDOM(viewport);
+  }, 20);
+}
+
+function renderTrainerTabBody() {
+  if (currentTrainerTab === 'triage') {
+    return renderTrainerTriageTab();
+  } else if (currentTrainerTab === 'givens') {
+    return renderTrainerGivensTab();
+  } else if (currentTrainerTab === 'scenarios') {
+    return renderTrainerScenariosTab();
+  } else if (currentTrainerTab === 'protocol') {
+    return renderTrainerProtocolTab();
+  }
+  return '';
+}
+
+function renderTrainerTriageTab() {
+  const rec = getTriageRecommendation(trainerTriageStructure, trainerTriageObjective, trainerTriageModifiers);
+
+  const structures = [
+    { id: 'cont_beam', name: 'Continuous Multi-Span Beam' },
+    { id: 'frame_nosway', name: 'Rigid Frame (No-Sway / Symmetrical)' },
+    { id: 'frame_sway', name: 'Rigid Portal Frame (Side-Sway)' },
+    { id: 'frame_unequal', name: 'Rigid Frame (Unequal Columns / Sloping)' },
+    { id: 'truss_det', name: 'Plane Truss (Determinate)' },
+    { id: 'truss_indet', name: 'Plane Truss (Indeterminate)' },
+    { id: 'beam_det', name: 'Determinate Beam (Deflection/Slope)' },
+    { id: 'beam_hinge', name: 'Compound Beam with Internal Hinge' }
+  ];
+
+  const objectives = [
+    { id: 'moments', name: 'Support / End Moments (M)' },
+    { id: 'deflection', name: 'Deflection / Displacement (Δ, v)' },
+    { id: 'slope', name: 'Rotation / Slope (θ)' },
+    { id: 'axial', name: 'Bar Axial Forces (N)' }
+  ];
+
+  const modifiersList = [
+    { id: 'settlement', label: 'Support Settlement (Δ ≠ 0)' },
+    { id: 'pinned_end', label: 'Far End Pinned / Roller (M = 0)' },
+    { id: 'varying_ei', label: 'Varying Rigidity (EI₁ ≠ EI₂)' },
+    { id: 'symmetry', label: 'Symmetrical Loading & Frame' },
+    { id: 'temp_fab', label: 'Thermal ΔT or Lack of Fit δL' },
+    { id: 'lateral_load', label: 'Horizontal Lateral Wind Load' }
+  ];
+
+  return `
+    <div class="triage-grid">
+      <!-- LEFT: INTERACTIVE DECISION MATRIX CONTROLS -->
+      <div class="triage-control-card">
+        <h4 style="margin:0 0 12px; color:#fff; display:flex; align-items:center; gap:8px;">
+          <span>🎯</span> Step 1: Input Problem Anatomy
+        </h4>
+
+        <div style="margin-bottom:14px;">
+          <label class="control-label">Structure Family:</label>
+          <select class="triage-select" onchange="setTriageStructure(this.value)">
+            ${structures.map(s => `
+              <option value="${s.id}" ${s.id === trainerTriageStructure ? 'selected' : ''}>${s.name}</option>
+            `).join('')}
+          </select>
+        </div>
+
+        <div style="margin-bottom:14px;">
+          <label class="control-label">Target Question (What must be found?):</label>
+          <div class="triage-chip-group">
+            ${objectives.map(o => `
+              <button class="triage-chip ${o.id === trainerTriageObjective ? 'active' : ''}" onclick="setTriageObjective('${o.id}')">
+                ${o.name}
+              </button>
+            `).join('')}
+          </div>
+        </div>
+
+        <div>
+          <label class="control-label">Special Givens & Complications:</label>
+          <div class="triage-chip-group">
+            ${modifiersList.map(m => `
+              <button class="triage-chip ${trainerTriageModifiers[m.id] ? 'active modifier-active' : ''}" onclick="toggleTriageModifier('${m.id}')">
+                ${trainerTriageModifiers[m.id] ? '✓ ' : '+ '}${m.label}
+              </button>
+            `).join('')}
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: AI STATICAL TRIAGE RECOMMENDATION DOSSIER -->
+      <div class="triage-result-card">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:10px; margin-bottom:12px;">
+          <div>
+            <span class="stat-pill" style="color:var(--accent); font-weight:700; margin-bottom:6px; display:inline-block;">${rec.badge}</span>
+            <h3 style="margin:4px 0; color:#fff; font-size:1.3rem;">${rec.method}</h3>
+          </div>
+          <span class="stat-pill" style="color:var(--gold); border-color:var(--gold); font-size:0.85rem;">${rec.advantageScore}</span>
+        </div>
+
+        <div class="triage-stat-row">
+          <div class="triage-stat-box">
+            <span class="triage-stat-label">Statical Indeterminacy</span>
+            <span class="triage-stat-value">${rec.ds}</span>
+          </div>
+          <div class="triage-stat-box">
+            <span class="triage-stat-label">Kinematic Indeterminacy</span>
+            <span class="triage-stat-value">${rec.dk}</span>
+          </div>
+        </div>
+
+        <div class="concept-callout" style="border-left-color:var(--accent); margin:12px 0;">
+          <h5 style="margin:0 0 4px; color:#fff;">💡 Why This Method Dominates:</h5>
+          <p style="margin:0; font-size:0.88rem; color:var(--text-muted); line-height:1.5;">${rec.whyBest}</p>
+        </div>
+
+        <div class="concept-callout" style="border-left-color:var(--danger); margin:12px 0; background:rgba(239, 68, 68, 0.08);">
+          <h5 style="margin:0 0 4px; color:#fca5a5;">⚠️ Fatal Exam Trap to Dodge:</h5>
+          <p style="margin:0; font-size:0.88rem; color:#fecdd3; line-height:1.5;">${rec.deadlyTrap}</p>
+        </div>
+
+        <div class="concept-callout" style="border-left-color:var(--gold); margin:12px 0; background:rgba(245, 158, 11, 0.08);">
+          <h5 style="margin:0 0 4px; color:#fde68a;">🚫 Why Alternative Methods Fail on Timed Exams:</h5>
+          <p style="margin:0; font-size:0.88rem; color:var(--text-muted); line-height:1.5;">${rec.whyOthersFail}</p>
+        </div>
+
+        <div style="margin-top:14px;">
+          <h5 style="margin:0 0 8px; color:#fff; display:flex; align-items:center; gap:6px;">
+            <span>🧮</span> Formula Arsenal to Deploy:
+          </h5>
+          ${rec.formulas.map(f => `
+            <div class="formula-banner math-display-card" style="margin-bottom:8px;">
+              <div style="font-size:0.78rem; color:var(--accent); margin-bottom:4px; font-weight:600;">${f.name}</div>
+              <div class="math-card-body">${formatFormula(f.latex)}</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderTrainerGivensTab() {
+  const allGivens = (typeof GIVENS_DECODER_DATABASE !== 'undefined') ? GIVENS_DECODER_DATABASE : [];
+  
+  let filtered = allGivens;
+  if (trainerGivensFilter !== 'all') {
+    filtered = filtered.filter(g => g.category === trainerGivensFilter);
+  }
+
+  if (trainerGivensSearch.trim()) {
+    const q = trainerGivensSearch.toLowerCase();
+    filtered = filtered.filter(g =>
+      g.title.toLowerCase().includes(q) ||
+      g.examPhrase.toLowerCase().includes(q) ||
+      g.signLock.toLowerCase().includes(q) ||
+      g.trapMnemonic.toLowerCase().includes(q)
+    );
+  }
+
+  const categories = [
+    { id: 'all', name: 'All Exam Givens' },
+    { id: 'settlement', name: 'Settlement & Shifts' },
+    { id: 'supports', name: 'Boundary Supports' },
+    { id: 'hinges', name: 'Internal Hinges' },
+    { id: 'trusses', name: 'Trusses & Errors' },
+    { id: 'frames', name: 'Rigid Frames & Sway' },
+    { id: 'beams', name: 'Beams & Overhangs' }
+  ];
+
+  return `
+    <div>
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:14px;">
+        <div>
+          <h3 style="margin:0 0 4px; color:#fff;">🔍 Exam Givens Scanner & Mathematical Decoder</h3>
+          <p style="margin:0; font-size:0.88rem; color:var(--text-muted);">
+            Translate English exam phrasing into strict mathematical boundary conditions, sign locks, and formula adjustments.
+          </p>
+        </div>
+        <div style="position:relative; min-width:260px; flex:1; max-width:380px;">
+          <input 
+            type="text" 
+            class="triage-select" 
+            placeholder="Search keywords: settle, hinge, chord, sway, temp..." 
+            value="${trainerGivensSearch}"
+            oninput="handleTrainerGivensSearch(this.value)"
+            style="padding-left:32px;"
+          />
+          <span style="position:absolute; left:10px; top:50%; transform:translateY(-50%); color:var(--text-dim);">🔍</span>
+        </div>
+      </div>
+
+      <!-- CATEGORY FILTER CHIPS -->
+      <div class="givens-filter-bar">
+        ${categories.map(c => `
+          <button class="triage-chip ${trainerGivensFilter === c.id ? 'active' : ''}" onclick="filterTrainerGivens('${c.id}')">
+            ${c.name}
+          </button>
+        `).join('')}
+      </div>
+
+      <!-- GIVENS GRID -->
+      <div class="givens-grid">
+        ${filtered.length === 0 ? `
+          <div class="concept-callout" style="grid-column:1/-1;">
+            No matching exam phrases found for "${trainerGivensSearch}". Try searching "settle", "pin", "hinge", or "sway".
+          </div>
+        ` : filtered.map(g => `
+          <div class="givens-card">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px; margin-bottom:8px;">
+              <h4 style="margin:0; color:#fff; font-size:1.02rem;">${g.title}</h4>
+              <span class="stat-pill" style="font-size:0.72rem; color:var(--accent);">${g.categoryName}</span>
+            </div>
+
+            <div class="exam-phrase-quote">
+              <span style="color:var(--gold); font-weight:700;">Exam Phrasing:</span> "${g.examPhrase}"
+            </div>
+
+            <div class="formula-banner math-display-card" style="margin:8px 0; padding:10px;">
+              <div style="font-size:0.75rem; color:var(--accent); font-weight:600; margin-bottom:2px;">Mathematical Constraint:</div>
+              <div class="math-card-body">${formatFormula(g.mathCondition)}</div>
+            </div>
+
+            <div class="concept-callout" style="border-left-color:var(--danger); background:rgba(239, 68, 68, 0.08); margin:8px 0; padding:8px 12px;">
+              <strong style="color:#fca5a5; font-size:0.82rem;">🔒 Critical Sign Lock:</strong>
+              <p style="margin:4px 0 0; font-size:0.82rem; color:#fecdd3; line-height:1.4;">${g.signLock}</p>
+            </div>
+
+            <div style="margin:8px 0;">
+              <strong style="color:var(--text-main); font-size:0.82rem;">📐 Course Formula Adjustments:</strong>
+              <ul style="margin:4px 0 0 16px; padding:0; font-size:0.82rem; color:var(--text-muted); line-height:1.45;">
+                ${g.rules.map(r => `<li>${r}</li>`).join('')}
+              </ul>
+            </div>
+
+            <div class="concept-callout" style="border-left-color:var(--gold); background:rgba(245, 158, 11, 0.08); margin-top:8px; padding:8px 12px;">
+              <strong style="color:#fde68a; font-size:0.82rem;">💡 Memory Trick / Statical Law:</strong>
+              <p style="margin:2px 0 0; font-size:0.82rem; color:var(--text-muted);">${g.trapMnemonic}</p>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function renderTrainerScenariosTab() {
+  const scenarios = (typeof METHOD_TRAINER_SCENARIOS !== 'undefined') ? METHOD_TRAINER_SCENARIOS : [];
+  if (scenarios.length === 0) return '<div class="concept-callout">No scenarios found.</div>';
+
+  const scen = scenarios[currentTrainerScenarioIdx] || scenarios[0];
+  const userSolved = userState.trainerSolved || {};
+
+  return `
+    <div>
+      <div style="margin-bottom:14px;">
+        <h3 style="margin:0 0 4px; color:#fff;">⚔️ Scenario Combat Arena (University Exam Drills)</h3>
+        <p style="margin:0; font-size:0.88rem; color:var(--text-muted);">
+          Master tough exam scenarios from Addis Ababa University (EiABC). Decode givens, inspect the statical triage, deploy the formula, and earn +100 XP per master tactical choice.
+        </p>
+      </div>
+
+      <!-- SCENARIO SELECTOR BUTTONS -->
+      <div class="scenario-nav-bar">
+        ${scenarios.map((s, idx) => {
+          const solvedInScen = s.questions.filter((_, qIdx) => userSolved[`${s.id}_q${qIdx}`]).length;
+          const isDone = solvedInScen === s.questions.length && s.questions.length > 0;
+          return `
+            <button class="scenario-nav-btn ${idx === currentTrainerScenarioIdx ? 'active' : ''}" onclick="selectTrainerScenario(${idx})">
+              <span>${s.title.split(':')[0]}</span>
+              <span class="scenario-status-badge ${isDone ? 'badge-done' : ''}">
+                ${isDone ? '✅ Done' : `${solvedInScen}/${s.questions.length}`}
+              </span>
+            </button>
+          `;
+        }).join('')}
+      </div>
+
+      <!-- ACTIVE SCENARIO DOSSIER -->
+      <div class="scenario-dossier-card">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:10px; margin-bottom:12px;">
+          <div>
+            <span class="stat-pill" style="color:var(--accent); font-weight:700; margin-bottom:6px; display:inline-block;">${scen.structureType}</span>
+            <h3 style="margin:4px 0; color:#fff; font-size:1.25rem;">${scen.title}</h3>
+          </div>
+          <span class="stat-pill" style="color:var(--gold); border-color:var(--gold);">
+            +100 XP per Master Choice
+          </span>
+        </div>
+
+        <div class="step-box" style="border-left:4px solid var(--accent); margin-bottom:16px;">
+          <h4 style="margin:0 0 6px; color:#fff; font-size:0.95rem;">📋 Problem Statement:</h4>
+          <p style="margin:0; font-size:0.9rem; color:var(--text-main); line-height:1.55;">${scen.problemText}</p>
+        </div>
+
+        <!-- 4-STEP EXPANSION PROTOCOL ACCORDION -->
+        <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:20px;">
+          <!-- STEP 1: GIVENS SCANNER -->
+          <details class="combat-accordion" open>
+            <summary class="combat-summary">🔍 Step 1: Scan Givens & Physical Implications</summary>
+            <div class="combat-body">
+              <div style="display:flex; flex-direction:column; gap:8px;">
+                ${scen.givens.map(g => `
+                  <div class="protocol-step-box" style="margin-bottom:0;">
+                    <strong style="color:var(--gold); font-size:0.88rem;">Key Given: "${g.key}"</strong>
+                    <p style="font-size:0.85rem; color:var(--text-muted); margin-top:2px;">↳ ${g.implication}</p>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          </details>
+
+          <!-- STEP 2: STATICAL TRIAGE -->
+          <details class="combat-accordion" open>
+            <summary class="combat-summary">⚡ Step 2: Statical Triage Dossier (Ds vs Dk)</summary>
+            <div class="combat-body">
+              <div class="triage-stat-row" style="margin-bottom:10px;">
+                <div class="triage-stat-box">
+                  <span class="triage-stat-label">Statical Degree</span>
+                  <span class="triage-stat-value">${scen.triage.Ds}</span>
+                </div>
+                <div class="triage-stat-box">
+                  <span class="triage-stat-label">Kinematic Degree</span>
+                  <span class="triage-stat-value">${scen.triage.Dk}</span>
+                </div>
+              </div>
+              <div class="concept-callout" style="border-left-color:var(--accent); margin-bottom:8px;">
+                <strong>Recommended Method:</strong> ${scen.triage.recommendedMethod}<br/>
+                <span style="font-size:0.86rem; color:var(--text-muted);">${scen.triage.whyBest}</span>
+              </div>
+              <div class="concept-callout" style="border-left-color:var(--danger); background:rgba(239, 68, 68, 0.08);">
+                <strong style="color:#fca5a5;">⚠️ Deadly Exam Trap:</strong>
+                <span style="font-size:0.86rem; color:#fecdd3; display:block; margin-top:2px;">${scen.triage.deadlyTrap}</span>
+              </div>
+            </div>
+          </details>
+
+          <!-- STEP 3: FORMULA ARSENAL -->
+          <details class="combat-accordion" open>
+            <summary class="combat-summary">🧮 Step 3: Formula Arsenal to Deploy</summary>
+            <div class="combat-body">
+              <div style="display:flex; flex-direction:column; gap:8px;">
+                ${scen.formulaArsenal.map(f => `
+                  <div class="formula-banner math-display-card" style="margin:0; padding:10px;">
+                    <div style="font-size:0.78rem; color:var(--accent); font-weight:600; margin-bottom:4px;">${f.name}</div>
+                    <div class="math-card-body">${formatFormula(f.latex)}</div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          </details>
+        </div>
+
+        <!-- STEP 4: TACTICAL COMBAT QUESTIONS -->
+        <h4 style="color:#fff; margin:0 0 12px; display:flex; align-items:center; gap:8px;">
+          <span>⚔️</span> Step 4: Tactical Combat Challenge (Test Your Decisions)
+        </h4>
+
+        <div style="display:flex; flex-direction:column; gap:16px;">
+          ${scen.questions.map((q, qIdx) => {
+            const isSolved = userSolved[`${scen.id}_q${qIdx}`];
+            return `
+              <div class="scenario-challenge-box" id="scenQBox_${currentTrainerScenarioIdx}_${qIdx}">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px; margin-bottom:10px;">
+                  <span style="font-weight:600; font-size:0.96rem; color:#fff;">${qIdx + 1}. ${q.prompt}</span>
+                  <span class="stat-pill" style="font-size:0.75rem; color:${isSolved ? 'var(--success)' : 'var(--gold)'};">
+                    ${isSolved ? '✅ Solved (+100 XP)' : '⚡ +100 XP'}
+                  </span>
+                </div>
+
+                <div class="options-list">
+                  ${q.options.map((opt, optIdx) => `
+                    <button class="option-btn" onclick="checkTrainerScenarioAnswer(${currentTrainerScenarioIdx}, ${qIdx}, ${optIdx})">
+                      ${opt.text}
+                    </button>
+                  `).join('')}
+                </div>
+
+                <div class="feedback-banner" id="scenFeedback_${currentTrainerScenarioIdx}_${qIdx}" style="display:none; margin-top:10px;"></div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderTrainerProtocolTab() {
+  return `
+    <div class="master-protocol-card" style="margin-top:0;">
+      <div class="protocol-header">
+        <div>
+          <h3 style="margin:0 0 4px; color:#fff; display:flex; align-items:center; gap:8px;">
+            <span>🧠</span> The 1000x Accuracy Master Protocol
+          </h3>
+          <p style="margin:0; font-size:0.88rem; color:var(--text-muted);">
+            The deterministic 5-phase execution engine designed to eliminate calculation panic, avoid sign traps, and guarantee first-time accuracy on tough COTM 3101 exams.
+          </p>
+        </div>
+        <span class="stat-pill" style="color:var(--gold); border-color:var(--gold);">
+          Universal 5-Phase Checklist
+        </span>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:12px; margin-top:14px;">
+        <div class="protocol-step-box">
+          <h4><span>1️⃣</span> Phase 1: Givens & Boundary Condition Decoding</h4>
+          <p>
+            Do NOT start calculating immediately. Systematically scan problem statements into mathematical constraints:
+            identify sinking supports (Δc < 0), far-end pins (M = 0), fixed clamps (θ = 0), fabrication errors (δL), and thermal gradients (αΔTL).
+            Lock these boundary conditions at the top of your paper.
+          </p>
+          <div class="concept-callout" style="border-left-color:var(--accent); margin-top:6px; padding:6px 10px; font-size:0.82rem;">
+            💡 <strong>Pro Rule:</strong> If middle support B sinks, write: ΔB = -δ, (ΔA - ΔB) = +δ.
+          </div>
+        </div>
+
+        <div class="protocol-step-box">
+          <h4><span>2️⃣</span> Phase 2: 5-Second Statical Triage (Ds vs Dk)</h4>
+          <p>
+            Evaluate statical vs kinematic indeterminacy:
+            <br/>• For trusses: Compute Ds = (m + r) - 2j. If Ds = 1 or 2, deploy Force Method!
+            <br/>• For continuous beams: Compute number of unknown support moments. If 2 or 3, deploy Three-Moment Equation (Clapeyron)!
+            <br/>• For frames with sidesway: Slope-Deflection with column shear equations is 10x safer than Hardy Cross sway balancing.
+          </p>
+          <div class="concept-callout" style="border-left-color:var(--gold); margin-top:6px; padding:6px 10px; font-size:0.82rem;">
+            💡 <strong>Pro Rule:</strong> Never pick a method requiring higher simultaneous equations than its dual.
+          </div>
+        </div>
+
+        <div class="protocol-step-box">
+          <h4><span>3️⃣</span> Phase 3: Sign Lock & Formula Customization</h4>
+          <p>
+            Lock your signs according to the strict COTM 3101 convention:
+            <br/>• <strong>Slope-Deflection:</strong> Rotation θ is (+) Clockwise; Member end moment M is (+) Counter-Clockwise on member. Equation MUST have the MINUS sign: <em>M_ij = M^F - 2EK(2θ_i + θ_j - 3ψ)</em>.
+            <br/>• <strong>Hardy Cross:</strong> Moments are (+) Clockwise. If far end is hinged, use modified stiffness K = (3/4)(I/L) and lock COF = 0.
+            <br/>• <strong>Conjugate Beam:</strong> Sagging moment = upward (+) load; Hogging = downward (-) load. Real hinge ➔ conjugate roller; Real roller ➔ conjugate hinge.
+          </p>
+        </div>
+
+        <div class="protocol-step-box">
+          <h4><span>4️⃣</span> Phase 4: Deterministic Matrix Assembly & Solution</h4>
+          <p>
+            Assemble your system systematically. For Three-Moment equations, note the banded tridiagonal structure where each row only contains 3 non-zero entries.
+            Use Gaussian back-substitution rather than Cramer's rule to eliminate roundoff errors.
+            For trusses, fill the tabular columns: Member, L, A, N0, n1, (n1 N0 L / A), (n1² L / A).
+          </p>
+        </div>
+
+        <div class="protocol-step-box">
+          <h4><span>5️⃣</span> Phase 5: First-Principles Equilibrium & Boundary Check</h4>
+          <p>
+            NEVER hand in your exam without running the 30-second statical equilibrium check:
+            <br/>1. <strong>Joint Moment Balance:</strong> At every rigid joint (e.g. Joint B), verify ∑ M_B = M_BA + M_BC = 0.
+            <br/>2. <strong>Global Shear Balance:</strong> For sway frames, verify that column shears equilibrate external lateral load: ∑ H = H_left + H_right + P_lat = 0.
+            <br/>3. <strong>Boundary Verification:</strong> Confirm moment at simple end supports with no overhang is identically 0.
+          </p>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
 // DOWNLOAD OFFLINE APP (STANDALONE HTML SINGLE-FILE BUNDLE)
 // =========================================================================
 function exportStandaloneHTML() {
@@ -9403,7 +11274,7 @@ window.addEventListener('DOMContentLoaded', () => {
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./sw.js').then((reg) => {
       reg.update();
-      console.log('PWA Service Worker Active (v8) - 100% Offline Ready!');
+      console.log('PWA Service Worker Active (v9) - 100% Offline Ready!');
     }).catch(e => console.log('SW registration note:', e));
   }
 });
