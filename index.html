@@ -42,6 +42,7 @@
       <div class="stat-pill pill-xp" id="xpBadge">⚡ 0 XP</div>
       <div class="stat-pill pill-streak" id="streakBadge">🔥 Streak: 0</div>
       <div class="stat-pill" id="masteryBadge">📊 0% Mastered</div>
+      <a href="https://github.com/dagiyosi-pixel/theory-of-structures-mastery-lab" target="_blank" rel="noopener noreferrer" class="hud-btn" style="text-decoration:none;" title="View GitHub Repository">⭐ <span class="hide-mobile">GitHub</span></a>
       <button class="hud-btn" onclick="exportStandaloneHTML()" title="Download single standalone HTML file for phone or offline PC">📲 <span class="hide-mobile">Save App</span></button>
       <button class="hud-btn reset-btn" onclick="resetProgress()" title="Reset Saved Progress">↺ <span class="hide-mobile">Reset</span></button>
     </div>
@@ -81,6 +82,9 @@
 
       <div class="sidebar-section-title" style="margin-top:24px;">🎓 ACTIVE RECALL & DRILLS</div>
       <div class="module-nav">
+        <button class="nav-item" onclick="openModuleVideos(currentModuleIdx)">
+          <span>🎥 Video Masterclasses</span>
+        </button>
         <button class="nav-item" onclick="switchAppView('atlas')">
           <span>🃏 Formula Flashcard Deck</span>
         </button>

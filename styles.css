@@ -2116,6 +2116,46 @@ html, body {
   }
 }
 
+/* Dashboard Video Masterclasses Hub & Context Links */
+.dashboard-video-hub {
+  background: rgba(11, 19, 41, 0.85);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  border-radius: 12px;
+  padding: 18px;
+  margin: 24px 0 20px;
+}
+
+.dashboard-video-chip {
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.dashboard-video-chip:hover {
+  border-color: var(--accent);
+  background: rgba(56, 189, 248, 0.08);
+  transform: translateY(-1px);
+}
+
+.solver-context-links {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 20px;
+  padding: 12px 16px;
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
 /* Print-Friendly Stylesheet */
 @media print {
   body {

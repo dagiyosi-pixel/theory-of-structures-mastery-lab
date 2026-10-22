@@ -131,6 +131,11 @@ function switchModuleTab(tab) {
   renderMainView();
 }
 
+function openModuleVideos(modIdx) {
+  selectModule(modIdx !== undefined ? modIdx : currentModuleIdx);
+  switchModuleTab('videos');
+}
+
 function openSandbox(solverName) {
   currentAppView = 'solvers';
   currentSolver = solverName;
@@ -385,6 +390,7 @@ function renderDashboardView(viewport) {
         const total = m.arena.length;
         const pct = total > 0 ? Math.round((solved / total) * 100) : 0;
         const isDone = pct === 100;
+        const vCount = m.videos ? m.videos.length : 0;
 
         return `
           <div class="mod-card" onclick="selectModule(${idx})">
@@ -402,11 +408,65 @@ function renderDashboardView(viewport) {
             </div>
             <div class="mod-card-footer">
               <span>${solved} / ${total} Solved</span>
-              <span style="color:var(--accent);">Study ➔</span>
+              <div style="display:flex; gap:6px;">
+                <button class="hud-btn" style="padding:2px 7px; font-size:0.72rem; color:var(--accent); border-color:var(--accent);" onclick="openModuleVideos(${idx}); event.stopPropagation();" title="Watch Video Masterclasses">
+                  🎥 ${vCount}
+                </button>
+                <button class="primary-btn" style="padding:2px 8px; font-size:0.72rem;" onclick="selectModule(${idx}); event.stopPropagation();">
+                  Study ➔
+                </button>
+              </div>
             </div>
           </div>
         `;
       }).join('')}
+    </div>
+
+    <!-- VIDEO MASTERCLASSES CURRICULUM HUB -->
+    <div class="dashboard-video-hub">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:10px; margin-bottom:12px;">
+        <div>
+          <h3 style="margin:0; font-size:1.12rem; color:#fff; display:flex; align-items:center; gap:8px;">
+            <span style="color:#ef4444;">🎥</span> Video Masterclasses Curriculum Hub
+          </h3>
+          <p style="color:var(--text-muted); font-size:0.86rem; margin:4px 0 0;">
+            19 curated AAU & international structural analysis video lectures across all 8 modules.
+          </p>
+        </div>
+        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+          <span class="stat-pill" style="font-size:0.78rem; color:var(--success);">
+            ✓ ${Object.keys(userState.watchedVideos || {}).length} / 19 Watched
+          </span>
+          <button class="btn-primary" style="padding:6px 12px; font-size:0.8rem;" onclick="openModuleVideos(currentModuleIdx)">
+            Open Chapter Videos ➔
+          </button>
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(220px, 1fr)); gap:10px; margin-top:14px;">
+        ${COURSE_MODULES.map((m, mIdx) => {
+          const vCount = m.videos ? m.videos.length : 0;
+          const watchedInMod = (m.videos || []).filter(v => {
+            const vidId = extractYouTubeId(v.url);
+            return userState.watchedVideos && userState.watchedVideos[vidId];
+          }).length;
+          const allWatched = watchedInMod === vCount && vCount > 0;
+
+          return `
+            <div class="dashboard-video-chip" onclick="openModuleVideos(${mIdx})" style="border-color:${allWatched ? 'var(--success)' : 'var(--border)'};">
+              <div style="min-width:0;">
+                <strong style="color:#fff; font-size:0.84rem; display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                  ${m.icon} ${m.shortTitle}
+                </strong>
+                <span style="font-size:0.75rem; color:var(--text-muted);">
+                  ${watchedInMod} / ${vCount} Watched ${allWatched ? '✅' : ''}
+                </span>
+              </div>
+              <span style="color:var(--accent); font-size:0.82rem; flex-shrink:0;">▶</span>
+            </div>
+          `;
+        }).join('')}
+      </div>
     </div>
 
     <!-- FORMULA OF THE DAY (SPATIAL ACTIVE RECALL) -->
@@ -479,6 +539,15 @@ function renderModuleView(viewport) {
           <strong>💡 First-Principles Intuition:</strong> ${mod.intuition}
         </div>
 
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin: 10px 0 16px; padding: 8px 12px; background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 8px;">
+          <span style="font-size:0.86rem; color:var(--text-muted);">
+            🎥 <strong>Video Masterclasses:</strong> ${mod.videos ? mod.videos.length : 0} curated AAU video lectures available for this chapter
+          </span>
+          <button class="hud-btn" style="padding:4px 10px; font-size:0.8rem; color:var(--accent); border-color:var(--accent);" onclick="switchModuleTab('videos')">
+            ▶ Watch Chapter Videos
+          </button>
+        </div>
+
         <div style="display:flex; flex-direction:column; gap:12px;">
           ${mod.theory.map((t, tIdx) => `
             <div class="collapsible-card ${tIdx === 0 ? 'open' : ''}" id="theory_card_${tIdx}">
@@ -504,14 +573,22 @@ function renderModuleView(viewport) {
 
         <div style="margin-top:24px; padding-top:16px; border-top:1px solid var(--border); display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;">
           <button class="hud-btn" onclick="switchAppView('dashboard')">⬅ Back to Cockpit</button>
-          <button class="btn-primary" onclick="switchModuleTab('guided')">Next: Guided Worked Examples ➔</button>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button class="hud-btn" onclick="switchModuleTab('videos')">🎥 Video Lectures</button>
+            <button class="btn-primary" onclick="switchModuleTab('guided')">Next: Guided Worked Examples ➔</button>
+          </div>
         </div>
       </div>
     `;
   } else if (currentModuleTab === 'guided') {
     viewport.innerHTML = `
       <div class="card">
-        <h2>🔬 Guided Worked Lecture Examples — ${mod.shortTitle}</h2>
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:10px; margin-bottom:8px;">
+          <h2>🔬 Guided Worked Lecture Examples — ${mod.shortTitle}</h2>
+          <button class="hud-btn" style="color:var(--accent); border-color:var(--accent); font-size:0.8rem; padding:4px 10px;" onclick="switchModuleTab('videos')">
+            🎥 Watch Video Walkthroughs (${mod.videos ? mod.videos.length : 0})
+          </button>
+        </div>
         <p style="color:var(--text-muted); margin-bottom:18px; font-size:0.92rem;">Master each derivation step by step with interactive checkpoints and fading hints.</p>
 
         ${mod.guidedExamples.map((ex, exIdx) => `
@@ -547,7 +624,10 @@ function renderModuleView(viewport) {
 
         <div style="margin-top:20px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;">
           <button class="hud-btn" onclick="switchModuleTab('theory')">⬅ Theory</button>
-          <button class="btn-primary" onclick="switchModuleTab('shortcuts')">Next: Speed Tricks ➔</button>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button class="hud-btn" onclick="switchModuleTab('videos')">🎥 Video Lectures</button>
+            <button class="btn-primary" onclick="switchModuleTab('shortcuts')">Next: Speed Tricks ➔</button>
+          </div>
         </div>
       </div>
     `;
@@ -634,7 +714,10 @@ function renderModuleView(viewport) {
 
         <div style="margin-top:24px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;">
           <button class="hud-btn" onclick="switchModuleTab('arena')">⬅ Challenge Gauntlet</button>
-          <button class="btn-primary" onclick="switchModuleTab('videos')">Next: Video Masterclasses 🎥 ➔</button>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button class="hud-btn" onclick="switchAppView('atlas'); filterAtlas('${mod.id}')">Explore in Full Atlas ➔</button>
+            <button class="btn-primary" onclick="switchModuleTab('videos')">Next: Video Masterclasses 🎥 ➔</button>
+          </div>
         </div>
       </div>
     `;
@@ -695,9 +778,12 @@ function renderModuleView(viewport) {
 
         <div style="margin-top:24px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;">
           <button class="hud-btn" onclick="switchModuleTab('cheatsheet')">⬅ Formula Vault</button>
-          <button class="btn-primary" onclick="selectModule(${(currentModuleIdx + 1) % COURSE_MODULES.length})">
-            Next Module: ${COURSE_MODULES[(currentModuleIdx + 1) % COURSE_MODULES.length].shortTitle} ➔
-          </button>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button class="hud-btn" onclick="switchAppView('dashboard')">🏠 Mission Control</button>
+            <button class="btn-primary" onclick="selectModule(${(currentModuleIdx + 1) % COURSE_MODULES.length})">
+              Next Module: ${COURSE_MODULES[(currentModuleIdx + 1) % COURSE_MODULES.length].shortTitle} ➔
+            </button>
+          </div>
         </div>
       </div>
     `;
@@ -1000,11 +1086,18 @@ function renderFormulaAtlasView(viewport) {
 
         <div style="display:flex; flex-direction:column; gap:16px;">
           ${filtered.length === 0 ? '<p style="color:var(--text-muted); padding:20px; text-align:center;">No formulas match your search query.</p>' : ''}
-          ${filtered.map(f => `
+          ${filtered.map(f => {
+            const modIdxMap = { mod0: 0, mod1: 1, mod2: 2, mod3: 3, mod4: 4, mod5: 5, mod6: 6, mod7: 7 };
+            const mIdx = modIdxMap[f.moduleId] !== undefined ? modIdxMap[f.moduleId] : 0;
+            return `
             <div class="step-box" style="border-left:4px solid var(--accent);">
               <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
                 <h3 style="color:var(--accent); margin:0; font-size:1.05rem;">${f.name}</h3>
-                <span class="stat-pill" style="font-size:0.75rem;">${f.moduleTitle}</span>
+                <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
+                  <span class="stat-pill" style="font-size:0.75rem;">${f.moduleTitle}</span>
+                  <button class="hud-btn" style="padding:2px 7px; font-size:0.72rem;" onclick="selectModule(${mIdx}); switchModuleTab('theory');" title="Open Chapter Notes">📖 Notes</button>
+                  <button class="hud-btn" style="padding:2px 7px; font-size:0.72rem; color:var(--accent); border-color:var(--accent);" onclick="openModuleVideos(${mIdx})" title="Watch Video Masterclass">🎥 Video</button>
+                </div>
               </div>
               <div class="formula-banner math-display-card">
                 <div class="math-card-header">
@@ -1040,7 +1133,8 @@ function renderFormulaAtlasView(viewport) {
                 <p style="color:var(--text-muted); margin-top:4px;"><strong>Derivation Core:</strong> ${f.derivation}</p>
               </div>
             </div>
-          `).join('')}
+            `;
+          }).join('')}
         </div>
       ` : `
         <!-- Active Recall Flashcard Deck -->
@@ -1291,6 +1385,7 @@ function renderSolversView(viewport) {
           <strong id="metric_Def">--</strong>
         </div>
       </div>
+      ${getSolverContextLinks('beam')}
     `;
     updateBeamSim();
   } else if (currentSolver === 'determinacy') {
@@ -1308,6 +1403,7 @@ function renderSolversView(viewport) {
       <div id="detSpecificInputs" class="calc-grid"></div>
       <button class="btn-primary" onclick="runDeterminacySolve()">Compute Stability & Determinacy Status</button>
       <div id="detResultBox" style="margin-top:20px; display:none;"></div>
+      ${getSolverContextLinks('determinacy')}
     `;
     renderDetInputs();
   } else if (currentSolver === 'threemoment') {
@@ -1324,6 +1420,7 @@ function renderSolversView(viewport) {
       </div>
       <button class="btn-primary" onclick="runThreeMomentSolve()">Solve Two-Span Continuous Beam</button>
       <div id="tmResultBox" style="margin-top:20px; display:none;"></div>
+      ${getSolverContextLinks('threemoment')}
     `;
     runThreeMomentSolve();
   } else if (currentSolver === 'hardycross') {
@@ -1340,6 +1437,7 @@ function renderSolversView(viewport) {
       </div>
       <button class="btn-primary" onclick="runHardyCrossSolve()">Generate Iterative Distribution Table</button>
       <div id="hcResultBox" style="margin-top:20px; display:none;"></div>
+      ${getSolverContextLinks('hardycross')}
     `;
     runHardyCrossSolve();
   } else if (currentSolver === 'conjugate') {
@@ -1355,9 +1453,40 @@ function renderSolversView(viewport) {
         </div>
       </div>
       <div id="conjResultBox" style="margin-top:16px;"></div>
+      ${getSolverContextLinks('conjugate')}
     `;
     runConjugateTransform();
   }
+}
+
+function getSolverContextLinks(solverKey) {
+  const solverMapping = {
+    beam: { modIdx: 0, title: 'Module 0: Core Foundations & Statics', topic: 'Beam Reactions & Deflection Mechanics' },
+    determinacy: { modIdx: 1, title: 'Module 1: Stability & Determinacy', topic: 'Geometric Traps, Trusses & Rigid Frames' },
+    conjugate: { modIdx: 2, title: 'Module 2: Conjugate Beam Method', topic: 'Conjugate Duality & Slope/Deflection Transformations' },
+    threemoment: { modIdx: 5, title: 'Module 5: Three-Moment Equation', topic: 'Clapeyron Multi-Span Continuous Beams' },
+    hardycross: { modIdx: 7, title: 'Module 7: Moment Distribution', topic: 'Hardy Cross Iteration, Stiffness & Carry-Over' }
+  };
+  const item = solverMapping[solverKey];
+  if (!item) return '';
+
+  return `
+    <div class="solver-context-links">
+      <div style="font-size:0.86rem;">
+        <span style="color:var(--text-muted);">Curriculum Anchor:</span>
+        <strong style="color:#fff; margin-left:4px;">${item.title}</strong>
+        <span style="color:var(--text-dim); display:block; font-size:0.78rem; margin-top:2px;">Topic: ${item.topic}</span>
+      </div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <button class="hud-btn" style="padding:6px 12px; font-size:0.8rem;" onclick="selectModule(${item.modIdx}); switchModuleTab('theory');">
+          📖 Read Chapter Theory
+        </button>
+        <button class="btn-primary" style="padding:6px 12px; font-size:0.8rem;" onclick="openModuleVideos(${item.modIdx})">
+          🎥 Watch Video Masterclass
+        </button>
+      </div>
+    </div>
+  `;
 }
 
 function renderDetInputs() {
@@ -1717,13 +1846,21 @@ function renderErrorNotebookView(viewport) {
         </div>
       ` : `
         <div style="display:flex; flex-direction:column; gap:16px;">
-          ${userState.errors.map((err, idx) => `
+          ${userState.errors.map((err, idx) => {
+            const modIdxMap = { mod0: 0, mod1: 1, mod2: 2, mod3: 3, mod4: 4, mod5: 5, mod6: 6, mod7: 7 };
+            const mIdx = err.modId ? (modIdxMap[err.modId] !== undefined ? modIdxMap[err.modId] : -1) : -1;
+
+            return `
             <div class="step-box" style="border-left:4px solid var(--danger);" id="err_box_${idx}">
               <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
                 <h3 style="color:var(--danger); margin:0; font-size:1.02rem;">${err.title}</h3>
-                <div style="display:flex; gap:8px;">
-                  <button class="hud-btn" style="border-color:var(--accent); color:var(--accent);" onclick="toggleRetestError(${idx})">⚔️ Retest Now</button>
-                  <button class="hud-btn" style="border-color:var(--success); color:var(--success);" onclick="clearError(${idx})">Mark Mastered ✅</button>
+                <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                  ${mIdx >= 0 ? `
+                    <button class="hud-btn" style="padding:4px 8px; font-size:0.76rem;" onclick="selectModule(${mIdx}); switchModuleTab('theory');">📖 Review Notes</button>
+                    <button class="hud-btn" style="padding:4px 8px; font-size:0.76rem; color:var(--accent); border-color:var(--accent);" onclick="openModuleVideos(${mIdx})">🎥 Video</button>
+                  ` : ''}
+                  <button class="hud-btn" style="border-color:var(--accent); color:var(--accent); padding:4px 8px; font-size:0.76rem;" onclick="toggleRetestError(${idx})">⚔️ Retest Now</button>
+                  <button class="hud-btn" style="border-color:var(--success); color:var(--success); padding:4px 8px; font-size:0.76rem;" onclick="clearError(${idx})">Mark Mastered ✅</button>
                 </div>
               </div>
               <p style="font-weight:600; margin:10px 0;">${err.prompt}</p>
@@ -1743,7 +1880,8 @@ function renderErrorNotebookView(viewport) {
 
               <div style="font-size:0.8rem; color:var(--text-dim); margin-top:8px;">Logged on: ${err.timestamp || 'Recent'}</div>
             </div>
-          `).join('')}
+          `;
+          }).join('')}
         </div>
       `}
     </div>
