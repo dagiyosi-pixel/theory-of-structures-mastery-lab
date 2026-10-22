@@ -642,6 +642,86 @@ function renderModuleView(viewport) {
           ${mod.methodSelection}
         </div>
 
+        <!-- 1000x ACCURACY MASTER PROBLEM-SOLVING PROTOCOL -->
+        <div class="master-protocol-card">
+          <div class="protocol-header">
+            <div>
+              <h3 style="margin:0; font-size:1.08rem; color:#fff; display:flex; align-items:center; gap:8px;">
+                <span>🎯</span> The 1000x Accuracy Master Protocol (Foolproof Problem-Solving Framework)
+              </h3>
+              <p style="color:var(--text-muted); font-size:0.84rem; margin:3px 0 0;">
+                Follow these 5 non-negotiable phases to eliminate careless sign errors, maintain complete tracking, and conquer any exam question of any difficulty.
+              </p>
+            </div>
+            <span class="stat-pill" style="color:var(--accent);">Universal Protocol</span>
+          </div>
+
+          <div class="protocol-step-box">
+            <h4><span>1️⃣</span> Phase 1: Kinematic & Statical Triage (Lock the Degree of Indeterminacy D)</h4>
+            <p>
+              • Count supports ($r$), members ($m$), joints ($j$), and releases ($s$).<br/>
+              • Compute $D = (m + r) - 2j$ (Trusses) or $D = (3m + r) - (3j + s)$ (Frames).<br/>
+              • <strong>Stability Audit:</strong> Verify lines of action are NOT parallel (translational instability) and NOT concurrent (rotational instability).
+            </p>
+            <label class="protocol-check-label">
+              <input type="checkbox" />
+              <span>Checkpoint 1: Number of redundants or unknown kinematic rotations locked.</span>
+            </label>
+          </div>
+
+          <div class="protocol-step-box">
+            <h4><span>2️⃣</span> Phase 2: Sign Convention & Coordinate Lock (The Zero-Slip Seal)</h4>
+            <p>
+              • <strong>Slope-Deflection:</strong> Rotation $\theta$ is (+) Clockwise; Member end moment is (+) Counter-Clockwise on the member (MINUS sign in equation: $M = M^F - 2EK(2\theta_i + \theta_j - 3\Delta/L)$).<br/>
+              • <strong>Hardy Cross:</strong> Clockwise moments are (+); Far-end hinged stiffness is $\frac{3}{4} K$ with $COF = 0$.<br/>
+              • <strong>Conjugate Beam:</strong> Sagging moment is (+) UPWARD load; Hogging is (-) DOWNWARD load.
+            </p>
+            <label class="protocol-check-label">
+              <input type="checkbox" />
+              <span>Checkpoint 2: Positive sign directions established before touching any calculation.</span>
+            </label>
+          </div>
+
+          <div class="protocol-step-box">
+            <h4><span>3️⃣</span> Phase 3: Canonical System Formulation (Table or Matrix Setup)</h4>
+            <p>
+              • <strong>Force Method:</strong> Assemble flexibility table columns: Member, $L$, $A$, $N$, $n_1$, $n_2$, $\frac{N n L}{A}$, $\frac{n^2 L}{A}$. Set up $[\delta]\{R\} + \{\Delta_0\} = 0$.<br/>
+              • <strong>Three-Moment:</strong> Write $M_l(L/EI)_l + 2M_c[(L/EI)_l + (L/EI)_r] + M_r(L/EI)_r = \text{Load Terms} + \text{Settlement}$.<br/>
+              • <strong>Slope-Deflection / Cross:</strong> Express end moments in terms of joint rotations and lateral sway $\Delta$.
+            </p>
+            <label class="protocol-check-label">
+              <input type="checkbox" />
+              <span>Checkpoint 3: Governing equations laid out cleanly with variables vertically aligned.</span>
+            </label>
+          </div>
+
+          <div class="protocol-step-box">
+            <h4><span>4️⃣</span> Phase 4: Precision System Solution & Sanity Cross-Checks</h4>
+            <p>
+              • Carry all intermediate calculations to 3 decimal places.<br/>
+              • <strong>Maxwell-Betti Check:</strong> In flexibility matrices, verify that off-diagonal terms are identical: $\delta_{12} \equiv \delta_{21}$.<br/>
+              • <strong>Symmetry Check:</strong> Symmetrical geometry under symmetrical loads must yield identical joint rotations: $\theta_B = -\theta_C$.
+            </p>
+            <label class="protocol-check-label">
+              <input type="checkbox" />
+              <span>Checkpoint 4: Intermediate symmetry and Maxwell-Betti cross-checks verified.</span>
+            </label>
+          </div>
+
+          <div class="protocol-step-box">
+            <h4><span>5️⃣</span> Phase 5: The 3-Point Equilibrium Audit & Diagram Geometry</h4>
+            <p>
+              • <strong>Audit 1 (Joint Balance):</strong> Sum of member end moments at every rigid joint must equal zero: $\sum M_{\text{joint}} = 0$.<br/>
+              • <strong>Audit 2 (Global Balance):</strong> $\sum F_x = 0$ and $\sum F_y = 0$ across the complete structure.<br/>
+              • <strong>Audit 3 (Peak Moments):</strong> Point of zero shear $x_0 = V_{\text{left}} / w \implies M_{\max} = M_{\text{left}} + \frac{1}{2} V_{\text{left}} x_0$. Sketch SFD & BMD with critical ordinate labels.
+            </p>
+            <label class="protocol-check-label">
+              <input type="checkbox" />
+              <span>Checkpoint 5: Statics back-substitution and zero-shear max moment verified.</span>
+            </label>
+          </div>
+        </div>
+
         <h3>🔥 High-Yield Speed Tricks:</h3>
         <div style="display:flex; flex-direction:column; gap:10px; margin-top:10px;">
           ${mod.shortcuts.map(s => `
@@ -2297,7 +2377,7 @@ window.addEventListener('DOMContentLoaded', () => {
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./sw.js').then((reg) => {
       reg.update();
-      console.log('PWA Service Worker Active (v7) - 100% Offline Ready!');
+      console.log('PWA Service Worker Active (v8) - 100% Offline Ready!');
     }).catch(e => console.log('SW registration note:', e));
   }
 });
