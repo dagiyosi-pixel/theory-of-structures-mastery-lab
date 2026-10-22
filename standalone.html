@@ -1921,6 +1921,215 @@ html, body {
   outline: none;
 }
 
+/* =========================================================================
+   VIDEO MASTERCLASSES HUB & MODAL PLAYER
+   ========================================================================= */
+
+.video-masterclass-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+  gap: 16px;
+  margin: 18px 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.video-card {
+  background: rgba(11, 19, 41, 0.85);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.video-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), 0 0 16px var(--accent-glow);
+}
+
+.video-thumb-container {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #030712;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.video-thumb-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.25s ease;
+  display: block;
+}
+
+.video-card:hover .video-thumb-img {
+  transform: scale(1.04);
+}
+
+.video-play-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(3, 7, 18, 0.45);
+  transition: background 0.2s ease;
+}
+
+.video-card:hover .video-play-overlay {
+  background: rgba(3, 7, 18, 0.2);
+}
+
+.play-badge-btn {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: rgba(239, 68, 68, 0.9);
+  border: 2px solid #fff;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.35rem;
+  padding-left: 3px;
+  box-shadow: 0 4px 16px rgba(239, 68, 68, 0.5);
+  transition: transform 0.2s ease, background 0.2s;
+}
+
+.video-card:hover .play-badge-btn {
+  transform: scale(1.1);
+  background: #ef4444;
+}
+
+.video-hd-badge {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  background: rgba(0, 0, 0, 0.85);
+  color: #fff;
+  font-size: 0.7rem;
+  font-family: var(--font-mono);
+  padding: 2px 6px;
+  border-radius: 4px;
+  letter-spacing: 0.04em;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.video-watched-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: rgba(16, 185, 129, 0.95);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.5);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.video-card-content {
+  padding: 14px 16px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.video-card-title {
+  font-size: 0.96rem;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.4;
+  margin-bottom: 8px;
+}
+
+.video-card-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+}
+
+/* Video Player Modal */
+.video-modal-box {
+  background: #090e1d;
+  border: 1px solid var(--border-light);
+  border-radius: 14px;
+  width: 100%;
+  max-width: 840px;
+  box-shadow: 0 16px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(56, 189, 248, 0.2);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  animation: modalFadeIn 0.15s ease-out;
+  box-sizing: border-box;
+}
+
+.video-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 18px;
+  background: rgba(15, 23, 42, 0.92);
+  border-bottom: 1px solid var(--border);
+  gap: 12px;
+}
+
+.video-iframe-container {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #000;
+}
+
+.video-iframe-container iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.video-modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 18px;
+  background: rgba(15, 23, 42, 0.92);
+  border-top: 1px solid var(--border);
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+@media (max-width: 640px) {
+  .video-masterclass-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .video-modal-header {
+    padding: 10px 12px;
+  }
+  .video-modal-footer {
+    padding: 10px 12px;
+  }
+  .video-card-title {
+    font-size: 0.9rem;
+  }
+}
+
 /* Print-Friendly Stylesheet */
 @media print {
   body {
@@ -2051,6 +2260,9 @@ html, body {
         <button class="mode-tab" data-tab="cheatsheet" onclick="switchModuleTab('cheatsheet')">
           📜 5. Chapter Formula Vault
         </button>
+        <button class="mode-tab" data-tab="videos" onclick="switchModuleTab('videos')">
+          🎥 6. Video Masterclasses
+        </button>
       </div>
 
       <!-- DYNAMIC VIEWPORT -->
@@ -2121,6 +2333,29 @@ html, body {
     <button class="hud-btn" id="focusPlayBtn" style="padding:4px 8px; font-size:0.75rem;" onclick="toggleFocusTimer()">▶</button>
     <button class="hud-btn" style="padding:4px 8px; font-size:0.75rem;" onclick="resetFocusTimer()">↺</button>
     <button class="hud-btn" style="padding:4px 8px; font-size:0.75rem;" onclick="toggleFocusSprint()">✕</button>
+  </div>
+
+  <!-- RESPONSIVE VIDEO PLAYER MODAL -->
+  <div id="videoModal" class="modal-overlay" onclick="handleVideoOverlayClick(event)">
+    <div class="video-modal-box">
+      <div class="video-modal-header">
+        <div style="display:flex; align-items:center; gap:8px; min-width:0;">
+          <span style="color:#ef4444; font-size:1.15rem; flex-shrink:0;">🎥</span>
+          <strong id="videoModalTitle" style="color:#fff; font-size:0.92rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Video Masterclass</strong>
+        </div>
+        <button class="hud-btn" onclick="closeVideoModal()" style="padding:4px 9px;" title="Close Player (Esc)">✕</button>
+      </div>
+      <div class="video-iframe-container">
+        <iframe id="videoIframe" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      </div>
+      <div class="video-modal-footer">
+        <span style="font-size:0.78rem; color:var(--text-muted);">COTM 3101: Theory of Structures • Video Hub</span>
+        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+          <a id="videoModalExtBtn" href="#" target="_blank" class="hud-btn" style="text-decoration:none;">↗ Open on YouTube</a>
+          <button class="btn-primary" id="videoModalWatchBtn" onclick="toggleModalVideoWatched()" style="padding:6px 14px; font-size:0.8rem;">✓ Mark Watched (+50 XP)</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- Script Architecture -->
@@ -3711,6 +3946,21 @@ const COURSE_MODULES = [
       }
     ],
     "cheatsheet": "\n    <strong>MODULE 0 FORMULA & CONVENTION QUICK SHEET</strong><br/>\n    • <strong>2D Equilibrium:</strong> $\\sum F_x = 0, \\; \\sum F_y = 0, \\; \\sum M_z = 0$<br/>\n    • <strong>Differential Relations:</strong> $w = -dV/dx, \\; V = dM/dx, \\; \\Delta M = \\int V dx$<br/>\n    • <strong>Axial Deformation:</strong> $\\Delta L = NL / EA$<br/>\n    • <strong>Inertia & Parallel Axis:</strong> $I_{NA} = bh^3/12, \\; I = I_{NA} + Ad^2$<br/>\n    • <strong>Elastic Flexure:</strong> $\\sigma = -My/I, \\; S = bh^2/6$<br/>\n    • <strong>Double Integration:</strong> $EI v'' = M(x), \\; EI v' = \\int M dx + C_1, \\; EI v = \\iint M dx dx + C_1 x + C_2$<br/>\n    • <strong>Moment-Area:</strong> $\\theta_{B/A} = \\text{Area}_{M/EI}, \\; t_{B/A} = \\bar{x}_B \\cdot \\text{Area}_{M/EI}$ (arm $\\bar{x}_B$ measured from $B$)\n  "
+  ,
+    videos: [
+          {
+                "title": "Statics & 2D Coplanar Equilibrium",
+                "url": "https://www.youtube.com/watch?v=k1tG9PZ8x5g"
+          },
+          {
+                "title": "Shear Force & Bending Moment Diagrams (SFD/BMD)",
+                "url": "https://www.youtube.com/watch?v=m2c_8WvI5pU"
+          },
+          {
+                "title": "Mohr's Moment-Area Method for Slope & Deflection",
+                "url": "https://www.youtube.com/watch?v=F3a7rVd5d_g"
+          }
+    ]
   },
 
   // =========================================================================
@@ -3916,6 +4166,17 @@ const COURSE_MODULES = [
       • <strong>Closed-Loop Internal Formula:</strong> D_i = 3n - I_c<br/>
       • <strong>Internal Hinge Release:</strong> s = k - 1 (for <em>k</em> members meeting at hinge)
     `
+  ,
+    videos: [
+          {
+                "title": "Stability & Determinacy with Examples",
+                "url": "https://www.youtube.com/watch?v=7ZMjz4QmrMQ"
+          },
+          {
+                "title": "Plane Frame Determinacy & Hinges",
+                "url": "https://www.youtube.com/watch?v=gcPP8DCa2sw"
+          }
+    ]
   },
 
   // =========================================================================
@@ -4070,6 +4331,21 @@ const COURSE_MODULES = [
       • <strong>Simple Beam UDL w:</strong> θ_end = wL³/(24EI),  v_mid = 5wL⁴/(384EI)<br/>
       • <strong>Simple Beam Center Load P:</strong> θ_end = PL²/(16EI),  v_mid = PL³/(48EI)
     `
+  ,
+    videos: [
+          {
+                "title": "Conjugate Beam Rules & Drawing",
+                "url": "https://www.youtube.com/watch?v=EpTZ77-tUC0"
+          },
+          {
+                "title": "Conjugate Beam Worked Example",
+                "url": "https://www.youtube.com/watch?v=Vfuh4YGM57w"
+          },
+          {
+                "title": "Beam with Internal Hinge (Conjugate)",
+                "url": "https://www.youtube.com/watch?v=02pOdMKCoVs"
+          }
+    ]
   },
 
   // =========================================================================
@@ -4216,6 +4492,21 @@ Virtual m-Diagram (Unit Couple at Support A): Triangle from 1.0 at A to 0 at B (
       • <strong>Beam/Frame Flexure:</strong> 1·Δ = ∫ [m · M / (EI)] dx = Σ [Area(M) × m_c / EI]<br/>
       • <strong>Support Movement (Determinate):</strong> 1·Δ = - Σ (R_virtual · Δ_settlement)
     `
+  ,
+    videos: [
+          {
+                "title": "Virtual Work Core Derivation",
+                "url": "https://www.youtube.com/watch?v=TlznZHClMLY"
+          },
+          {
+                "title": "Virtual Work for Trusses",
+                "url": "https://www.youtube.com/watch?v=R5p5J-O_iFA"
+          },
+          {
+                "title": "Virtual Work for Beams",
+                "url": "https://www.youtube.com/watch?v=g8Y4TrXsRtU"
+          }
+    ]
   },
 
   // =========================================================================
@@ -4318,6 +4609,21 @@ Virtual m-Diagram (Unit Couple at Support A): Triangle from 1.0 at A to 0 at B (
       • <strong>Propped Cantilever (Mid Point P):</strong> R_roller = 5P/16,  R_wall = 11P/16,  M_wall = 3PL/16<br/>
       • <strong>Symmetry Theorem:</strong> δ_ij = δ_ji (Maxwell-Betti Reciprocal Theorem)
     `
+  ,
+    videos: [
+          {
+                "title": "Consistent Deformations (1st Degree Beam)",
+                "url": "https://www.youtube.com/watch?v=-dhVofRCoPM"
+          },
+          {
+                "title": "Consistent Deformations (2nd Degree Beam)",
+                "url": "https://www.youtube.com/watch?v=avU_YnKP3M8"
+          },
+          {
+                "title": "Indeterminate Truss (Force Method)",
+                "url": "https://www.youtube.com/watch?v=AuBcV1oehD8"
+          }
+    ]
   },
 
   // =========================================================================
@@ -4434,6 +4740,17 @@ Virtual m-Diagram (Unit Couple at Support A): Triangle from 1.0 at A to 0 at B (
       • <strong>Center Point Load Term:</strong> 6Ax / L = 3 P L² / 8<br/>
       • <strong>Fixed End:</strong> Attach imaginary span L₀ = 0, EI₀ = ∞
     `
+  ,
+    videos: [
+          {
+                "title": "Three-Moment Equation Intro",
+                "url": "https://www.youtube.com/watch?v=SHrnZtU11mc"
+          },
+          {
+                "title": "Clapeyron's Three-Moment Full Problem",
+                "url": "https://www.youtube.com/watch?v=pk6z6STv_uw"
+          }
+    ]
   },
 
   // =========================================================================
@@ -4567,6 +4884,17 @@ Virtual m-Diagram (Unit Couple at Support A): Triangle from 1.0 at A to 0 at B (
       • <strong>Chord Rotation / Sway:</strong> Multiplier is 3 (i.e. 6EKΔ/L)<br/>
       • <strong>Joint Equilibrium:</strong> Σ M_joint = 0 for all interior joints
     `
+  ,
+    videos: [
+          {
+                "title": "Slope-Deflection Continuous Beam",
+                "url": "https://www.youtube.com/watch?v=gQtII2rL8PQ"
+          },
+          {
+                "title": "Slope-Deflection Side-Sway Frame",
+                "url": "https://www.youtube.com/watch?v=RYSFgi39-Kk"
+          }
+    ]
   },
 
   // =========================================================================
@@ -4685,6 +5013,21 @@ Virtual m-Diagram (Unit Couple at Support A): Triangle from 1.0 at A to 0 at B (
       • <strong>Hinged End DF:</strong> DF_hinge = 1.0<br/>
       • <strong>Carry-Over Factor:</strong> COF = + 0.5 (to fixed far ends)
     `
+  ,
+    videos: [
+          {
+                "title": "Hardy Cross Intuition & Stiffness",
+                "url": "https://www.youtube.com/watch?v=E3zLTnc_nlk"
+          },
+          {
+                "title": "Moment Distribution Beams",
+                "url": "https://www.youtube.com/watch?v=Cyia85dap0E"
+          },
+          {
+                "title": "Moment Distribution Sway Frame",
+                "url": "https://www.youtube.com/watch?v=aSNJZZAXZf0"
+          }
+    ]
   }
 ];
 
@@ -5548,6 +5891,7 @@ let userState = {
   solved: {},
   errors: [], // array of missed question objects
   flashcardRatings: {}, // { formId: 'easy'|'good'|'hard'|'again' }
+  watchedVideos: {}, // { [vidId]: true }
   rank: 'Apprentice',
   lastModuleId: 'mod0'
 };
@@ -5559,6 +5903,7 @@ function loadState() {
       userState = Object.assign(userState, JSON.parse(saved));
       if (!userState.errors) userState.errors = [];
       if (!userState.flashcardRatings) userState.flashcardRatings = {};
+      if (!userState.watchedVideos) userState.watchedVideos = {};
     } catch (e) {
       console.error(e);
     }
@@ -5579,6 +5924,7 @@ function resetProgress() {
       solved: {},
       errors: [],
       flashcardRatings: {},
+      watchedVideos: {},
       rank: 'Apprentice',
       lastModuleId: 'mod0'
     };
@@ -6154,12 +6500,153 @@ function renderModuleView(viewport) {
         </div>
 
         <div style="margin-top:24px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;">
-          <button class="hud-btn" onclick="switchAppView('dashboard')">🏠 Mission Control</button>
-          <button class="btn-primary" onclick="switchAppView('atlas')">Explore Full 28-Formula Atlas ➔</button>
+          <button class="hud-btn" onclick="switchModuleTab('arena')">⬅ Challenge Gauntlet</button>
+          <button class="btn-primary" onclick="switchModuleTab('videos')">Next: Video Masterclasses 🎥 ➔</button>
+        </div>
+      </div>
+    `;
+  } else if (currentModuleTab === 'videos') {
+    const videos = mod.videos || [];
+    viewport.innerHTML = `
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:10px; margin-bottom:8px;">
+          <h2>🎥 Video Masterclasses — ${mod.shortTitle}</h2>
+          <span class="stat-pill" style="font-size:0.8rem;">${videos.length} Curated Lectures</span>
+        </div>
+        <p style="color:var(--text-muted); margin:4px 0 16px; font-size:0.9rem;">
+          Carefully selected AAU & international structural analysis video lectures. Watch inside the app or launch directly on YouTube. Complete videos to earn <strong>+50 XP</strong> each!
+        </p>
+
+        <div class="concept-callout" style="border-left-color:var(--primary); font-size:0.88rem; margin-bottom:20px;">
+          <strong>📶 Offline Note:</strong> Video streaming requires an active internet connection. All written theory, step-by-step worked examples, speed tricks, and interactive structural solvers in the other tabs remain <strong>100% offline accessible</strong> anytime.
+        </div>
+
+        ${videos.length === 0 ? `
+          <p style="color:var(--text-muted); text-align:center; padding:30px;">No video lectures assigned for this module yet.</p>
+        ` : `
+          <div class="video-masterclass-grid">
+            ${videos.map((v, vIdx) => {
+              const vidId = extractYouTubeId(v.url) || '';
+              const thumbUrl = vidId ? `https://img.youtube.com/vi/${vidId}/hqdefault.jpg` : '';
+              const isWatched = !!(userState.watchedVideos && userState.watchedVideos[vidId]);
+
+              return `
+                <div class="video-card ${isWatched ? 'watched' : ''}">
+                  <div class="video-thumb-container" onclick="openVideoModal('${vidId}', '${v.title.replace(/'/g, "\\'")}', '${v.url}')">
+                    <img class="video-thumb-img" src="${thumbUrl}" alt="${v.title}" loading="lazy" onerror="this.src='https://placehold.co/480x270/0f172a/38bdf8?text=Theory+of+Structures+Lecture'">
+                    <div class="video-play-overlay">
+                      <button class="play-badge-btn" title="Play Video">▶</button>
+                    </div>
+                    <span class="video-hd-badge">Lecture #${vIdx + 1}</span>
+                    ${isWatched ? '<span class="video-watched-badge">✓ Watched</span>' : ''}
+                  </div>
+                  <div class="video-card-content">
+                    <h3 class="video-card-title" title="${v.title}">${v.title}</h3>
+                    <div class="video-card-actions">
+                      <button class="btn-primary" onclick="openVideoModal('${vidId}', '${v.title.replace(/'/g, "\\'")}', '${v.url}')" style="flex:1; justify-content:center; padding:7px 12px; font-size:0.82rem;">
+                        ▶ Watch in App
+                      </button>
+                      <a href="${v.url}" target="_blank" rel="noopener noreferrer" class="hud-btn" style="text-decoration:none; padding:7px 10px; font-size:0.82rem;" title="Watch directly on YouTube">
+                        ↗ YouTube
+                      </a>
+                      <button class="hud-btn ${isWatched ? 'active' : ''}" onclick="toggleVideoWatched('${vidId}', '${v.title.replace(/'/g, "\\'")}')" style="padding:7px 10px; font-size:0.82rem;" title="${isWatched ? 'Mark as unwatched' : 'Mark as watched (+50 XP)'}">
+                        ${isWatched ? '✓ Done' : '+50 XP'}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        `}
+
+        <div style="margin-top:24px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;">
+          <button class="hud-btn" onclick="switchModuleTab('cheatsheet')">⬅ Formula Vault</button>
+          <button class="btn-primary" onclick="selectModule(${(currentModuleIdx + 1) % COURSE_MODULES.length})">
+            Next Module: ${COURSE_MODULES[(currentModuleIdx + 1) % COURSE_MODULES.length].shortTitle} ➔
+          </button>
         </div>
       </div>
     `;
   }
+}
+
+// =========================================================================
+// VIDEO MASTERCLASS HUB CONTROLLERS
+// =========================================================================
+let currentModalVideo = { vidId: null, title: '', url: '' };
+
+function extractYouTubeId(url) {
+  if (!url) return null;
+  const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/);
+  return match ? match[1] : null;
+}
+
+function openVideoModal(vidId, title, url) {
+  currentModalVideo = { vidId, title, url };
+  const modal = document.getElementById('videoModal');
+  const iframe = document.getElementById('videoIframe');
+  const titleEl = document.getElementById('videoModalTitle');
+  const extBtn = document.getElementById('videoModalExtBtn');
+  const watchBtn = document.getElementById('videoModalWatchBtn');
+
+  if (!modal || !iframe) return;
+
+  if (titleEl) titleEl.textContent = title;
+  if (extBtn) extBtn.href = url;
+  iframe.src = `https://www.youtube-nocookie.com/embed/${vidId}?autoplay=1`;
+
+  const isWatched = !!(userState.watchedVideos && userState.watchedVideos[vidId]);
+  if (watchBtn) {
+    watchBtn.textContent = isWatched ? '✓ Watched (+50 XP Claimed)' : '✓ Mark Watched (+50 XP)';
+    watchBtn.classList.toggle('btn-primary', !isWatched);
+    watchBtn.classList.toggle('hud-btn', isWatched);
+  }
+
+  modal.style.display = 'flex';
+}
+
+function closeVideoModal() {
+  const modal = document.getElementById('videoModal');
+  const iframe = document.getElementById('videoIframe');
+  if (iframe) iframe.src = '';
+  if (modal) modal.style.display = 'none';
+  currentModalVideo = { vidId: null, title: '', url: '' };
+}
+
+function handleVideoOverlayClick(e) {
+  if (e.target.id === 'videoModal') {
+    closeVideoModal();
+  }
+}
+
+function toggleModalVideoWatched() {
+  if (!currentModalVideo.vidId) return;
+  toggleVideoWatched(currentModalVideo.vidId, currentModalVideo.title);
+  const watchBtn = document.getElementById('videoModalWatchBtn');
+  const isWatched = !!(userState.watchedVideos && userState.watchedVideos[currentModalVideo.vidId]);
+  if (watchBtn) {
+    watchBtn.textContent = isWatched ? '✓ Watched (+50 XP Claimed)' : '✓ Mark Watched (+50 XP)';
+    watchBtn.classList.toggle('btn-primary', !isWatched);
+    watchBtn.classList.toggle('hud-btn', isWatched);
+  }
+}
+
+function toggleVideoWatched(vidId, title) {
+  if (!userState.watchedVideos) userState.watchedVideos = {};
+  const isWatched = !!userState.watchedVideos[vidId];
+  if (!isWatched) {
+    userState.watchedVideos[vidId] = true;
+    userState.xp += 50;
+    saveState();
+    triggerConfetti();
+    alert(`🎉 Video Masterclass Completed!\n\n"${title}"\n+50 XP earned! Keep up the momentum!`);
+  } else {
+    delete userState.watchedVideos[vidId];
+    userState.xp = Math.max(0, userState.xp - 50);
+    saveState();
+  }
+  renderMainView();
 }
 
 function toggleCollapsible(id) {
@@ -7347,6 +7834,21 @@ function handleGlobalSearch(query) {
     }
   });
 
+  // Search Video Masterclasses
+  COURSE_MODULES.forEach((m, mIdx) => {
+    (m.videos || []).forEach(v => {
+      if (!q || v.title.toLowerCase().includes(q) || m.shortTitle.toLowerCase().includes(q)) {
+        const vidId = extractYouTubeId(v.url) || '';
+        results.push({
+          type: 'Video 🎥',
+          title: v.title,
+          desc: `${m.shortTitle} • Masterclass Lecture`,
+          action: `selectModule(${mIdx}); switchModuleTab('videos'); openVideoModal('${vidId}', '${v.title.replace(/'/g, "\\'")}', '${v.url}'); toggleSpotlightSearch();`
+        });
+      }
+    });
+  });
+
   list.innerHTML = results.slice(0, 10).map((r, i) => `
     <div class="search-result-item" onclick="${r.action}">
       <div>
@@ -7500,12 +8002,14 @@ window.addEventListener('keydown', (e) => {
   } else if (e.altKey && (e.key === 'f' || e.key === 'F')) {
     e.preventDefault();
     toggleFocusSprint();
-  } else if (e.key >= '1' && e.key <= '5' && currentAppView === 'module') {
-    const tabs = ['theory', 'guided', 'shortcuts', 'arena', 'cheatsheet'];
+  } else if (e.key >= '1' && e.key <= '6' && currentAppView === 'module') {
+    const tabs = ['theory', 'guided', 'shortcuts', 'arena', 'cheatsheet', 'videos'];
     switchModuleTab(tabs[parseInt(e.key) - 1]);
   } else if (e.key === 'Escape') {
     const modal = document.getElementById('searchModal');
     if (modal && modal.style.display === 'flex') toggleSpotlightSearch();
+    const vidModal = document.getElementById('videoModal');
+    if (vidModal && vidModal.style.display === 'flex') closeVideoModal();
     const drawer = document.getElementById('scratchpadDrawer');
     if (drawer && drawer.style.display === 'flex') toggleScratchpad();
   }
@@ -7522,7 +8026,7 @@ window.addEventListener('DOMContentLoaded', () => {
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./sw.js').then((reg) => {
       reg.update();
-      console.log('PWA Service Worker Active (v6) - 100% Offline Ready!');
+      console.log('PWA Service Worker Active (v7) - 100% Offline Ready!');
     }).catch(e => console.log('SW registration note:', e));
   }
 });

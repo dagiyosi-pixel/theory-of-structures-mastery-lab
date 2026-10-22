@@ -112,6 +112,9 @@
         <button class="mode-tab" data-tab="cheatsheet" onclick="switchModuleTab('cheatsheet')">
           📜 5. Chapter Formula Vault
         </button>
+        <button class="mode-tab" data-tab="videos" onclick="switchModuleTab('videos')">
+          🎥 6. Video Masterclasses
+        </button>
       </div>
 
       <!-- DYNAMIC VIEWPORT -->
@@ -182,6 +185,29 @@
     <button class="hud-btn" id="focusPlayBtn" style="padding:4px 8px; font-size:0.75rem;" onclick="toggleFocusTimer()">▶</button>
     <button class="hud-btn" style="padding:4px 8px; font-size:0.75rem;" onclick="resetFocusTimer()">↺</button>
     <button class="hud-btn" style="padding:4px 8px; font-size:0.75rem;" onclick="toggleFocusSprint()">✕</button>
+  </div>
+
+  <!-- RESPONSIVE VIDEO PLAYER MODAL -->
+  <div id="videoModal" class="modal-overlay" onclick="handleVideoOverlayClick(event)">
+    <div class="video-modal-box">
+      <div class="video-modal-header">
+        <div style="display:flex; align-items:center; gap:8px; min-width:0;">
+          <span style="color:#ef4444; font-size:1.15rem; flex-shrink:0;">🎥</span>
+          <strong id="videoModalTitle" style="color:#fff; font-size:0.92rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Video Masterclass</strong>
+        </div>
+        <button class="hud-btn" onclick="closeVideoModal()" style="padding:4px 9px;" title="Close Player (Esc)">✕</button>
+      </div>
+      <div class="video-iframe-container">
+        <iframe id="videoIframe" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      </div>
+      <div class="video-modal-footer">
+        <span style="font-size:0.78rem; color:var(--text-muted);">COTM 3101: Theory of Structures • Video Hub</span>
+        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+          <a id="videoModalExtBtn" href="#" target="_blank" class="hud-btn" style="text-decoration:none;">↗ Open on YouTube</a>
+          <button class="btn-primary" id="videoModalWatchBtn" onclick="toggleModalVideoWatched()" style="padding:6px 14px; font-size:0.8rem;">✓ Mark Watched (+50 XP)</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- Script Architecture -->

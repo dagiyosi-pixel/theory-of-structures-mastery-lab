@@ -24,6 +24,7 @@ let userState = {
   solved: {},
   errors: [], // array of missed question objects
   flashcardRatings: {}, // { formId: 'easy'|'good'|'hard'|'again' }
+  watchedVideos: {}, // { [vidId]: true }
   rank: 'Apprentice',
   lastModuleId: 'mod0'
 };
@@ -35,6 +36,7 @@ function loadState() {
       userState = Object.assign(userState, JSON.parse(saved));
       if (!userState.errors) userState.errors = [];
       if (!userState.flashcardRatings) userState.flashcardRatings = {};
+      if (!userState.watchedVideos) userState.watchedVideos = {};
     } catch (e) {
       console.error(e);
     }
@@ -55,6 +57,7 @@ function resetProgress() {
       solved: {},
       errors: [],
       flashcardRatings: {},
+      watchedVideos: {},
       rank: 'Apprentice',
       lastModuleId: 'mod0'
     };
@@ -630,12 +633,153 @@ function renderModuleView(viewport) {
         </div>
 
         <div style="margin-top:24px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;">
-          <button class="hud-btn" onclick="switchAppView('dashboard')">🏠 Mission Control</button>
-          <button class="btn-primary" onclick="switchAppView('atlas')">Explore Full 28-Formula Atlas ➔</button>
+          <button class="hud-btn" onclick="switchModuleTab('arena')">⬅ Challenge Gauntlet</button>
+          <button class="btn-primary" onclick="switchModuleTab('videos')">Next: Video Masterclasses 🎥 ➔</button>
+        </div>
+      </div>
+    `;
+  } else if (currentModuleTab === 'videos') {
+    const videos = mod.videos || [];
+    viewport.innerHTML = `
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:10px; margin-bottom:8px;">
+          <h2>🎥 Video Masterclasses — ${mod.shortTitle}</h2>
+          <span class="stat-pill" style="font-size:0.8rem;">${videos.length} Curated Lectures</span>
+        </div>
+        <p style="color:var(--text-muted); margin:4px 0 16px; font-size:0.9rem;">
+          Carefully selected AAU & international structural analysis video lectures. Watch inside the app or launch directly on YouTube. Complete videos to earn <strong>+50 XP</strong> each!
+        </p>
+
+        <div class="concept-callout" style="border-left-color:var(--primary); font-size:0.88rem; margin-bottom:20px;">
+          <strong>📶 Offline Note:</strong> Video streaming requires an active internet connection. All written theory, step-by-step worked examples, speed tricks, and interactive structural solvers in the other tabs remain <strong>100% offline accessible</strong> anytime.
+        </div>
+
+        ${videos.length === 0 ? `
+          <p style="color:var(--text-muted); text-align:center; padding:30px;">No video lectures assigned for this module yet.</p>
+        ` : `
+          <div class="video-masterclass-grid">
+            ${videos.map((v, vIdx) => {
+              const vidId = extractYouTubeId(v.url) || '';
+              const thumbUrl = vidId ? `https://img.youtube.com/vi/${vidId}/hqdefault.jpg` : '';
+              const isWatched = !!(userState.watchedVideos && userState.watchedVideos[vidId]);
+
+              return `
+                <div class="video-card ${isWatched ? 'watched' : ''}">
+                  <div class="video-thumb-container" onclick="openVideoModal('${vidId}', '${v.title.replace(/'/g, "\\'")}', '${v.url}')">
+                    <img class="video-thumb-img" src="${thumbUrl}" alt="${v.title}" loading="lazy" onerror="this.src='https://placehold.co/480x270/0f172a/38bdf8?text=Theory+of+Structures+Lecture'">
+                    <div class="video-play-overlay">
+                      <button class="play-badge-btn" title="Play Video">▶</button>
+                    </div>
+                    <span class="video-hd-badge">Lecture #${vIdx + 1}</span>
+                    ${isWatched ? '<span class="video-watched-badge">✓ Watched</span>' : ''}
+                  </div>
+                  <div class="video-card-content">
+                    <h3 class="video-card-title" title="${v.title}">${v.title}</h3>
+                    <div class="video-card-actions">
+                      <button class="btn-primary" onclick="openVideoModal('${vidId}', '${v.title.replace(/'/g, "\\'")}', '${v.url}')" style="flex:1; justify-content:center; padding:7px 12px; font-size:0.82rem;">
+                        ▶ Watch in App
+                      </button>
+                      <a href="${v.url}" target="_blank" rel="noopener noreferrer" class="hud-btn" style="text-decoration:none; padding:7px 10px; font-size:0.82rem;" title="Watch directly on YouTube">
+                        ↗ YouTube
+                      </a>
+                      <button class="hud-btn ${isWatched ? 'active' : ''}" onclick="toggleVideoWatched('${vidId}', '${v.title.replace(/'/g, "\\'")}')" style="padding:7px 10px; font-size:0.82rem;" title="${isWatched ? 'Mark as unwatched' : 'Mark as watched (+50 XP)'}">
+                        ${isWatched ? '✓ Done' : '+50 XP'}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        `}
+
+        <div style="margin-top:24px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;">
+          <button class="hud-btn" onclick="switchModuleTab('cheatsheet')">⬅ Formula Vault</button>
+          <button class="btn-primary" onclick="selectModule(${(currentModuleIdx + 1) % COURSE_MODULES.length})">
+            Next Module: ${COURSE_MODULES[(currentModuleIdx + 1) % COURSE_MODULES.length].shortTitle} ➔
+          </button>
         </div>
       </div>
     `;
   }
+}
+
+// =========================================================================
+// VIDEO MASTERCLASS HUB CONTROLLERS
+// =========================================================================
+let currentModalVideo = { vidId: null, title: '', url: '' };
+
+function extractYouTubeId(url) {
+  if (!url) return null;
+  const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/);
+  return match ? match[1] : null;
+}
+
+function openVideoModal(vidId, title, url) {
+  currentModalVideo = { vidId, title, url };
+  const modal = document.getElementById('videoModal');
+  const iframe = document.getElementById('videoIframe');
+  const titleEl = document.getElementById('videoModalTitle');
+  const extBtn = document.getElementById('videoModalExtBtn');
+  const watchBtn = document.getElementById('videoModalWatchBtn');
+
+  if (!modal || !iframe) return;
+
+  if (titleEl) titleEl.textContent = title;
+  if (extBtn) extBtn.href = url;
+  iframe.src = `https://www.youtube-nocookie.com/embed/${vidId}?autoplay=1`;
+
+  const isWatched = !!(userState.watchedVideos && userState.watchedVideos[vidId]);
+  if (watchBtn) {
+    watchBtn.textContent = isWatched ? '✓ Watched (+50 XP Claimed)' : '✓ Mark Watched (+50 XP)';
+    watchBtn.classList.toggle('btn-primary', !isWatched);
+    watchBtn.classList.toggle('hud-btn', isWatched);
+  }
+
+  modal.style.display = 'flex';
+}
+
+function closeVideoModal() {
+  const modal = document.getElementById('videoModal');
+  const iframe = document.getElementById('videoIframe');
+  if (iframe) iframe.src = '';
+  if (modal) modal.style.display = 'none';
+  currentModalVideo = { vidId: null, title: '', url: '' };
+}
+
+function handleVideoOverlayClick(e) {
+  if (e.target.id === 'videoModal') {
+    closeVideoModal();
+  }
+}
+
+function toggleModalVideoWatched() {
+  if (!currentModalVideo.vidId) return;
+  toggleVideoWatched(currentModalVideo.vidId, currentModalVideo.title);
+  const watchBtn = document.getElementById('videoModalWatchBtn');
+  const isWatched = !!(userState.watchedVideos && userState.watchedVideos[currentModalVideo.vidId]);
+  if (watchBtn) {
+    watchBtn.textContent = isWatched ? '✓ Watched (+50 XP Claimed)' : '✓ Mark Watched (+50 XP)';
+    watchBtn.classList.toggle('btn-primary', !isWatched);
+    watchBtn.classList.toggle('hud-btn', isWatched);
+  }
+}
+
+function toggleVideoWatched(vidId, title) {
+  if (!userState.watchedVideos) userState.watchedVideos = {};
+  const isWatched = !!userState.watchedVideos[vidId];
+  if (!isWatched) {
+    userState.watchedVideos[vidId] = true;
+    userState.xp += 50;
+    saveState();
+    triggerConfetti();
+    alert(`🎉 Video Masterclass Completed!\n\n"${title}"\n+50 XP earned! Keep up the momentum!`);
+  } else {
+    delete userState.watchedVideos[vidId];
+    userState.xp = Math.max(0, userState.xp - 50);
+    saveState();
+  }
+  renderMainView();
 }
 
 function toggleCollapsible(id) {
@@ -1823,6 +1967,21 @@ function handleGlobalSearch(query) {
     }
   });
 
+  // Search Video Masterclasses
+  COURSE_MODULES.forEach((m, mIdx) => {
+    (m.videos || []).forEach(v => {
+      if (!q || v.title.toLowerCase().includes(q) || m.shortTitle.toLowerCase().includes(q)) {
+        const vidId = extractYouTubeId(v.url) || '';
+        results.push({
+          type: 'Video 🎥',
+          title: v.title,
+          desc: `${m.shortTitle} • Masterclass Lecture`,
+          action: `selectModule(${mIdx}); switchModuleTab('videos'); openVideoModal('${vidId}', '${v.title.replace(/'/g, "\\'")}', '${v.url}'); toggleSpotlightSearch();`
+        });
+      }
+    });
+  });
+
   list.innerHTML = results.slice(0, 10).map((r, i) => `
     <div class="search-result-item" onclick="${r.action}">
       <div>
@@ -1976,12 +2135,14 @@ window.addEventListener('keydown', (e) => {
   } else if (e.altKey && (e.key === 'f' || e.key === 'F')) {
     e.preventDefault();
     toggleFocusSprint();
-  } else if (e.key >= '1' && e.key <= '5' && currentAppView === 'module') {
-    const tabs = ['theory', 'guided', 'shortcuts', 'arena', 'cheatsheet'];
+  } else if (e.key >= '1' && e.key <= '6' && currentAppView === 'module') {
+    const tabs = ['theory', 'guided', 'shortcuts', 'arena', 'cheatsheet', 'videos'];
     switchModuleTab(tabs[parseInt(e.key) - 1]);
   } else if (e.key === 'Escape') {
     const modal = document.getElementById('searchModal');
     if (modal && modal.style.display === 'flex') toggleSpotlightSearch();
+    const vidModal = document.getElementById('videoModal');
+    if (vidModal && vidModal.style.display === 'flex') closeVideoModal();
     const drawer = document.getElementById('scratchpadDrawer');
     if (drawer && drawer.style.display === 'flex') toggleScratchpad();
   }
@@ -1998,7 +2159,7 @@ window.addEventListener('DOMContentLoaded', () => {
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./sw.js').then((reg) => {
       reg.update();
-      console.log('PWA Service Worker Active (v6) - 100% Offline Ready!');
+      console.log('PWA Service Worker Active (v7) - 100% Offline Ready!');
     }).catch(e => console.log('SW registration note:', e));
   }
 });

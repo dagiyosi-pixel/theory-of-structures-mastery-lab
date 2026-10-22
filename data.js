@@ -357,6 +357,21 @@ const COURSE_MODULES = [
       }
     ],
     "cheatsheet": "\n    <strong>MODULE 0 FORMULA & CONVENTION QUICK SHEET</strong><br/>\n    • <strong>2D Equilibrium:</strong> $\\sum F_x = 0, \\; \\sum F_y = 0, \\; \\sum M_z = 0$<br/>\n    • <strong>Differential Relations:</strong> $w = -dV/dx, \\; V = dM/dx, \\; \\Delta M = \\int V dx$<br/>\n    • <strong>Axial Deformation:</strong> $\\Delta L = NL / EA$<br/>\n    • <strong>Inertia & Parallel Axis:</strong> $I_{NA} = bh^3/12, \\; I = I_{NA} + Ad^2$<br/>\n    • <strong>Elastic Flexure:</strong> $\\sigma = -My/I, \\; S = bh^2/6$<br/>\n    • <strong>Double Integration:</strong> $EI v'' = M(x), \\; EI v' = \\int M dx + C_1, \\; EI v = \\iint M dx dx + C_1 x + C_2$<br/>\n    • <strong>Moment-Area:</strong> $\\theta_{B/A} = \\text{Area}_{M/EI}, \\; t_{B/A} = \\bar{x}_B \\cdot \\text{Area}_{M/EI}$ (arm $\\bar{x}_B$ measured from $B$)\n  "
+  ,
+    videos: [
+          {
+                "title": "Statics & 2D Coplanar Equilibrium",
+                "url": "https://www.youtube.com/watch?v=k1tG9PZ8x5g"
+          },
+          {
+                "title": "Shear Force & Bending Moment Diagrams (SFD/BMD)",
+                "url": "https://www.youtube.com/watch?v=m2c_8WvI5pU"
+          },
+          {
+                "title": "Mohr's Moment-Area Method for Slope & Deflection",
+                "url": "https://www.youtube.com/watch?v=F3a7rVd5d_g"
+          }
+    ]
   },
 
   // =========================================================================
@@ -562,6 +577,17 @@ const COURSE_MODULES = [
       • <strong>Closed-Loop Internal Formula:</strong> D_i = 3n - I_c<br/>
       • <strong>Internal Hinge Release:</strong> s = k - 1 (for <em>k</em> members meeting at hinge)
     `
+  ,
+    videos: [
+          {
+                "title": "Stability & Determinacy with Examples",
+                "url": "https://www.youtube.com/watch?v=7ZMjz4QmrMQ"
+          },
+          {
+                "title": "Plane Frame Determinacy & Hinges",
+                "url": "https://www.youtube.com/watch?v=gcPP8DCa2sw"
+          }
+    ]
   },
 
   // =========================================================================
@@ -716,6 +742,21 @@ const COURSE_MODULES = [
       • <strong>Simple Beam UDL w:</strong> θ_end = wL³/(24EI),  v_mid = 5wL⁴/(384EI)<br/>
       • <strong>Simple Beam Center Load P:</strong> θ_end = PL²/(16EI),  v_mid = PL³/(48EI)
     `
+  ,
+    videos: [
+          {
+                "title": "Conjugate Beam Rules & Drawing",
+                "url": "https://www.youtube.com/watch?v=EpTZ77-tUC0"
+          },
+          {
+                "title": "Conjugate Beam Worked Example",
+                "url": "https://www.youtube.com/watch?v=Vfuh4YGM57w"
+          },
+          {
+                "title": "Beam with Internal Hinge (Conjugate)",
+                "url": "https://www.youtube.com/watch?v=02pOdMKCoVs"
+          }
+    ]
   },
 
   // =========================================================================
@@ -862,6 +903,21 @@ Virtual m-Diagram (Unit Couple at Support A): Triangle from 1.0 at A to 0 at B (
       • <strong>Beam/Frame Flexure:</strong> 1·Δ = ∫ [m · M / (EI)] dx = Σ [Area(M) × m_c / EI]<br/>
       • <strong>Support Movement (Determinate):</strong> 1·Δ = - Σ (R_virtual · Δ_settlement)
     `
+  ,
+    videos: [
+          {
+                "title": "Virtual Work Core Derivation",
+                "url": "https://www.youtube.com/watch?v=TlznZHClMLY"
+          },
+          {
+                "title": "Virtual Work for Trusses",
+                "url": "https://www.youtube.com/watch?v=R5p5J-O_iFA"
+          },
+          {
+                "title": "Virtual Work for Beams",
+                "url": "https://www.youtube.com/watch?v=g8Y4TrXsRtU"
+          }
+    ]
   },
 
   // =========================================================================
@@ -964,6 +1020,21 @@ Virtual m-Diagram (Unit Couple at Support A): Triangle from 1.0 at A to 0 at B (
       • <strong>Propped Cantilever (Mid Point P):</strong> R_roller = 5P/16,  R_wall = 11P/16,  M_wall = 3PL/16<br/>
       • <strong>Symmetry Theorem:</strong> δ_ij = δ_ji (Maxwell-Betti Reciprocal Theorem)
     `
+  ,
+    videos: [
+          {
+                "title": "Consistent Deformations (1st Degree Beam)",
+                "url": "https://www.youtube.com/watch?v=-dhVofRCoPM"
+          },
+          {
+                "title": "Consistent Deformations (2nd Degree Beam)",
+                "url": "https://www.youtube.com/watch?v=avU_YnKP3M8"
+          },
+          {
+                "title": "Indeterminate Truss (Force Method)",
+                "url": "https://www.youtube.com/watch?v=AuBcV1oehD8"
+          }
+    ]
   },
 
   // =========================================================================
@@ -1080,6 +1151,17 @@ Virtual m-Diagram (Unit Couple at Support A): Triangle from 1.0 at A to 0 at B (
       • <strong>Center Point Load Term:</strong> 6Ax / L = 3 P L² / 8<br/>
       • <strong>Fixed End:</strong> Attach imaginary span L₀ = 0, EI₀ = ∞
     `
+  ,
+    videos: [
+          {
+                "title": "Three-Moment Equation Intro",
+                "url": "https://www.youtube.com/watch?v=SHrnZtU11mc"
+          },
+          {
+                "title": "Clapeyron's Three-Moment Full Problem",
+                "url": "https://www.youtube.com/watch?v=pk6z6STv_uw"
+          }
+    ]
   },
 
   // =========================================================================
@@ -1213,6 +1295,17 @@ Virtual m-Diagram (Unit Couple at Support A): Triangle from 1.0 at A to 0 at B (
       • <strong>Chord Rotation / Sway:</strong> Multiplier is 3 (i.e. 6EKΔ/L)<br/>
       • <strong>Joint Equilibrium:</strong> Σ M_joint = 0 for all interior joints
     `
+  ,
+    videos: [
+          {
+                "title": "Slope-Deflection Continuous Beam",
+                "url": "https://www.youtube.com/watch?v=gQtII2rL8PQ"
+          },
+          {
+                "title": "Slope-Deflection Side-Sway Frame",
+                "url": "https://www.youtube.com/watch?v=RYSFgi39-Kk"
+          }
+    ]
   },
 
   // =========================================================================
@@ -1331,6 +1424,21 @@ Virtual m-Diagram (Unit Couple at Support A): Triangle from 1.0 at A to 0 at B (
       • <strong>Hinged End DF:</strong> DF_hinge = 1.0<br/>
       • <strong>Carry-Over Factor:</strong> COF = + 0.5 (to fixed far ends)
     `
+  ,
+    videos: [
+          {
+                "title": "Hardy Cross Intuition & Stiffness",
+                "url": "https://www.youtube.com/watch?v=E3zLTnc_nlk"
+          },
+          {
+                "title": "Moment Distribution Beams",
+                "url": "https://www.youtube.com/watch?v=Cyia85dap0E"
+          },
+          {
+                "title": "Moment Distribution Sway Frame",
+                "url": "https://www.youtube.com/watch?v=aSNJZZAXZf0"
+          }
+    ]
   }
 ];
 
