@@ -851,10 +851,11 @@ function renderModuleView(viewport) {
               const vidId = extractYouTubeId(v.url) || '';
               const thumbUrl = vidId ? `https://img.youtube.com/vi/${vidId}/hqdefault.jpg` : '';
               const isWatched = !!(userState.watchedVideos && userState.watchedVideos[vidId]);
+              const secureUrl = (v.url && v.url.startsWith('http')) ? v.url.replace(/^http:\/\//i, 'https://') : `https://www.youtube.com/watch?v=${vidId}`;
 
               return `
                 <div class="video-card ${isWatched ? 'watched' : ''}">
-                  <div class="video-thumb-container" onclick="openVideoModal('${vidId}', '${v.title.replace(/'/g, "\\'")}', '${v.url}')">
+                  <div class="video-thumb-container" onclick="openVideoModal('${vidId}', '${v.title.replace(/'/g, "\\'")}', '${secureUrl}')">
                     <img class="video-thumb-img" src="${thumbUrl}" alt="${v.title}" loading="lazy" onerror="this.src='https://placehold.co/480x270/0f172a/38bdf8?text=Theory+of+Structures+Lecture'">
                     <div class="video-play-overlay">
                       <button class="play-badge-btn" title="Play Video">▶</button>
@@ -865,10 +866,10 @@ function renderModuleView(viewport) {
                   <div class="video-card-content">
                     <h3 class="video-card-title" title="${v.title}">${v.title}</h3>
                     <div class="video-card-actions">
-                      <button class="btn-primary" onclick="openVideoModal('${vidId}', '${v.title.replace(/'/g, "\\'")}', '${v.url}')" style="flex:1; justify-content:center; padding:7px 12px; font-size:0.82rem;">
+                      <button class="btn-primary" onclick="openVideoModal('${vidId}', '${v.title.replace(/'/g, "\\'")}', '${secureUrl}')" style="flex:1; justify-content:center; padding:7px 12px; font-size:0.82rem;">
                         ▶ Watch in App
                       </button>
-                      <a href="${v.url}" target="_blank" rel="noopener noreferrer" class="hud-btn" style="text-decoration:none; padding:7px 10px; font-size:0.82rem;" title="Watch directly on YouTube">
+                      <a href="${secureUrl}" target="_blank" rel="noopener noreferrer" class="hud-btn" style="text-decoration:none; padding:7px 10px; font-size:0.82rem;" title="Watch directly on YouTube">
                         ↗ YouTube
                       </a>
                       <button class="hud-btn ${isWatched ? 'active' : ''}" onclick="toggleVideoWatched('${vidId}', '${v.title.replace(/'/g, "\\'")}')" style="padding:7px 10px; font-size:0.82rem;" title="${isWatched ? 'Mark as unwatched' : 'Mark as watched (+50 XP)'}">
@@ -914,12 +915,17 @@ function openVideoModal(vidId, title, url) {
   const titleEl = document.getElementById('videoModalTitle');
   const extBtn = document.getElementById('videoModalExtBtn');
   const watchBtn = document.getElementById('videoModalWatchBtn');
+  const fallbackLink = document.getElementById('videoEmbedFallbackLink');
 
   if (!modal || !iframe) return;
 
+  const secureUrl = (url && url.startsWith('http')) ? url.replace(/^http:\/\//i, 'https://') : `https://www.youtube.com/watch?v=${vidId}`;
+
   if (titleEl) titleEl.textContent = title;
-  if (extBtn) extBtn.href = url;
-  iframe.src = `https://www.youtube-nocookie.com/embed/${vidId}?autoplay=1`;
+  if (extBtn) extBtn.href = secureUrl;
+  if (fallbackLink) fallbackLink.href = secureUrl;
+
+  iframe.src = `https://www.youtube.com/embed/${vidId}?autoplay=1&rel=0&playsinline=1`;
 
   const isWatched = !!(userState.watchedVideos && userState.watchedVideos[vidId]);
   if (watchBtn) {
@@ -3167,7 +3173,7 @@ window.addEventListener('DOMContentLoaded', () => {
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./sw.js').then((reg) => {
       reg.update();
-      console.log('PWA Service Worker Active (v9) - 100% Offline Ready!');
+      console.log('PWA Service Worker Active (v10) - 100% Offline Ready!');
     }).catch(e => console.log('SW registration note:', e));
   }
 });

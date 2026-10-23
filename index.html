@@ -210,12 +210,16 @@
         <button class="hud-btn" onclick="closeVideoModal()" style="padding:4px 9px;" title="Close Player (Esc)">✕</button>
       </div>
       <div class="video-iframe-container">
-        <iframe id="videoIframe" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        <iframe id="videoIframe" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+      </div>
+      <div id="videoEmbedFallbackNotice" style="padding:10px 14px; background:rgba(30, 41, 59, 0.7); border-top:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; font-size:0.82rem;">
+        <span style="color:var(--text-muted);">Having trouble loading in your browser?</span>
+        <a id="videoEmbedFallbackLink" href="#" target="_blank" rel="noopener noreferrer" style="color:var(--accent); font-weight:600; text-decoration:none;">▶ Watch Directly on YouTube App ↗</a>
       </div>
       <div class="video-modal-footer">
         <span style="font-size:0.78rem; color:var(--text-muted);">COTM 3101: Theory of Structures • Video Hub</span>
         <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-          <a id="videoModalExtBtn" href="#" target="_blank" class="hud-btn" style="text-decoration:none;">↗ Open on YouTube</a>
+          <a id="videoModalExtBtn" href="#" target="_blank" rel="noopener noreferrer" class="hud-btn" style="text-decoration:none;">↗ Open on YouTube</a>
           <button class="btn-primary" id="videoModalWatchBtn" onclick="toggleModalVideoWatched()" style="padding:6px 14px; font-size:0.8rem;">✓ Mark Watched (+50 XP)</button>
         </div>
       </div>

@@ -359,16 +359,16 @@ const COURSE_MODULES = [
     "cheatsheet": "\n    <strong>MODULE 0 FORMULA & CONVENTION QUICK SHEET</strong><br/>\n    • <strong>2D Equilibrium:</strong> $\\sum F_x = 0, \\; \\sum F_y = 0, \\; \\sum M_z = 0$<br/>\n    • <strong>Differential Relations:</strong> $w = -dV/dx, \\; V = dM/dx, \\; \\Delta M = \\int V dx$<br/>\n    • <strong>Axial Deformation:</strong> $\\Delta L = NL / EA$<br/>\n    • <strong>Inertia & Parallel Axis:</strong> $I_{NA} = bh^3/12, \\; I = I_{NA} + Ad^2$<br/>\n    • <strong>Elastic Flexure:</strong> $\\sigma = -My/I, \\; S = bh^2/6$<br/>\n    • <strong>Double Integration:</strong> $EI v'' = M(x), \\; EI v' = \\int M dx + C_1, \\; EI v = \\iint M dx dx + C_1 x + C_2$<br/>\n    • <strong>Moment-Area:</strong> $\\theta_{B/A} = \\text{Area}_{M/EI}, \\; t_{B/A} = \\bar{x}_B \\cdot \\text{Area}_{M/EI}$ (arm $\\bar{x}_B$ measured from $B$)\n  ",
     "videos": [
       {
-        "title": "Statics & 2D Coplanar Equilibrium",
-        "url": "https://www.youtube.com/watch?v=k1tG9PZ8x5g"
+        "title": "Equilibrium of Rigid Bodies (2D Coplanar Forces)",
+        "url": "https://www.youtube.com/watch?v=jQDEOwrR4UU"
       },
       {
-        "title": "Shear Force & Bending Moment Diagrams (SFD/BMD)",
-        "url": "https://www.youtube.com/watch?v=m2c_8WvI5pU"
+        "title": "Shear & Moment Diagrams Graphically (SFD/BMD)",
+        "url": "https://www.youtube.com/watch?v=0PuWq6oTEwE"
       },
       {
-        "title": "Mohr's Moment-Area Method for Slope & Deflection",
-        "url": "https://www.youtube.com/watch?v=F3a7rVd5d_g"
+        "title": "Moment Area Theorems Explained (Slope & Deflection)",
+        "url": "https://www.youtube.com/watch?v=4W47rgTE09M"
       }
     ]
   },
