@@ -20,11 +20,12 @@ let mathEngineJs = fs.readFileSync('math_engine.js', 'utf8');
 let visualsJs = fs.readFileSync('visuals.js', 'utf8');
 let solversJs = fs.readFileSync('solvers.js', 'utf8');
 let dataJs = fs.readFileSync('data.js', 'utf8');
+let qbJs = fs.readFileSync('question_bank.js', 'utf8');
 let appJs = fs.readFileSync('app.js', 'utf8');
 
 // Replace CSS links with inlined style
 const combinedCss = `<style>\n${katexCss}\n\n${css}\n</style>`;
-html = html.replace(/<link rel="stylesheet" href="katex\.min\.css" \/>\s*<link rel="stylesheet" href="styles\.css(?:\?[^"]*)?" \/>/, combinedCss);
+html = html.replace(/<link rel="stylesheet" href="katex\.min\.css" \/>\s*<link rel="stylesheet" href="styles\.css(?:\?[^"]*)?" \/>/, () => combinedCss);
 
 // Remove external script tags in head
 html = html.replace(/<script src="katex\.min\.js"><\/script>\s*<script src="auto-render\.min\.js"><\/script>/, '');
@@ -50,13 +51,16 @@ ${solversJs}
 ${dataJs}
   </script>
   <script>
+${qbJs}
+  </script>
+  <script>
 ${appJs}
   </script>
 `;
 
 html = html.replace(
-  /<script src="math_engine\.js"><\/script>\s*<script src="visuals\.js"><\/script>\s*<script src="solvers\.js"><\/script>\s*<script src="data\.js"><\/script>\s*<script src="app\.js(?:\?[^"]*)?"><\/script>/,
-  combinedScripts
+  /<script src="math_engine\.js"><\/script>\s*<script src="visuals\.js"><\/script>\s*<script src="solvers\.js"><\/script>\s*<script src="data\.js"><\/script>\s*<script src="question_bank\.js"><\/script>\s*<script src="app\.js(?:\?[^"]*)?"><\/script>/,
+  () => combinedScripts
 );
 
 fs.writeFileSync('standalone.html', html, 'utf8');

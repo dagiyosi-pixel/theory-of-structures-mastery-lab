@@ -27,12 +27,15 @@
     <!-- Primary View Switcher (Desktop & Tablet) -->
     <nav class="top-nav-bar">
       <button class="top-nav-btn active" data-view="dashboard" onclick="switchAppView('dashboard')">🚀 Cockpit</button>
-      <button class="top-nav-btn" data-view="module" onclick="switchAppView('module')">📚 Curriculum</button>
+      <button class="top-nav-btn" data-view="bank" onclick="switchAppView('bank')">📚 105 Exam Bank</button>
+      <button class="top-nav-btn" data-view="trees" onclick="switchAppView('trees')">🌲 Decision Trees</button>
+      <button class="top-nav-btn" data-view="diagnostic" onclick="switchAppView('diagnostic')">🎯 Diagnostic & Skills</button>
+      <button class="top-nav-btn" data-view="module" onclick="switchAppView('module')">📖 Curriculum</button>
+      <button class="top-nav-btn" data-view="trainer" onclick="switchAppView('trainer')">🥋 Method Decider</button>
       <button class="top-nav-btn" data-view="solvers" onclick="switchAppView('solvers')">🧮 Solvers</button>
       <button class="top-nav-btn" data-view="atlas" onclick="switchAppView('atlas')">📜 Formula Vault</button>
-      <button class="top-nav-btn" data-view="exam" onclick="switchAppView('exam')">⏱️ Exam Sim</button>
-      <button class="top-nav-btn" data-view="trainer" onclick="switchAppView('trainer')">🥋 Method Decider</button>
-      <button class="top-nav-btn" data-view="errors" onclick="switchAppView('errors')">📓 Error Notebook</button>
+      <button class="top-nav-btn" data-view="errors" onclick="switchAppView('errors')">📓 Error Vault</button>
+      <button class="top-nav-btn" data-view="sources" onclick="switchAppView('sources')">🏛️ EiABC Sources</button>
     </nav>
 
     <div class="hud-stats">
@@ -56,6 +59,18 @@
       <div class="module-nav" style="margin-bottom:16px;">
         <button class="nav-item" id="sidebarCockpitBtn" onclick="switchAppView('dashboard')">
           <span>🚀 Cockpit Dashboard</span>
+        </button>
+        <button class="nav-item" onclick="switchAppView('bank')">
+          <span>📚 105 Exam Question Bank</span>
+        </button>
+        <button class="nav-item" onclick="switchAppView('trees')">
+          <span>🌲 6 Method Decision Trees</span>
+        </button>
+        <button class="nav-item" onclick="switchAppView('diagnostic')">
+          <span>🎯 Diagnostic & Skill Map</span>
+        </button>
+        <button class="nav-item" onclick="switchAppView('sources')">
+          <span>🏛️ Official Source Register</span>
         </button>
       </div>
 
@@ -136,25 +151,25 @@
       <span class="mob-icon">🚀</span>
       <span>Cockpit</span>
     </button>
-    <button class="mob-nav-btn" data-view="module" onclick="switchAppView('module')">
+    <button class="mob-nav-btn" data-view="bank" onclick="switchAppView('bank')">
       <span class="mob-icon">📚</span>
-      <span>Modules</span>
+      <span>105 Bank</span>
+    </button>
+    <button class="mob-nav-btn" data-view="trees" onclick="switchAppView('trees')">
+      <span class="mob-icon">🌲</span>
+      <span>Trees</span>
     </button>
     <button class="mob-nav-btn" data-view="trainer" onclick="switchAppView('trainer')">
       <span class="mob-icon">🥋</span>
       <span>Decider</span>
     </button>
-    <button class="mob-nav-btn" data-view="solvers" onclick="switchAppView('solvers')">
-      <span class="mob-icon">🧮</span>
-      <span>Solvers</span>
+    <button class="mob-nav-btn" data-view="diagnostic" onclick="switchAppView('diagnostic')">
+      <span class="mob-icon">🎯</span>
+      <span>Skills</span>
     </button>
     <button class="mob-nav-btn" data-view="atlas" onclick="switchAppView('atlas')">
       <span class="mob-icon">📜</span>
       <span>Vault</span>
-    </button>
-    <button class="mob-nav-btn" data-view="exam" onclick="switchAppView('exam')">
-      <span class="mob-icon">⏱️</span>
-      <span>Exam</span>
     </button>
   </nav>
 
@@ -231,6 +246,7 @@
   <script src="visuals.js"></script>
   <script src="solvers.js"></script>
   <script src="data.js"></script>
+  <script src="question_bank.js"></script>
   <script src="app.js?v=6.0.2"></script>
 </body>
 </html>

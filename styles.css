@@ -2645,3 +2645,744 @@ html, body {
     gap: 10px;
   }
 }
+/* =========================================================================
+   QUESTION BANK, DECISION TREES, DIAGNOSTIC SKILL MAP & SOURCE REGISTER
+   ========================================================================= */
+
+/* Question Bank Hub */
+.qb-hub-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.qb-banner {
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.85));
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+}
+
+.qb-banner-info h2 {
+  font-size: 1.3rem;
+  color: #fff;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.qb-banner-info p {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.qb-stat-counters {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.qb-counter-pill {
+  background: rgba(9, 14, 29, 0.85);
+  border: 1px solid var(--border);
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.qb-counter-pill strong {
+  color: var(--accent);
+  font-size: 0.92rem;
+  margin-left: 4px;
+}
+
+.qb-controls-bar {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.qb-search-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.qb-search-input {
+  flex: 1;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 14px;
+  color: #fff;
+  font-size: 0.85rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.qb-search-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 10px var(--accent-glow);
+}
+
+.qb-filter-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.qb-filter-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-right: 4px;
+}
+
+.qb-filter-pill {
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.qb-filter-pill:hover {
+  background: var(--accent-dim);
+  color: #fff;
+  border-color: var(--border-light);
+}
+
+.qb-filter-pill.active {
+  background: var(--accent);
+  color: #030712;
+  font-weight: 700;
+  border-color: var(--accent);
+  box-shadow: 0 0 12px var(--accent-glow);
+}
+
+/* Question Grid */
+.qb-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+  gap: 14px;
+}
+
+.qb-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 10px;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.qb-card:hover {
+  border-color: var(--border-focus);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+
+.qb-card.is-solved {
+  border-left: 3px solid var(--success);
+}
+
+.qb-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.qb-id-badge {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  background: rgba(56, 189, 248, 0.12);
+  color: var(--accent);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.qb-subject-tag {
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.qb-tag-foundations { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); }
+.qb-tag-deflections { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+.qb-tag-indeterminate { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+
+.qb-topic-title {
+  font-size: 0.82rem;
+  color: #fff;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.qb-problem-snippet {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.qb-card-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding-top: 8px;
+}
+
+.qb-difficulty-stars {
+  color: var(--gold);
+  letter-spacing: 1px;
+}
+
+.qb-solve-btn {
+  background: var(--accent-dim);
+  border: 1px solid var(--border);
+  color: var(--accent);
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.qb-solve-btn:hover {
+  background: var(--accent);
+  color: #030712;
+  box-shadow: 0 0 10px var(--accent-glow);
+}
+
+/* Interactive Problem Workspace ("Solve-Any-Problem Protocol") */
+.solver-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.solver-nav-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.solver-back-btn {
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.solver-back-btn:hover {
+  color: #fff;
+  border-color: var(--border-light);
+}
+
+.solver-meta-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+}
+
+.solver-problem-text {
+  font-size: 0.95rem;
+  color: #fff;
+  line-height: 1.6;
+  background: rgba(9, 14, 29, 0.7);
+  padding: 14px 16px;
+  border-radius: 8px;
+  border-left: 3px solid var(--accent);
+}
+
+.solver-givens-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 10px;
+}
+
+.solver-given-pill {
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 0.78rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.solver-given-pill span:first-child {
+  color: var(--text-muted);
+}
+
+.solver-given-pill span:last-child {
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-weight: 600;
+}
+
+/* Method Selector Challenge */
+.method-challenge-box {
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.9));
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  border-radius: 10px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.method-challenge-title {
+  font-size: 0.88rem;
+  color: #fff;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.method-options-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.method-option-card {
+  background: rgba(9, 14, 29, 0.8);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  transition: all 0.15s;
+}
+
+.method-option-card:hover {
+  background: var(--accent-dim);
+  color: #fff;
+  border-color: var(--border-light);
+}
+
+.method-option-card.selected-correct {
+  background: var(--success-dim);
+  border-color: var(--success);
+  color: #fff;
+}
+
+.method-option-card.selected-wrong {
+  background: var(--danger-dim);
+  border-color: var(--danger);
+  color: #fff;
+}
+
+.method-feedback-box {
+  background: rgba(9, 14, 29, 0.85);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+/* Step-by-Step Solution Section */
+.solver-steps-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.solver-step-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.solver-step-header {
+  padding: 10px 14px;
+  background: rgba(30, 41, 59, 0.6);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+}
+
+.solver-step-body {
+  padding: 12px 16px;
+  font-size: 0.85rem;
+  color: var(--text-main);
+  line-height: 1.6;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Answer Submission & Verification */
+.solver-answer-box {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.solver-answer-inputs {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.solver-final-display {
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid var(--success);
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 0.88rem;
+  color: #fff;
+  font-weight: 600;
+}
+
+/* Hint Ladder */
+.solver-hints-box {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.solver-hint-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.solver-hint-btn {
+  background: rgba(9, 14, 29, 0.7);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 0.76rem;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.solver-hint-btn.active {
+  background: var(--gold-dim);
+  border-color: var(--gold);
+  color: var(--gold);
+  font-weight: 600;
+}
+
+.solver-hint-text {
+  background: rgba(9, 14, 29, 0.6);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 10px 12px;
+  font-size: 0.82rem;
+  color: var(--text-main);
+  line-height: 1.5;
+}
+
+/* Error Logger Card */
+.solver-error-logger {
+  background: rgba(244, 63, 94, 0.08);
+  border: 1px solid rgba(244, 63, 94, 0.25);
+  border-radius: 10px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Decision Trees View */
+.trees-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.tree-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px;
+}
+
+.tree-picker-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.tree-picker-card:hover, .tree-picker-card.active {
+  background: var(--accent-dim);
+  border-color: var(--accent);
+  box-shadow: 0 4px 16px var(--accent-glow);
+}
+
+.tree-picker-title {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.tree-picker-desc {
+  font-size: 0.76rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.tree-active-node-box {
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.tree-breadcrumbs {
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.tree-prompt {
+  font-size: 1.05rem;
+  color: #fff;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.tree-options-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.tree-option-btn {
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 0.84rem;
+  color: var(--text-main);
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.tree-option-btn:hover {
+  background: var(--accent-dim);
+  border-color: var(--accent);
+  color: #fff;
+  transform: translateX(4px);
+}
+
+.tree-recommendation-box {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(15, 23, 42, 0.9));
+  border: 1px solid var(--success);
+  border-radius: 10px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Diagnostic & Skill Map View */
+.diag-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.diag-skill-map-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.skill-bar-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.skill-bar-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.skill-bar-track {
+  background: rgba(9, 14, 29, 0.8);
+  height: 8px;
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.skill-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.6s ease;
+}
+
+.fill-mastery { background: linear-gradient(90deg, #10b981, #06b6d4); }
+.fill-proficient { background: linear-gradient(90deg, #38bdf8, #60a5fa); }
+.fill-developing { background: linear-gradient(90deg, #fbbf24, #f59e0b); }
+.fill-attention { background: linear-gradient(90deg, #f43f5e, #e11d48); }
+
+/* Sources Register View */
+.sources-container {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.source-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.source-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.source-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.source-badge {
+  font-size: 0.72rem;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+  border: 1px solid var(--border);
+  background: var(--accent-dim);
+  color: var(--accent);
+}
+
+.source-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 8px;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .qb-banner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .qb-grid {
+    grid-template-columns: 1fr;
+  }
+  .solver-givens-grid {
+    grid-template-columns: 1fr;
+  }
+  .tree-picker-grid {
+    grid-template-columns: 1fr;
+  }
+}

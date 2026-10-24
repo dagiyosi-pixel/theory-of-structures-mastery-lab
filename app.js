@@ -1,3 +1,13 @@
+
+function escapeHtml(str) {
+  if (typeof str !== 'string') return str === null || str === undefined ? '' : String(str);
+  return str.replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+}
+
 // COTM 3101: Theory of Structures - Master Academic Controller & Futuristic Cockpit Engine
 // Addis Ababa University (AAU) / EiABC Curriculum • 100% Offline Single-Page Architecture
 
@@ -47,6 +57,11 @@ function loadState() {
       if (!userState.flashcardRatings) userState.flashcardRatings = {};
       if (!userState.watchedVideos) userState.watchedVideos = {};
       if (!userState.trainerSolved) userState.trainerSolved = {};
+      if (!userState.bankSolved) userState.bankSolved = {};
+      if (!userState.spacedRepetition) userState.spacedRepetition = {};
+      if (!userState.mistakeLog) userState.mistakeLog = [];
+      if (!userState.diagnosticScores) userState.diagnosticScores = null;
+
     } catch (e) {
       console.error(e);
     }
@@ -221,6 +236,21 @@ function renderMainView() {
   } else if (currentAppView === 'module') {
     if (modeTabs) modeTabs.style.display = 'flex';
     renderModuleView(viewport);
+  } else if (currentAppView === 'bank') {
+    if (modeTabs) modeTabs.style.display = 'none';
+    renderQuestionBankView(viewport);
+  } else if (currentAppView === 'solver') {
+    if (modeTabs) modeTabs.style.display = 'none';
+    renderProblemWorkspaceView(viewport);
+  } else if (currentAppView === 'trees') {
+    if (modeTabs) modeTabs.style.display = 'none';
+    renderDecisionTreesView(viewport);
+  } else if (currentAppView === 'diagnostic') {
+    if (modeTabs) modeTabs.style.display = 'none';
+    renderDiagnosticView(viewport);
+  } else if (currentAppView === 'sources') {
+    if (modeTabs) modeTabs.style.display = 'none';
+    renderSourcesView(viewport);
   } else {
     if (modeTabs) modeTabs.style.display = 'none';
     if (currentAppView === 'solvers') renderSolversView(viewport);
@@ -351,6 +381,21 @@ function renderDashboardView(viewport) {
         <p>Scan exam givens into boundary conditions, run 5-second statical triage (Ds vs Dk), deploy the exact formula arsenal, and master tricky AAU exam traps.</p>
       </div>
       <button class="btn-primary" style="white-space:nowrap;">Enter Combat Arena ➔</button>
+    </div>
+
+    <!-- 105 EXAM QUESTION BANK & SKILL MAP COCKPIT BANNER -->
+    <div class="trainer-cta-banner" style="background:linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.95)); border-color:var(--border-light); margin-bottom:16px;">
+      <div class="trainer-cta-content">
+        <div class="trainer-cta-badge" style="background:rgba(56, 189, 248, 0.15); color:var(--accent);">📚 105 VERIFIED EXAM PROBLEMS & DECISION TREES</div>
+        <h3 style="color:#fff;">EiABC Theory of Structures Exam Mastery Hub</h3>
+        <p>105 meticulously structured problems across Foundations (35), Deflections (35), and Indeterminate Analysis (35). Features 6 Interactive Decision Trees, 12-Question Diagnostic Skill Map, and Step-by-Step Problem Solver.</p>
+      </div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+        <button class="btn-primary" onclick="switchAppView('bank')" style="white-space:nowrap;">Open 105 Bank ➔</button>
+        <button class="hud-btn" onclick="switchAppView('trees')" style="white-space:nowrap;">🌲 Decision Trees</button>
+        <button class="hud-btn" onclick="switchAppView('diagnostic')" style="white-space:nowrap;">🎯 Skill Map</button>
+        <button class="hud-btn" onclick="switchAppView('sources')" style="white-space:nowrap;">🏛️ Sources</button>
+      </div>
     </div>
 
     <!-- 4-METRIC COCKPIT OVERVIEW -->
@@ -1941,8 +1986,90 @@ function restartExam() {
 // 5. PERSONAL ERROR NOTEBOOK WITH DIRECT DRILL & RETEST
 // =========================================================================
 function renderErrorNotebookView(viewport) {
+  const srQueue = [];
+  if (userState.spacedRepetition && typeof QUESTION_BANK !== 'undefined') {
+    Object.keys(userState.spacedRepetition).forEach(qId => {
+      const q = getQuestionById(qId);
+      if (q) {
+        srQueue.push({ q, data: userState.spacedRepetition[qId] });
+      }
+    });
+  }
+
+  // Mistake counts from userState.mistakeLog
+  const mistakeCounts = {};
+  if (Array.isArray(userState.mistakeLog)) {
+    userState.mistakeLog.forEach(entry => {
+      mistakeCounts[entry.mistakeCode] = (mistakeCounts[entry.mistakeCode] || 0) + 1;
+    });
+  }
+
   viewport.innerHTML = `
     <div class="card">
+      <!-- 16-POINT MISTAKE TAXONOMY BREAKDOWN -->
+      <div style="background:rgba(15, 23, 42, 0.7); border:1px solid var(--border); border-radius:10px; padding:16px; margin-bottom:20px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:12px;">
+          <h3 style="font-size:1.05rem; color:#fff; font-weight:700; margin:0; display:flex; align-items:center; gap:8px;">
+            <span>🔬 16-Point Structural Misconception Taxonomy</span>
+          </h3>
+          <span style="font-size:0.75rem; color:var(--text-muted);">${(userState.mistakeLog || []).length} Logged Engineering Misconceptions</span>
+        </div>
+        <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:12px;">
+          University exam traps categorized from authentic EiABC student exams. Review the root causes and golden prevention rules:
+        </p>
+        <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:10px;">
+          ${(typeof MISTAKE_TAXONOMY !== 'undefined' ? MISTAKE_TAXONOMY : []).map(m => {
+            const count = mistakeCounts[m.code] || 0;
+            return `
+              <div style="background:rgba(9, 14, 29, 0.85); border:1px solid ${count > 0 ? 'var(--danger)' : 'var(--border)'}; border-radius:8px; padding:10px 12px; display:flex; flex-direction:column; gap:4px;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <span style="font-family:var(--font-mono); font-size:0.72rem; color:var(--accent); font-weight:700;">${m.code}</span>
+                  ${count > 0 ? `<span style="font-size:0.7rem; color:var(--danger); font-weight:700; background:rgba(244, 63, 94, 0.15); padding:2px 6px; border-radius:4px;">${count}x Triggered</span>` : ''}
+                </div>
+                <strong style="font-size:0.8rem; color:#fff;">${escapeHtml(m.name)}</strong>
+                <p style="font-size:0.75rem; color:var(--text-muted); line-height:1.35;">${escapeHtml(m.description)}</p>
+                <div style="font-size:0.73rem; color:var(--gold); border-top:1px solid rgba(255,255,255,0.06); padding-top:4px; margin-top:2px;">
+                  <strong>Rule:</strong> ${escapeHtml(m.preventionRule)}
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+
+      <!-- SPACED REPETITION REVIEW QUEUE -->
+      ${srQueue.length > 0 ? `
+        <div style="background:rgba(56, 189, 248, 0.08); border:1px solid var(--border-light); border-radius:10px; padding:16px; margin-bottom:20px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:12px;">
+            <h3 style="font-size:1.02rem; color:#fff; font-weight:700; margin:0;">
+              🔁 Spaced Repetition Problem Queue (${srQueue.length} Active Cards)
+            </h3>
+            <span style="font-size:0.75rem; color:var(--accent);">SM-2 / Leitner Review Intervals</span>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:10px;">
+            ${srQueue.map(item => `
+              <div style="background:rgba(9, 14, 29, 0.9); border:1px solid var(--border); border-radius:8px; padding:12px 14px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                <div>
+                  <div style="display:flex; align-items:center; gap:6px;">
+                    <span class="qb-id-badge">${item.q.id}</span>
+                    <span style="font-size:0.75rem; color:var(--gold); font-weight:600;">Box ${item.data.box} &bull; Trap ${item.data.mistakeCode || 'General'}</span>
+                  </div>
+                  <strong style="color:#fff; font-size:0.85rem; display:block; margin-top:4px;">${escapeHtml(item.q.subtopic || item.q.topic)}</strong>
+                </div>
+                <div style="display:flex; gap:8px;">
+                  <button class="btn-primary" style="padding:6px 12px; font-size:0.78rem;" onclick="openProblemWorkspace('${item.q.id}')">
+                    Retry Problem in Solver ➔
+                  </button>
+                  <button class="hud-btn" style="padding:6px 10px; font-size:0.78rem;" onclick="graduateSpacedRepetition('${item.q.id}')">
+                    Graduate to Box ${item.data.box + 1} ✓
+                  </button>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      ` : ''}
+
       <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
         <h2>📓 Personal Error Notebook & Mistake Vault</h2>
         <span class="stat-pill" style="color:var(--danger)">${userState.errors.length} Missed Concept(s)</span>
@@ -3177,3 +3304,946 @@ window.addEventListener('DOMContentLoaded', () => {
     }).catch(e => console.log('SW registration note:', e));
   }
 });
+
+
+function graduateSpacedRepetition(qId) {
+  if (userState.spacedRepetition && userState.spacedRepetition[qId]) {
+    userState.spacedRepetition[qId].box = (userState.spacedRepetition[qId].box || 1) + 1;
+    userState.xp += 75;
+    if (userState.spacedRepetition[qId].box > 4) {
+      delete userState.spacedRepetition[qId];
+      alert('Congratulations! This problem has been fully mastered and graduated from the Spaced Repetition queue (+75 XP)!');
+    } else {
+      alert('Card graduated to Box ' + userState.spacedRepetition[qId].box + ' (+75 XP)! Review interval extended.');
+    }
+    saveState();
+    renderMainView();
+  }
+}
+
+
+// =========================================================================
+// EXTENSIONS: QUESTION BANK, DECISION TREES, DIAGNOSTIC & SOURCES
+// =========================================================================
+
+// Extension functions for app.js: Question Bank, Decision Trees, Diagnostic Skill Map, Source Register
+
+// Global state for views
+let activeProblemId = 'qb-found-01';
+let qbFilterSubject = 'all';
+let qbFilterDifficulty = 'all';
+let qbFilterTopic = 'all';
+let qbFilterStatus = 'all';
+let qbSearchQuery = '';
+
+let activeTreeId = 'dt-deflection-method';
+let activeTreeNodeId = 'root';
+let treeHistory = ['root'];
+
+let diagAnswers = {};
+let diagCurrentIdx = 0;
+
+// Initialize userState extensions
+if (typeof userState !== 'undefined') {
+  if (!userState.bankSolved) userState.bankSolved = {};
+  if (!userState.spacedRepetition) userState.spacedRepetition = {};
+  if (!userState.mistakeLog) userState.mistakeLog = [];
+  if (!userState.diagnosticScores) userState.diagnosticScores = null;
+}
+
+// =========================================================================
+// 1. QUESTION BANK HUB VIEW
+// =========================================================================
+function renderQuestionBankView(viewport) {
+  if (typeof QUESTION_BANK === 'undefined') {
+    viewport.innerHTML = `<div style="padding:20px; color:#fff;">Loading Question Bank...</div>`;
+    return;
+  }
+
+  const counts = getVerifiedCount ? getVerifiedCount() : { total: QUESTION_BANK.length, foundations: 35, deflections: 35, indeterminate: 35, verified: 105 };
+  const solvedCount = Object.keys(userState.bankSolved || {}).length;
+  const pctSolved = Math.round((solvedCount / QUESTION_BANK.length) * 100);
+
+  // Filter questions
+  let filtered = QUESTION_BANK.slice();
+  if (qbFilterSubject !== 'all') {
+    filtered = filtered.filter(q => q.subject === qbFilterSubject);
+  }
+  if (qbFilterDifficulty !== 'all') {
+    filtered = filtered.filter(q => q.difficulty === parseInt(qbFilterDifficulty, 10));
+  }
+  if (qbFilterTopic !== 'all') {
+    filtered = filtered.filter(q => q.topic === qbFilterTopic);
+  }
+  if (qbFilterStatus === 'solved') {
+    filtered = filtered.filter(q => userState.bankSolved && userState.bankSolved[q.id]);
+  } else if (qbFilterStatus === 'unsolved') {
+    filtered = filtered.filter(q => !(userState.bankSolved && userState.bankSolved[q.id]));
+  }
+  if (qbSearchQuery.trim()) {
+    const q = qbSearchQuery.toLowerCase();
+    filtered = filtered.filter(item => 
+      item.id.toLowerCase().includes(q) ||
+      item.topic.toLowerCase().includes(q) ||
+      item.subtopic.toLowerCase().includes(q) ||
+      item.problemText.toLowerCase().includes(q)
+    );
+  }
+
+  // Extract all unique topics for current subject
+  const topicsPool = (qbFilterSubject === 'all') 
+    ? QUESTION_BANK 
+    : QUESTION_BANK.filter(q => q.subject === qbFilterSubject);
+  const uniqueTopics = Array.from(new Set(topicsPool.map(q => q.topic))).sort();
+
+  viewport.innerHTML = `
+    <div class="qb-hub-container">
+      <!-- HEADER BANNER -->
+      <div class="qb-banner">
+        <div class="qb-banner-info">
+          <h2>📚 105 Verified Exam Question Bank</h2>
+          <p>Complete curriculum aligned with EiABC / AAU COTM 3101: Theory of Structures examination standards.</p>
+        </div>
+        <div class="qb-stat-counters">
+          <div class="qb-counter-pill">Total: <strong>${counts.total}</strong></div>
+          <div class="qb-counter-pill">Foundations: <strong>${counts.foundations}</strong></div>
+          <div class="qb-counter-pill">Deflections: <strong>${counts.deflections}</strong></div>
+          <div class="qb-counter-pill">Indeterminate: <strong>${counts.indeterminate}</strong></div>
+          <div class="qb-counter-pill" style="border-color:var(--success);">Mastered: <strong style="color:var(--success);">${solvedCount} (${pctSolved}%)</strong></div>
+        </div>
+      </div>
+
+      <!-- FILTER & SEARCH TOOLBAR -->
+      <div class="qb-controls-bar">
+        <div class="qb-search-row">
+          <span style="color:var(--accent); font-size:1rem;">🔍</span>
+          <input type="text" class="qb-search-input" placeholder="Search 105 problems by keyword, load type, reaction, method, or ID (e.g. 'Gerber', 'settlement', 'qb-defl-03')..." value="${escapeHtml(qbSearchQuery)}" oninput="handleQBSearch(this.value)" />
+          ${qbSearchQuery ? `<button class="hud-btn" onclick="handleQBSearch('')" style="padding:6px 10px;">Clear</button>` : ''}
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <!-- Subject Filter Pills -->
+          <div class="qb-filter-group">
+            <span class="qb-filter-label">Domain:</span>
+            <button class="qb-filter-pill ${qbFilterSubject === 'all' ? 'active' : ''}" onclick="setQBFilterSubject('all')">All Domains (105)</button>
+            <button class="qb-filter-pill ${qbFilterSubject === 'foundations' ? 'active' : ''}" onclick="setQBFilterSubject('foundations')">1. Foundations & Statics (35)</button>
+            <button class="qb-filter-pill ${qbFilterSubject === 'deflections' ? 'active' : ''}" onclick="setQBFilterSubject('deflections')">2. Beam Slopes & Deflections (35)</button>
+            <button class="qb-filter-pill ${qbFilterSubject === 'indeterminate' ? 'active' : ''}" onclick="setQBFilterSubject('indeterminate')">3. Indeterminate Analysis (35)</button>
+          </div>
+
+          <!-- Difficulty & Status Filter Pills -->
+          <div class="qb-filter-group">
+            <span class="qb-filter-label">Level:</span>
+            <button class="qb-filter-pill ${qbFilterDifficulty === 'all' ? 'active' : ''}" onclick="setQBFilterDifficulty('all')">All</button>
+            <button class="qb-filter-pill ${qbFilterDifficulty === '1' ? 'active' : ''}" onclick="setQBFilterDifficulty('1')">⭐ L1 Fundamental</button>
+            <button class="qb-filter-pill ${qbFilterDifficulty === '2' ? 'active' : ''}" onclick="setQBFilterDifficulty('2')">⭐⭐ L2 Core</button>
+            <button class="qb-filter-pill ${qbFilterDifficulty === '3' ? 'active' : ''}" onclick="setQBFilterDifficulty('3')">⭐⭐⭐ L3 Exam Standard</button>
+            <button class="qb-filter-pill ${qbFilterDifficulty === '4' ? 'active' : ''}" onclick="setQBFilterDifficulty('4')">⭐⭐⭐⭐ L4 Advanced</button>
+            <button class="qb-filter-pill ${qbFilterDifficulty === '5' ? 'active' : ''}" onclick="setQBFilterDifficulty('5')">⭐⭐⭐⭐⭐ L5 Mastery</button>
+
+            <span class="qb-filter-label" style="margin-left:12px;">Status:</span>
+            <button class="qb-filter-pill ${qbFilterStatus === 'all' ? 'active' : ''}" onclick="setQBFilterStatus('all')">All</button>
+            <button class="qb-filter-pill ${qbFilterStatus === 'unsolved' ? 'active' : ''}" onclick="setQBFilterStatus('unsolved')">Unsolved</button>
+            <button class="qb-filter-pill ${qbFilterStatus === 'solved' ? 'active' : ''}" onclick="setQBFilterStatus('solved')">Mastered</button>
+          </div>
+
+          <!-- Topic Dropdown -->
+          <div class="qb-filter-group" style="margin-top:2px;">
+            <span class="qb-filter-label">Topic Filter:</span>
+            <select class="qb-search-input" style="max-width:380px; padding:6px 10px; font-size:0.8rem;" onchange="setQBFilterTopic(this.value)">
+              <option value="all">All Topics (${topicsPool.length} problems)</option>
+              ${uniqueTopics.map(t => {
+                const count = topicsPool.filter(q => q.topic === t).length;
+                return `<option value="${escapeHtml(t)}" ${qbFilterTopic === t ? 'selected' : ''}>${escapeHtml(t)} (${count})</option>`;
+              }).join('')}
+            </select>
+            <span style="font-size:0.75rem; color:var(--text-muted); margin-left:auto;">Showing <strong>${filtered.length}</strong> of ${QUESTION_BANK.length} problems</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- QUESTIONS GRID -->
+      ${filtered.length === 0 ? `
+        <div style="background:var(--bg-card); border:1px solid var(--border); border-radius:10px; padding:40px; text-align:center; color:var(--text-muted);">
+          <div style="font-size:2rem; margin-bottom:8px;">🔍</div>
+          <p>No questions matched your active filters.</p>
+          <button class="btn-primary" style="margin-top:14px; padding:6px 14px;" onclick="resetQBFilters()">Reset All Filters</button>
+        </div>
+      ` : `
+        <div class="qb-grid">
+          ${filtered.map(q => renderQBCard(q)).join('')}
+        </div>
+      `}
+    </div>
+  `;
+}
+
+function renderQBCard(q) {
+  const isSolved = userState.bankSolved && userState.bankSolved[q.id];
+  const stars = "★".repeat(q.difficulty) + "☆".repeat(5 - q.difficulty);
+  const tagClass = q.subject === 'foundations' ? 'qb-tag-foundations' : (q.subject === 'deflections' ? 'qb-tag-deflections' : 'qb-tag-indeterminate');
+  const subjName = q.subject === 'foundations' ? 'Foundations' : (q.subject === 'deflections' ? 'Deflections' : 'Indeterminate');
+
+  return `
+    <div class="qb-card ${isSolved ? 'is-solved' : ''}" id="card_${q.id}">
+      <div class="qb-card-header">
+        <div style="display:flex; align-items:center; gap:6px;">
+          <span class="qb-id-badge">${q.id}</span>
+          <span class="qb-subject-tag ${tagClass}">${subjName}</span>
+        </div>
+        <div class="qb-difficulty-stars" title="Difficulty Level ${q.difficulty}/5">${stars}</div>
+      </div>
+
+      <div>
+        <div class="qb-topic-title">${escapeHtml(q.subtopic || q.topic)}</div>
+        <div class="qb-problem-snippet" style="margin-top:6px;">${escapeHtml(q.problemText)}</div>
+      </div>
+
+      <div class="qb-card-meta">
+        <span>⏱️ ~${q.estimatedTimeMinutes} min</span>
+        <span>${isSolved ? '✓ Mastered (+50 XP)' : 'Unsolved'}</span>
+        <button class="qb-solve-btn" onclick="openProblemWorkspace('${q.id}')">
+          ${isSolved ? 'Review Solution ➔' : 'Solve Problem ➔'}
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+function handleQBSearch(val) {
+  qbSearchQuery = val;
+  renderMainView();
+}
+
+function setQBFilterSubject(s) {
+  qbFilterSubject = s;
+  qbFilterTopic = 'all';
+  renderMainView();
+}
+
+function setQBFilterDifficulty(d) {
+  qbFilterDifficulty = d;
+  renderMainView();
+}
+
+function setQBFilterTopic(t) {
+  qbFilterTopic = t;
+  renderMainView();
+}
+
+function setQBFilterStatus(st) {
+  qbFilterStatus = st;
+  renderMainView();
+}
+
+function resetQBFilters() {
+  qbFilterSubject = 'all';
+  qbFilterDifficulty = 'all';
+  qbFilterTopic = 'all';
+  qbFilterStatus = 'all';
+  qbSearchQuery = '';
+  renderMainView();
+}
+
+// Open Interactive Problem Workspace
+function openProblemWorkspace(qId) {
+  activeProblemId = qId;
+  currentAppView = 'solver';
+  updateTopNavUI();
+  updateMobileNavUI();
+  renderSidebar();
+  renderMainView();
+}
+
+console.log('App extensions part 1 (Question Bank Hub) loaded.');
+
+
+// Part 2: Interactive Problem Workspace, Decision Trees, Diagnostic & Error Vault
+
+let solverSelectedMethod = null;
+let solverMethodFeedback = null;
+let solverStepsRevealed = 1;
+let solverActiveHint = 0;
+let solverUserAnswer = "";
+let solverAnswerResult = null;
+
+// =========================================================================
+// 2. INTERACTIVE PROBLEM WORKSPACE ("Solve-Any-Problem Protocol")
+// =========================================================================
+function renderProblemWorkspaceView(viewport) {
+  const q = getQuestionById(activeProblemId);
+  if (!q) {
+    viewport.innerHTML = `<div style="padding:20px; color:#fff;">Question ${activeProblemId} not found. <button class="btn-primary" onclick="switchAppView('bank')">Back to Bank</button></div>`;
+    return;
+  }
+
+  // Find index in bank for previous / next navigation
+  const currentIdx = QUESTION_BANK.findIndex(item => item.id === q.id);
+  const prevQ = currentIdx > 0 ? QUESTION_BANK[currentIdx - 1] : null;
+  const nextQ = currentIdx < QUESTION_BANK.length - 1 ? QUESTION_BANK[currentIdx + 1] : null;
+  const isSolved = userState.bankSolved && userState.bankSolved[q.id];
+
+  // Prepare method choices for the Method Selector challenge
+  const allMethodChoices = [
+    { name: q.primaryMethod.name, isPrimary: true, justification: q.primaryMethod.justification }
+  ];
+  if (Array.isArray(q.alternativeMethods)) {
+    q.alternativeMethods.forEach(alt => {
+      allMethodChoices.push({ name: alt.name, isPrimary: false, justification: alt.applicability || "Valid alternative method, but primary method provides simpler calculations or direct boundary satisfaction." });
+    });
+  }
+  // Add common distractor method
+  if (allMethodChoices.length < 3) {
+    if (q.subject === 'foundations') {
+      allMethodChoices.push({ name: "Three-Moment Equation", isPrimary: false, justification: "Three-Moment Equation is designed for indeterminate continuous beams, not statically determinate single spans." });
+    } else if (q.subject === 'deflections') {
+      allMethodChoices.push({ name: "Slope-Deflection Method", isPrimary: false, justification: "Slope-Deflection is an indeterminate analysis tool; this problem is statically determinate and requires direct integration or geometric deflection methods." });
+    } else {
+      allMethodChoices.push({ name: "Direct Double Integration with 4 boundary constants", isPrimary: false, justification: "Far too laborious for indeterminate continuous systems; requires solving 4 simultaneous boundary constants." });
+    }
+  }
+
+  const stars = "★".repeat(q.difficulty) + "☆".repeat(5 - q.difficulty);
+
+  viewport.innerHTML = `
+    <div class="solver-container">
+      <!-- TOP NAVIGATION BAR -->
+      <div class="solver-nav-header">
+        <button class="solver-back-btn" onclick="switchAppView('bank')">
+          ← Back to Question Bank (${QUESTION_BANK.length} Problems)
+        </button>
+        <div style="display:flex; gap:8px;">
+          ${prevQ ? `<button class="solver-back-btn" onclick="openProblemWorkspace('${prevQ.id}')" title="Previous Question">◀ ${prevQ.id}</button>` : ''}
+          <span style="font-family:var(--font-mono); font-size:0.82rem; color:var(--accent); display:flex; align-items:center;">Problem ${currentIdx + 1} of ${QUESTION_BANK.length}</span>
+          ${nextQ ? `<button class="solver-back-btn" onclick="openProblemWorkspace('${nextQ.id}')" title="Next Question">${nextQ.id} ▶</button>` : ''}
+        </div>
+      </div>
+
+      <!-- PROBLEM CARD -->
+      <div class="solver-meta-card">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:10px;">
+          <div>
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+              <span class="qb-id-badge">${q.id}</span>
+              <span style="font-size:0.75rem; color:var(--text-muted);">${escapeHtml(q.topic)}</span>
+              <span class="qb-difficulty-stars">${stars}</span>
+            </div>
+            <h2 style="font-size:1.15rem; color:#fff; font-weight:700;">${escapeHtml(q.subtopic || q.topic)}</h2>
+          </div>
+          <div style="text-align:right;">
+            <span style="font-size:0.72rem; color:var(--text-dim); display:block;">Source: ${escapeHtml(q.sourceReference)}</span>
+            <span style="font-size:0.72rem; color:var(--accent); font-weight:600;">✓ Verified Academic Problem</span>
+          </div>
+        </div>
+
+        <!-- Problem Statement -->
+        <div class="solver-problem-text">
+          ${escapeHtml(q.problemText)}
+        </div>
+
+        <!-- Structural Description -->
+        <div style="font-size:0.78rem; color:var(--text-muted); background:rgba(15, 23, 42, 0.5); padding:8px 12px; border-radius:6px; border:1px solid var(--border);">
+          <strong>Structural Type:</strong> ${escapeHtml(q.structuralType)} &bull; 
+          <strong>Geometry & Loading:</strong> ${escapeHtml(q.diagramDesc || 'See diagram description')}
+        </div>
+
+        <!-- Givens & Requested Unknowns Grid -->
+        <div style="display:flex; flex-direction:column; gap:6px;">
+          <span style="font-size:0.75rem; font-weight:600; color:var(--text-dim); text-transform:uppercase;">1. Problem Deconstruction (Givens & Unknowns):</span>
+          <div class="solver-givens-grid">
+            ${q.givens.map(g => `
+              <div class="solver-given-pill">
+                <span>${escapeHtml(g.key)}</span>
+                <span>${g.val} ${escapeHtml(g.unit)}</span>
+              </div>
+            `).join('')}
+            ${q.requestedUnknowns.map(u => `
+              <div class="solver-given-pill" style="border-color:rgba(56, 189, 248, 0.4);">
+                <span style="color:#fff;">Find: <strong>${escapeHtml(u.name)}</strong> (${escapeHtml(u.symbol)})</span>
+                <span style="color:var(--gold);">[ ${escapeHtml(u.expectedUnit)} ]</span>
+              </div>
+            `).join('')}
+          </div>
+          <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">
+            <strong>Assumptions & Conventions:</strong> ${escapeHtml(q.assumptionsAndConventions)}
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 1: METHOD SELECTOR CHALLENGE -->
+      <div class="method-challenge-box">
+        <div class="method-challenge-title">
+          <span>🥋 Step 1: Method Selector Challenge</span>
+          <span style="font-size:0.75rem; font-weight:400; color:var(--text-muted); margin-left:auto;">Choose the optimal method before revealing calculations</span>
+        </div>
+        <p style="font-size:0.82rem; color:var(--text-muted);">
+          Exam pressure test: Which structural engineering method is most appropriate and efficient for this scenario?
+        </p>
+
+        <div class="method-options-list">
+          ${allMethodChoices.map((m, mIdx) => {
+            const isSelected = solverSelectedMethod === m.name;
+            const cls = isSelected ? (m.isPrimary ? 'selected-correct' : 'selected-wrong') : '';
+            return `
+              <div class="method-option-card ${cls}" onclick="checkMethodSelection('${q.id}', '${escapeHtml(m.name)}')">
+                <span style="color:var(--accent); font-weight:700;">${mIdx + 1}.</span>
+                <div style="flex:1;">
+                  <strong style="color:#fff; display:block;">${escapeHtml(m.name)}</strong>
+                  ${isSelected ? `
+                    <div style="margin-top:6px; font-size:0.78rem; color:${m.isPrimary ? 'var(--success)' : 'var(--danger)'};">
+                      ${m.isPrimary ? '✓ CORRECT & OPTIMAL!' : 'ℹ️ Alternative / Inefficient: '} ${escapeHtml(m.justification)}
+                    </div>
+                  ` : ''}
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+
+      <!-- STEP 2: STEP-BY-STEP SOLUTION -->
+      <div class="solver-steps-section">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <h3 style="font-size:0.95rem; color:#fff; font-weight:700;">🔬 Step 2: Step-by-Step Mathematical Derivations</h3>
+          <div style="display:flex; gap:8px;">
+            <button class="solver-hint-btn" onclick="revealAllSteps(${q.stepByStepSolution.length})">Reveal All Steps</button>
+            <button class="solver-hint-btn" onclick="revealNextStep(${q.stepByStepSolution.length})">Next Step (+1) ➔</button>
+          </div>
+        </div>
+
+        ${q.stepByStepSolution.slice(0, solverStepsRevealed).map((stepText, sIdx) => `
+          <div class="solver-step-card">
+            <div class="solver-step-header" onclick="toggleStep(${sIdx})">
+              <span>Step ${sIdx + 1} of ${q.stepByStepSolution.length}</span>
+              <span style="font-size:0.72rem; color:var(--accent);">✓ Verified Step</span>
+            </div>
+            <div class="solver-step-body" id="step_body_${sIdx}">
+              ${escapeHtml(stepText)}
+            </div>
+          </div>
+        `).join('')}
+
+        ${solverStepsRevealed < q.stepByStepSolution.length ? `
+          <div style="text-align:center; padding:10px;">
+            <button class="btn-primary" style="padding:6px 16px; font-size:0.8rem;" onclick="revealNextStep(${q.stepByStepSolution.length})">
+              Reveal Step ${solverStepsRevealed + 1} of ${q.stepByStepSolution.length} ➔
+            </button>
+          </div>
+        ` : ''}
+      </div>
+
+      <!-- STEP 3: NUMERICAL ANSWER & VERIFICATION -->
+      <div class="solver-answer-box">
+        <h3 style="font-size:0.92rem; color:#fff; font-weight:700;">🎯 Step 3: Verified Final Answer & Self-Check</h3>
+        <div class="solver-final-display">
+          ${escapeHtml(q.finalAnswer.text)}
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+          <span style="font-size:0.78rem; color:var(--text-muted);">Self-Evaluation: Did your own hand calculations match this verified result?</span>
+          <button class="btn-primary" style="padding:6px 14px; font-size:0.8rem; background:var(--success); border-color:var(--success); color:#fff;" onclick="markProblemSolved('${q.id}')">
+            ${isSolved ? '✓ Marked as Mastered' : '✓ I Got It Right! (+50 XP)'}
+          </button>
+        </div>
+      </div>
+
+      <!-- STEP 4: 3-LEVEL PROGRESSIVE HINT LADDER -->
+      <div class="solver-hints-box">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+          <h4 style="font-size:0.85rem; color:#fff; font-weight:700;">💡 Step 4: 3-Level Progressive Hint Ladder</h4>
+          <div class="solver-hint-buttons">
+            <button class="solver-hint-btn ${solverActiveHint === 1 ? 'active' : ''}" onclick="selectHint(1)">Hint 1: Strategy</button>
+            <button class="solver-hint-btn ${solverActiveHint === 2 ? 'active' : ''}" onclick="selectHint(2)">Hint 2: Equation</button>
+            <button class="solver-hint-btn ${solverActiveHint === 3 ? 'active' : ''}" onclick="selectHint(3)">Hint 3: Execution</button>
+            ${solverActiveHint > 0 ? `<button class="solver-hint-btn" onclick="selectHint(0)">Hide Hints</button>` : ''}
+          </div>
+        </div>
+
+        ${solverActiveHint > 0 ? `
+          <div class="solver-hint-text">
+            <strong>Hint Level ${solverActiveHint}:</strong> ${escapeHtml(q.hintLadder[solverActiveHint - 1])}
+          </div>
+        ` : `
+          <p style="font-size:0.78rem; color:var(--text-dim); margin-top:4px;">Stuck on a step? Unlock hints progressively from conceptual strategy to specific execution without giving away the full answer immediately.</p>
+        `}
+      </div>
+
+      <!-- STEP 5: INDEPENDENT ENGINEERING CHECKS -->
+      <div style="background:var(--bg-card); border:1px solid var(--border); border-radius:10px; padding:14px 18px;">
+        <h4 style="font-size:0.85rem; color:#fff; font-weight:700; margin-bottom:6px; display:flex; align-items:center; gap:6px;">
+          <span>🔍 Step 5: Independent Engineering Checks</span>
+        </h4>
+        <p style="font-size:0.82rem; color:var(--text-main); line-height:1.5;">
+          ${escapeHtml(q.independentChecks)}
+        </p>
+      </div>
+
+      <!-- STEP 6: MISCONCEPTION DIAGNOSIS & ERROR LOGGING -->
+      <div class="solver-error-logger">
+        <h4 style="font-size:0.85rem; color:var(--danger); font-weight:700; display:flex; align-items:center; gap:6px;">
+          <span>⚠️ Step 6: Common Misconceptions & Error Vault</span>
+        </h4>
+        <p style="font-size:0.82rem; color:var(--text-main); line-height:1.5;">
+          <strong>Frequent Student Trap:</strong> ${escapeHtml(q.commonMisconceptions)}
+        </p>
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-top:6px; padding-top:8px; border-top:1px solid rgba(244, 63, 94, 0.2);">
+          <span style="font-size:0.76rem; color:var(--text-muted);">Made a mistake or got confused on this problem?</span>
+          <button class="hud-btn" style="border-color:var(--danger); color:var(--danger); font-size:0.78rem;" onclick="logProblemMistake('${q.id}')">
+            📓 Log to Error Vault for Spaced Repetition ➔
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function checkMethodSelection(qId, methodName) {
+  const q = getQuestionById(qId);
+  if (!q) return;
+  solverSelectedMethod = methodName;
+  const isCorrect = (methodName === q.primaryMethod.name);
+  if (isCorrect) {
+    userState.xp += 25;
+    saveState();
+  }
+  renderMainView();
+}
+
+function revealNextStep(maxSteps) {
+  if (solverStepsRevealed < maxSteps) {
+    solverStepsRevealed++;
+    renderMainView();
+  }
+}
+
+function revealAllSteps(maxSteps) {
+  solverStepsRevealed = maxSteps;
+  renderMainView();
+}
+
+function selectHint(hintNum) {
+  solverActiveHint = hintNum;
+  renderMainView();
+}
+
+function markProblemSolved(qId) {
+  if (!userState.bankSolved) userState.bankSolved = {};
+  if (!userState.bankSolved[qId]) {
+    userState.bankSolved[qId] = { solvedAt: Date.now(), attempts: 1 };
+    userState.xp += 50;
+    userState.streak = (userState.streak || 0) + 1;
+    saveState();
+  }
+  renderMainView();
+}
+
+function logProblemMistake(qId) {
+  const q = getQuestionById(qId);
+  if (!q) return;
+
+  const taxonomyOptions = MISTAKE_TAXONOMY.map(m => `${m.code}: ${m.name}`).join('\n');
+  const userChoice = prompt(`Identify the root cause of your mistake:\n\n${taxonomyOptions}\n\nEnter Mistake Code (e.g. M01, M05, M12):`, "M01");
+  if (!userChoice) return;
+
+  const code = userChoice.trim().toUpperCase();
+  const matched = MISTAKE_TAXONOMY.find(m => m.code === code) || MISTAKE_TAXONOMY[0];
+
+  if (!userState.mistakeLog) userState.mistakeLog = [];
+  userState.mistakeLog.push({
+    questionId: qId,
+    mistakeCode: matched.code,
+    timestamp: Date.now()
+  });
+
+  // Add to Spaced Repetition queue
+  if (!userState.spacedRepetition) userState.spacedRepetition = {};
+  userState.spacedRepetition[qId] = {
+    box: 1,
+    nextDue: Date.now() + 24 * 3600 * 1000, // Due in 1 day
+    mistakeCode: matched.code
+  };
+
+  saveState();
+  alert(`Logged mistake [${matched.code}: ${matched.name}] to your Error Vault. Scheduled for Spaced Repetition Review in 24 hours!`);
+}
+
+// =========================================================================
+// 3. INTERACTIVE DECISION TREES VIEW
+// =========================================================================
+function renderDecisionTreesView(viewport) {
+  if (typeof DECISION_TREES === 'undefined') {
+    viewport.innerHTML = `<div style="padding:20px; color:#fff;">Loading Decision Trees...</div>`;
+    return;
+  }
+
+  const activeTree = DECISION_TREES.find(t => t.id === activeTreeId) || DECISION_TREES[0];
+  const currentNode = activeTree.nodes[activeTreeNodeId] || activeTree.nodes.root;
+
+  viewport.innerHTML = `
+    <div class="trees-container">
+      <!-- HEADER -->
+      <div class="qb-banner">
+        <div class="qb-banner-info">
+          <h2>🌲 6 Interactive Method-Selection Decision Trees</h2>
+          <p>Systematically diagnose structural scenarios, boundary constraints, and select the highest-scoring exam method.</p>
+        </div>
+      </div>
+
+      <!-- TREE SELECTOR TABS -->
+      <div class="tree-picker-grid">
+        ${DECISION_TREES.map(t => `
+          <div class="tree-picker-card ${t.id === activeTreeId ? 'active' : ''}" onclick="selectDecisionTree('${t.id}')">
+            <span class="tree-picker-title">${escapeHtml(t.title)}</span>
+            <span class="tree-picker-desc">${escapeHtml(t.description)}</span>
+          </div>
+        `).join('')}
+      </div>
+
+      <!-- ACTIVE TREE TRAVERSAL BOX -->
+      <div class="tree-active-node-box">
+        <!-- Breadcrumbs -->
+        <div class="tree-breadcrumbs">
+          <span>Root</span>
+          ${treeHistory.slice(1).map((nodeKey, idx) => `
+            <span>➔</span>
+            <span>Step ${idx + 1}</span>
+          `).join('')}
+          ${treeHistory.length > 1 ? `
+            <button class="hud-btn" style="margin-left:auto; padding:3px 8px; font-size:0.72rem;" onclick="stepBackDecisionTree()">↶ Previous Step</button>
+            <button class="hud-btn" style="padding:3px 8px; font-size:0.72rem;" onclick="resetDecisionTree()">↺ Restart Tree</button>
+          ` : ''}
+        </div>
+
+        <!-- Node Prompt -->
+        <div class="tree-prompt">
+          ${escapeHtml(currentNode.prompt)}
+        </div>
+
+        <!-- If leaf node (Recommendation) -->
+        ${currentNode.isLeaf ? `
+          <div class="tree-recommendation-box">
+            <div style="font-size:1.1rem; font-weight:700; color:var(--success); display:flex; align-items:center; gap:8px;">
+              <span>🏆 ${escapeHtml(currentNode.recommendedMethod)}</span>
+            </div>
+            <p style="font-size:0.88rem; color:#fff; line-height:1.5;">
+              ${escapeHtml(currentNode.recommendation)}
+            </p>
+            <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-top:8px;">
+              <button class="btn-primary" style="padding:8px 16px; font-size:0.82rem;" onclick="openQBFilteredByTree('${escapeHtml(currentNode.matchingTopics ? currentNode.matchingTopics[0] : '')}')">
+                📚 Practice Problems Using This Method ➔
+              </button>
+              <button class="hud-btn" style="padding:8px 14px; font-size:0.82rem;" onclick="resetDecisionTree()">
+                ↺ Run Another Scenario
+              </button>
+            </div>
+          </div>
+        ` : `
+          <!-- Options to branch -->
+          <div class="tree-options-list">
+            ${currentNode.options.map((opt, optIdx) => `
+              <button class="tree-option-btn" onclick="advanceDecisionTree('${opt.next}')">
+                <span><strong>${String.fromCharCode(65 + optIdx)}.</strong> ${escapeHtml(opt.text)}</span>
+                <span style="color:var(--accent);">➔</span>
+              </button>
+            `).join('')}
+          </div>
+        `}
+      </div>
+    </div>
+  `;
+}
+
+function selectDecisionTree(treeId) {
+  activeTreeId = treeId;
+  activeTreeNodeId = 'root';
+  treeHistory = ['root'];
+  renderMainView();
+}
+
+function advanceDecisionTree(nextNodeId) {
+  activeTreeNodeId = nextNodeId;
+  treeHistory.push(nextNodeId);
+  renderMainView();
+}
+
+function stepBackDecisionTree() {
+  if (treeHistory.length > 1) {
+    treeHistory.pop();
+    activeTreeNodeId = treeHistory[treeHistory.length - 1];
+    renderMainView();
+  }
+}
+
+function resetDecisionTree() {
+  activeTreeNodeId = 'root';
+  treeHistory = ['root'];
+  renderMainView();
+}
+
+function openQBFilteredByTree(topic) {
+  qbFilterTopic = topic || 'all';
+  switchAppView('bank');
+}
+
+// =========================================================================
+// 4. DIAGNOSTIC ASSESSMENT & PERSONAL SKILL MAP
+// =========================================================================
+function renderDiagnosticView(viewport) {
+  if (typeof DIAGNOSTIC_ASSESSMENT === 'undefined') {
+    viewport.innerHTML = `<div style="padding:20px; color:#fff;">Loading Diagnostic Assessment...</div>`;
+    return;
+  }
+
+  const scores = userState.diagnosticScores;
+
+  viewport.innerHTML = `
+    <div class="diag-container">
+      <!-- HEADER BANNER -->
+      <div class="qb-banner">
+        <div class="qb-banner-info">
+          <h2>🎯 Diagnostic Assessment & Personal Skill Map</h2>
+          <p>12-question diagnostic test calibrated to measure the 5 core structural engineering abilities under university exam conditions.</p>
+        </div>
+      </div>
+
+      <!-- PERSONAL SKILL MAP (If already taken) -->
+      ${scores ? renderPersonalSkillMapCard(scores) : ''}
+
+      <!-- DIAGNOSTIC TEST RUNNER -->
+      <div class="diag-skill-map-card">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); padding-bottom:12px;">
+          <div>
+            <h3 style="font-size:1.05rem; color:#fff; font-weight:700;">
+              ${scores ? '🔄 Retake Diagnostic Assessment' : '📝 Initial Diagnostic Assessment'}
+            </h3>
+            <span style="font-size:0.75rem; color:var(--text-muted);">Question ${diagCurrentIdx + 1} of ${DIAGNOSTIC_ASSESSMENT.length}</span>
+          </div>
+          <span style="font-size:0.75rem; font-family:var(--font-mono); color:var(--accent);">
+            ${Math.round(((diagCurrentIdx) / DIAGNOSTIC_ASSESSMENT.length) * 100)}% Complete
+          </span>
+        </div>
+
+        ${renderDiagQuestionCard(DIAGNOSTIC_ASSESSMENT[diagCurrentIdx], diagCurrentIdx)}
+      </div>
+    </div>
+  `;
+}
+
+function renderDiagQuestionCard(q, idx) {
+  const selectedOptionIdx = diagAnswers[q.id];
+
+  return `
+    <div style="display:flex; flex-direction:column; gap:14px; margin-top:8px;">
+      <div style="display:flex; gap:8px; align-items:center;">
+        <span class="qb-subject-tag qb-tag-foundations">${escapeHtml(q.ability)}</span>
+        <span style="font-size:0.75rem; color:var(--text-dim);">${escapeHtml(q.subject)}</span>
+      </div>
+
+      <div style="font-size:0.95rem; color:#fff; line-height:1.5;">
+        ${escapeHtml(q.prompt)}
+      </div>
+
+      <div class="method-options-list">
+        ${q.options.map((opt, oIdx) => {
+          const isSelected = selectedOptionIdx === oIdx;
+          return `
+            <div class="method-option-card ${isSelected ? 'selected-correct' : ''}" onclick="selectDiagAnswer('${q.id}', ${oIdx})">
+              <span style="color:var(--accent); font-weight:700;">${String.fromCharCode(65 + oIdx)}.</span>
+              <span style="color:#fff;">${escapeHtml(opt.text)}</span>
+            </div>
+          `;
+        }).join('')}
+      </div>
+
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
+        <button class="hud-btn" ${idx === 0 ? 'disabled style="opacity:0.5;"' : ''} onclick="prevDiagQuestion()">
+          ◀ Previous
+        </button>
+
+        ${idx < DIAGNOSTIC_ASSESSMENT.length - 1 ? `
+          <button class="btn-primary" style="padding:6px 16px;" onclick="nextDiagQuestion()">
+            Next Question ➔
+          </button>
+        ` : `
+          <button class="btn-primary" style="padding:6px 18px; background:var(--success); border-color:var(--success); color:#fff;" onclick="submitDiagnosticTest()">
+            ✓ Complete & Calculate Skill Map (+100 XP)
+          </button>
+        `}
+      </div>
+    </div>
+  `;
+}
+
+function selectDiagAnswer(qId, oIdx) {
+  diagAnswers[qId] = oIdx;
+  renderMainView();
+}
+
+function nextDiagQuestion() {
+  if (diagCurrentIdx < DIAGNOSTIC_ASSESSMENT.length - 1) {
+    diagCurrentIdx++;
+    renderMainView();
+  }
+}
+
+function prevDiagQuestion() {
+  if (diagCurrentIdx > 0) {
+    diagCurrentIdx--;
+    renderMainView();
+  }
+}
+
+function submitDiagnosticTest() {
+  let correctCount = 0;
+  const abilityScores = {
+    "1. Problem Understanding": { correct: 0, total: 0 },
+    "2. Method Selection": { correct: 0, total: 0 },
+    "3. Step-by-Step Execution": { correct: 0, total: 0 },
+    "4. Independent Checking": { correct: 0, total: 0 },
+    "5. Exam Speed & Accuracy": { correct: 0, total: 0 }
+  };
+
+  DIAGNOSTIC_ASSESSMENT.forEach(q => {
+    const selected = diagAnswers[q.id];
+    const isCorrect = (selected !== undefined && q.options[selected] && q.options[selected].correct);
+    if (isCorrect) correctCount++;
+
+    const abKey = Object.keys(abilityScores).find(k => q.ability.toLowerCase().includes(k.split('.')[1].trim().toLowerCase())) || "1. Problem Understanding";
+    abilityScores[abKey].total++;
+    if (isCorrect) abilityScores[abKey].correct++;
+  });
+
+  const overallPct = Math.round((correctCount / DIAGNOSTIC_ASSESSMENT.length) * 100);
+
+  userState.diagnosticScores = {
+    overallPct,
+    correctCount,
+    total: DIAGNOSTIC_ASSESSMENT.length,
+    abilityScores,
+    completedAt: Date.now()
+  };
+  userState.xp += 100;
+  saveState();
+
+  alert(`Diagnostic Assessment Completed! Overall Score: ${overallPct}% (${correctCount}/${DIAGNOSTIC_ASSESSMENT.length}). Your Personal Skill Map has been updated!`);
+  renderMainView();
+}
+
+function renderPersonalSkillMapCard(scores) {
+  const abilities = [
+    { key: "1. Problem Understanding", title: "1. Problem Understanding & Givens Deconstruction" },
+    { key: "2. Method Selection", title: "2. Optimal Method Selection & Justification" },
+    { key: "3. Step-by-Step Execution", title: "3. Step-by-Step Derivation & Sign Precision" },
+    { key: "4. Independent Checking", title: "4. Independent Reasonableness & Statics Checking" },
+    { key: "5. Exam Speed & Accuracy", title: "5. University Exam Speed & Multi-Span Stamina" }
+  ];
+
+  // Find lowest scoring ability
+  let lowestAbility = abilities[0].title;
+  let lowestPct = 100;
+  abilities.forEach(a => {
+    const data = scores.abilityScores[a.key] || { correct: 1, total: 2 };
+    const pct = Math.round((data.correct / data.total) * 100);
+    if (pct < lowestPct) {
+      lowestPct = pct;
+      lowestAbility = a.title;
+    }
+  });
+
+  return `
+    <div class="diag-skill-map-card">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+        <div>
+          <h3 style="font-size:1.15rem; color:#fff; font-weight:700;">📊 Your Personal Structural Skill Map</h3>
+          <span style="font-size:0.75rem; color:var(--text-muted);">Calibrated across 5 engineering dimensions based on your real performance</span>
+        </div>
+        <div style="text-align:right;">
+          <span style="font-size:1.2rem; font-weight:700; color:var(--accent); font-family:var(--font-mono);">${scores.overallPct}%</span>
+          <span style="font-size:0.72rem; color:var(--text-dim); display:block;">Overall Diagnostic Mastery</span>
+        </div>
+      </div>
+
+      <!-- 5 Dimension Bars -->
+      <div style="display:flex; flex-direction:column; gap:10px; margin-top:8px;">
+        ${abilities.map(a => {
+          const data = scores.abilityScores[a.key] || { correct: 1, total: 2 };
+          const pct = Math.round((data.correct / Math.max(1, data.total)) * 100);
+          const fillClass = pct >= 80 ? 'fill-mastery' : (pct >= 60 ? 'fill-proficient' : (pct >= 40 ? 'fill-developing' : 'fill-attention'));
+          const statusText = pct >= 80 ? 'Master' : (pct >= 60 ? 'Proficient' : (pct >= 40 ? 'Developing' : 'Needs Practice'));
+          return `
+            <div class="skill-bar-row">
+              <div class="skill-bar-header">
+                <span style="color:#fff; font-weight:600;">${escapeHtml(a.title)}</span>
+                <span style="font-family:var(--font-mono);">${data.correct}/${data.total} (${pct}%) — <strong style="color:var(--accent);">${statusText}</strong></span>
+              </div>
+              <div class="skill-bar-track">
+                <div class="skill-bar-fill ${fillClass}" style="width: ${pct}%;"></div>
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+
+      <!-- WHAT SHOULD I STUDY NEXT RECOMMENDATION -->
+      <div style="background:linear-gradient(135deg, rgba(56, 189, 248, 0.12), rgba(15, 23, 42, 0.8)); border:1px solid var(--border-light); border-radius:8px; padding:12px 16px; margin-top:6px;">
+        <strong style="color:#fff; font-size:0.85rem; display:block; margin-bottom:4px;">
+          💡 Smart Study Recommendation based on your Diagnostic Profile:
+        </strong>
+        <p style="font-size:0.8rem; color:var(--text-main); line-height:1.45;">
+          Focus priority: <strong>${escapeHtml(lowestAbility)}</strong> (Score: ${lowestPct}%). Drill targeted exercises in the 105 Exam Question Bank to solidify this foundation before taking the midterm.
+        </p>
+        <button class="btn-primary" style="margin-top:8px; padding:6px 14px; font-size:0.78rem;" onclick="switchAppView('bank')">
+          Explore Targeted Practice Problems ➔
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+// =========================================================================
+// 5. OFFICIAL SOURCE REGISTER VIEW
+// =========================================================================
+function renderSourcesView(viewport) {
+  if (typeof SOURCE_REGISTER === 'undefined') {
+    viewport.innerHTML = `<div style="padding:20px; color:#fff;">Loading Source Register...</div>`;
+    return;
+  }
+
+  viewport.innerHTML = `
+    <div class="sources-container">
+      <div class="qb-banner">
+        <div class="qb-banner-info">
+          <h2>🏛️ Official Academic Source Register</h2>
+          <p>Verified institutional course materials, national standards, and accredited textbooks governing the Theory of Structures curriculum.</p>
+        </div>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:12px;">
+        ${SOURCE_REGISTER.map(src => `
+          <div class="source-card">
+            <div class="source-header">
+              <span class="source-title">${escapeHtml(src.title)}</span>
+              <span class="source-badge">${escapeHtml(src.sourceType)}</span>
+            </div>
+            
+            <div class="source-meta-grid">
+              <div><strong>Institution / Author:</strong> ${escapeHtml(src.institutionOrAuthor)}</div>
+              <div><strong>Course / Year:</strong> ${escapeHtml(src.courseAndYear)}</div>
+              <div><strong>Identifier / Citation:</strong> ${escapeHtml(src.urlOrIdentifier)}</div>
+              <div><strong>Authenticity:</strong> ${escapeHtml(src.authenticityStatus)}</div>
+            </div>
+
+            <div style="font-size:0.8rem; color:var(--text-main); margin-top:4px;">
+              <strong>Topics Covered:</strong> ${escapeHtml(src.topicsCovered)}
+            </div>
+
+            <div style="font-size:0.78rem; color:var(--accent); background:rgba(56, 189, 248, 0.08); padding:8px 10px; border-radius:6px; border-left:3px solid var(--accent); margin-top:4px;">
+              <strong>Curriculum Impact:</strong> ${escapeHtml(src.curriculumImpact)}
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+console.log('App extensions part 2 loaded.');
