@@ -3386,3 +3386,398 @@ html, body {
     grid-template-columns: 1fr;
   }
 }
+
+
+/* =========================================================================
+   GIZMO-STYLE PROGRESSIVE MICRO-LEARNING & AIRTIGHT PROGRESS SYSTEM
+   ========================================================================= */
+
+/* Floating XP Toast */
+.xp-toast-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.xp-toast {
+  background: rgba(15, 23, 42, 0.95);
+  border: 1px solid var(--accent);
+  box-shadow: 0 4px 20px rgba(56, 189, 248, 0.35);
+  border-radius: 8px;
+  padding: 8px 16px;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  animation: xpSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.xp-toast.fade-out {
+  opacity: 0;
+  transform: translateY(-16px);
+}
+
+.xp-toast-val {
+  color: var(--gold);
+  font-family: var(--font-mono);
+  font-weight: 800;
+}
+
+.xp-toast-msg {
+  color: #cbd5e1;
+}
+
+@keyframes xpSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Sidebar Real-Time Progress Bar */
+.sidebar-progress-track {
+  width: 100%;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 4px;
+}
+
+.sidebar-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--success));
+  border-radius: 2px;
+  transition: width 0.4s ease;
+}
+
+/* Gizmo Container & Header */
+.gizmo-container {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 460px;
+}
+
+.gizmo-header {
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 14px;
+  margin-bottom: 16px;
+}
+
+.gizmo-mode-toggle {
+  display: flex;
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 2px;
+  gap: 2px;
+}
+
+.gizmo-mode-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 0.76rem;
+  padding: 4px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 600;
+}
+
+.gizmo-mode-btn.active {
+  background: var(--accent);
+  color: #050b1a;
+  box-shadow: 0 2px 8px rgba(56, 189, 248, 0.4);
+}
+
+/* Segmented Story Tracker */
+.gizmo-segmented-bar {
+  display: flex;
+  gap: 6px;
+  margin-top: 14px;
+  width: 100%;
+}
+
+.gizmo-segment {
+  flex: 1;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.25s ease;
+}
+
+.gizmo-segment:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.gizmo-segment.active {
+  background: var(--accent);
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.8);
+  transform: scaleY(1.3);
+}
+
+.gizmo-segment.completed {
+  background: var(--success);
+}
+
+.segment-label {
+  display: none;
+}
+
+/* Gizmo Card Body */
+.gizmo-card-body {
+  animation: cardFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+@keyframes cardFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.gizmo-card-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.gizmo-card-tag {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--accent);
+  background: var(--accent-dim);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+}
+
+.gizmo-status-tag {
+  font-size: 0.74rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.gizmo-status-tag.done {
+  color: var(--success);
+}
+
+.gizmo-card-title {
+  font-size: 1.22rem;
+  color: #fff;
+  font-weight: 700;
+  margin: 0 0 12px 0;
+  line-height: 1.35;
+}
+
+.gizmo-prose-body {
+  font-size: 0.92rem;
+  line-height: 1.6;
+  color: var(--text-main);
+  margin-bottom: 16px;
+}
+
+.gizmo-prose-body p {
+  margin-bottom: 10px;
+}
+
+/* Micro Comprehension Pulse */
+.gizmo-micro-check {
+  background: rgba(15, 23, 42, 0.75);
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin: 14px 0;
+}
+
+.micro-check-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 700;
+  font-size: 0.82rem;
+  color: var(--accent);
+  margin-bottom: 4px;
+}
+
+/* Sticky Bottom Action Bar */
+.gizmo-bottom-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding-top: 16px;
+  margin-top: auto;
+  border-top: 1px solid var(--border);
+  position: sticky;
+  bottom: 0;
+  background: rgba(10, 15, 30, 0.95);
+  backdrop-filter: blur(8px);
+  z-index: 10;
+}
+
+.gizmo-card-dots {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.gizmo-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  transition: all 0.2s ease;
+}
+
+.gizmo-dot.active {
+  width: 14px;
+  border-radius: 3px;
+  background: var(--accent);
+  box-shadow: 0 0 6px rgba(56, 189, 248, 0.8);
+}
+
+.gizmo-continue-btn {
+  padding: 10px 18px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  border-radius: 8px;
+  box-shadow: 0 4px 14px rgba(56, 189, 248, 0.3);
+}
+
+/* Victory Screen */
+.gizmo-victory-card {
+  text-align: center;
+  padding: 30px 16px;
+  animation: cardFadeIn 0.4s ease;
+}
+
+.victory-stats-row {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.victory-stat-pill {
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 130px;
+}
+
+.victory-stat-pill span {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.victory-stat-pill strong {
+  font-size: 1.15rem;
+  color: #fff;
+  font-family: var(--font-mono);
+}
+
+/* Guided Examples Gizmo Carousel */
+.gizmo-ex-tabs {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  margin-bottom: 14px;
+  scrollbar-width: thin;
+}
+
+.gizmo-ex-tab {
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.gizmo-ex-tab.active {
+  background: var(--accent-dim);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.gizmo-ex-tab.done {
+  border-color: var(--success);
+  color: #a7f3d0;
+}
+
+.gizmo-step-segment {
+  flex: 1;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.gizmo-step-segment.active {
+  background: var(--gold);
+  box-shadow: 0 0 10px rgba(250, 204, 21, 0.8);
+  transform: scaleY(1.3);
+}
+
+.gizmo-step-segment.completed {
+  background: var(--success);
+}
+
+/* Mobile Responsiveness for Gizmo Elements */
+@media (max-width: 640px) {
+  .gizmo-card-title {
+    font-size: 1.05rem;
+  }
+  .gizmo-bottom-bar {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .gizmo-continue-btn {
+    width: 100%;
+    order: 3;
+  }
+  .gizmo-card-dots {
+    order: 2;
+  }
+}

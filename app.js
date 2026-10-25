@@ -44,6 +44,9 @@ let userState = {
   errors: [], // array of missed question objects
   flashcardRatings: {}, // { formId: 'easy'|'good'|'hard'|'again' }
   watchedVideos: {}, // { [vidId]: true }
+  theoryProgress: {}, // { [modId_tIdx]: true }
+  guidedProgress: {}, // { [modId_gIdx]: true }
+  shortcutsProgress: {}, // { [modId_sIdx]: true }
   rank: 'Apprentice',
   lastModuleId: 'mod0'
 };
@@ -58,6 +61,9 @@ function loadState() {
       if (!userState.watchedVideos) userState.watchedVideos = {};
       if (!userState.trainerSolved) userState.trainerSolved = {};
       if (!userState.bankSolved) userState.bankSolved = {};
+      if (!userState.theoryProgress) userState.theoryProgress = {};
+      if (!userState.guidedProgress) userState.guidedProgress = {};
+      if (!userState.shortcutsProgress) userState.shortcutsProgress = {};
       if (!userState.spacedRepetition) userState.spacedRepetition = {};
       if (!userState.mistakeLog) userState.mistakeLog = [];
       if (!userState.diagnosticScores) userState.diagnosticScores = null;
@@ -72,14 +78,23 @@ function loadState() {
 function saveState() {
   localStorage.setItem('structures_mastery_v2', JSON.stringify(userState));
   updateStatsHUD();
+  if (typeof renderSidebar === 'function') renderSidebar();
 }
 
 function resetProgress() {
-  if (confirm("Reset all your earned XP, streaks, exam scores, and error notebook?")) {
+  if (confirm("Reset all your earned XP, streaks, exam scores, question bank solutions, and error notebook?")) {
     userState = {
       xp: 0,
       streak: 0,
       solved: {},
+      bankSolved: {},
+      theoryProgress: {},
+      guidedProgress: {},
+      shortcutsProgress: {},
+      trainerSolved: {},
+      spacedRepetition: {},
+      mistakeLog: [],
+      diagnosticScores: null,
       errors: [],
       flashcardRatings: {},
       watchedVideos: {},
@@ -107,14 +122,130 @@ function getRankData(xp) {
   return current;
 }
 
+
+// =========================================================================
+// COMPREHENSIVE CURRICULUM PROGRESS ENGINE
+// =========================================================================
+
+function calculateOverallProgress() {
+  let totalArena = 0, solvedArena = 0;
+  let totalTheory = 0, readTheory = 0;
+  let totalGuided = 0, completedGuided = 0;
+  let totalVideos = 0, watchedVideos = 0;
+
+  if (typeof COURSE_MODULES !== 'undefined') {
+    COURSE_MODULES.forEach(m => {
+      totalArena += (m.arena || []).length;
+      (m.arena || []).forEach((q, qIdx) => {
+        if (userState.solved && userState.solved[`${m.id}_q${qIdx}`]) solvedArena++;
+      });
+
+      totalTheory += (m.theory || []).length;
+      (m.theory || []).forEach((t, tIdx) => {
+        if (userState.theoryProgress && userState.theoryProgress[`${m.id}_t${tIdx}`]) readTheory++;
+      });
+
+      totalGuided += (m.guidedExamples || []).length;
+      (m.guidedExamples || []).forEach((g, gIdx) => {
+        if (userState.guidedProgress && userState.guidedProgress[`${m.id}_g${gIdx}`]) completedGuided++;
+      });
+
+      totalVideos += (m.videos || []).length;
+      (m.videos || []).forEach(v => {
+        const vidId = v.vidId || (v.url && v.url.includes('v=') ? v.url.split('v=')[1] : '');
+        if (userState.watchedVideos && userState.watchedVideos[vidId]) watchedVideos++;
+      });
+    });
+  }
+
+  const totalBank = (typeof QUESTION_BANK !== 'undefined') ? QUESTION_BANK.length : 105;
+  const solvedBank = (userState.bankSolved) ? Object.keys(userState.bankSolved).length : 0;
+
+  const totalItems = totalArena + totalBank + totalTheory + totalGuided + totalVideos;
+  const completedItems = solvedArena + solvedBank + readTheory + completedGuided + watchedVideos;
+  const masteryPct = totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0;
+
+  return {
+    masteryPct,
+    totalItems,
+    completedItems,
+    solvedArena,
+    totalArena,
+    solvedBank,
+    totalBank,
+    readTheory,
+    totalTheory,
+    completedGuided,
+    totalGuided,
+    watchedVideos,
+    totalVideos
+  };
+}
+
+function getModuleProgressData(modId) {
+  if (typeof COURSE_MODULES === 'undefined') return { pct: 0, completed: 0, total: 0 };
+  const m = COURSE_MODULES.find(mod => mod.id === modId);
+  if (!m) return { pct: 0, completed: 0, total: 0 };
+
+  const theoryTotal = (m.theory || []).length;
+  let theoryDone = 0;
+  for (let i = 0; i < theoryTotal; i++) {
+    if (userState.theoryProgress && userState.theoryProgress[`${modId}_t${i}`]) theoryDone++;
+  }
+
+  const guidedTotal = (m.guidedExamples || []).length;
+  let guidedDone = 0;
+  for (let i = 0; i < guidedTotal; i++) {
+    if (userState.guidedProgress && userState.guidedProgress[`${modId}_g${i}`]) guidedDone++;
+  }
+
+  const arenaTotal = (m.arena || []).length;
+  let arenaDone = 0;
+  for (let i = 0; i < arenaTotal; i++) {
+    if (userState.solved && userState.solved[`${modId}_q${i}`]) arenaDone++;
+  }
+
+  const videosTotal = (m.videos || []).length;
+  let videosDone = 0;
+  (m.videos || []).forEach(v => {
+    const vidId = v.vidId || (v.url && v.url.includes('v=') ? v.url.split('v=')[1] : '');
+    if (userState.watchedVideos && userState.watchedVideos[vidId]) videosDone++;
+  });
+
+  const total = theoryTotal + guidedTotal + arenaTotal + videosTotal;
+  const completed = theoryDone + guidedDone + arenaDone + videosDone;
+  const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+  return { pct, completed, total, theoryDone, theoryTotal, guidedDone, guidedTotal, arenaDone, arenaTotal, videosDone, videosTotal };
+}
+
+// Floating XP Toast Notification
+function showXPToast(amount, message) {
+  if (typeof document === 'undefined') return;
+  let container = document.getElementById('xpToastContainer');
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'xpToastContainer';
+    container.className = 'xp-toast-container';
+    document.body.appendChild(container);
+  }
+
+  const toast = document.createElement('div');
+  toast.className = 'xp-toast';
+  toast.innerHTML = `<span class="xp-toast-val">+⚡ ${amount} XP</span> <span class="xp-toast-msg">${escapeHtml(message || '')}</span>`;
+  container.appendChild(toast);
+
+  setTimeout(() => {
+    toast.classList.add('fade-out');
+    setTimeout(() => toast.remove(), 400);
+  }, 2200);
+}
+
 function updateStatsHUD() {
   const rankData = getRankData(userState.xp);
   userState.rank = rankData.title;
 
-  let totalChallenges = 0;
-  COURSE_MODULES.forEach(m => totalChallenges += m.arena.length);
-  const solvedCount = Object.keys(userState.solved).length;
-  const masteryPct = totalChallenges > 0 ? Math.round((solvedCount / totalChallenges) * 100) : 0;
+  const prog = calculateOverallProgress();
 
   const rankEl = document.getElementById('rankBadge');
   const xpEl = document.getElementById('xpBadge');
@@ -124,8 +255,9 @@ function updateStatsHUD() {
   if (rankEl) rankEl.innerHTML = `${rankData.icon} ${userState.rank}`;
   if (xpEl) xpEl.innerHTML = `⚡ ${userState.xp} XP`;
   if (streakEl) streakEl.innerHTML = `🔥 Streak: ${userState.streak}`;
-  if (masteryEl) masteryEl.innerHTML = `📊 ${masteryPct}% Mastered`;
+  if (masteryEl) masteryEl.innerHTML = `📊 ${prog.masteryPct}% Mastered (${prog.completedItems}/${prog.totalItems})`;
 }
+
 
 // =========================================================================
 // ROUTING & NAVIGATION CONTROLLERS
@@ -140,6 +272,11 @@ function switchAppView(view) {
 }
 
 function selectModule(idx) {
+  if (currentModuleIdx !== idx) {
+    currentTheoryCardIdx = 0;
+    currentGuidedExIdx = 0;
+    currentGuidedStepIdx = 0;
+  }
   currentModuleIdx = idx;
   currentAppView = 'module';
   userState.lastModuleId = COURSE_MODULES[idx].id;
@@ -204,17 +341,24 @@ function renderSidebar() {
   if (!container) return;
 
   container.innerHTML = COURSE_MODULES.map((m, idx) => {
-    const solvedInMod = m.arena.filter((q, qIdx) => userState.solved[`${m.id}_q${qIdx}`]).length;
-    const isMastered = solvedInMod === m.arena.length && m.arena.length > 0;
-    const badgeText = isMastered ? '✅ Done' : `${solvedInMod}/${m.arena.length}`;
+    const p = getModuleProgressData(m.id);
+    const isMastered = p.pct === 100;
+    const badgeText = isMastered ? '✅ 100%' : (p.pct > 0 ? `${p.pct}%` : `${p.completed}/${p.total}`);
 
     return `
       <button class="nav-item ${idx === currentModuleIdx && currentAppView === 'module' ? 'active' : ''}" onclick="selectModule(${idx})">
-        <span style="display:flex; align-items:center; gap:8px;">
-          <span>${m.icon}</span>
-          <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:170px;">${m.shortTitle}</span>
-        </span>
-        <span class="nav-item-badge ${isMastered ? 'badge-mastered' : ''}">${badgeText}</span>
+        <div style="display:flex; flex-direction:column; gap:4px; width:100%; overflow:hidden;">
+          <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+            <span style="display:flex; align-items:center; gap:8px; overflow:hidden;">
+              <span>${m.icon}</span>
+              <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:140px; font-weight:600;">${m.shortTitle}</span>
+            </span>
+            <span class="nav-item-badge ${isMastered ? 'badge-mastered' : ''}">${badgeText}</span>
+          </div>
+          <div class="sidebar-progress-track">
+            <div class="sidebar-progress-fill" style="width: ${p.pct}%;"></div>
+          </div>
+        </div>
       </button>
     `;
   }).join('');
@@ -280,10 +424,10 @@ function renderDashboardView(viewport) {
   const levelSpan = Math.max(1, nextXP - currentLevelMin);
   const levelPct = Math.min(100, Math.round((xpInLevel / levelSpan) * 100));
 
-  let totalChallenges = 0;
-  COURSE_MODULES.forEach(m => totalChallenges += m.arena.length);
-  const solvedCount = Object.keys(userState.solved).length;
-  const totalMasteryPct = totalChallenges > 0 ? Math.round((solvedCount / totalChallenges) * 100) : 0;
+  const prog = calculateOverallProgress();
+  const totalMasteryPct = prog.masteryPct;
+  const totalChallenges = prog.totalArena;
+  const solvedCount = prog.solvedArena;
 
   // Compute Smart Recommendation
   let recTitle = "";
@@ -419,6 +563,7 @@ function renderDashboardView(viewport) {
         <div class="metric-info">
           <h5>Curriculum Mastery</h5>
           <div class="metric-val">${totalMasteryPct}%</div>
+          <span style="font-size:0.72rem; color:var(--text-muted);">${prog.completedItems} / ${prog.totalItems} Objectives</span>
         </div>
       </div>
       <div class="metric-card" onclick="switchAppView('errors')" style="cursor:pointer;">
@@ -595,111 +740,488 @@ function checkDailyChallengeAnswer(mIdx, qIdx, optIdx) {
 // =========================================================================
 // 1. MODULE VIEW RENDERER (WITH COLLAPSIBLE TOPICS & COMPACT SECTIONS)
 // =========================================================================
+
+
+// =========================================================================
+// GIZMO-STYLE PROGRESSIVE LEARNING CONTROLLER
+// =========================================================================
+
+let moduleStudyMode = 'deck'; // 'deck' (Gizmo card flow, default) or 'scroll' (all at once)
+let currentTheoryCardIdx = 0;
+let currentGuidedExIdx = 0;
+let currentGuidedStepIdx = 0;
+
+function setModuleStudyMode(mode) {
+  moduleStudyMode = mode;
+  renderMainView();
+}
+
+function nextTheoryCard() {
+  const mod = COURSE_MODULES[currentModuleIdx];
+  if (!mod || !mod.theory) return;
+
+  const cardKey = `${mod.id}_t${currentTheoryCardIdx}`;
+  if (!userState.theoryProgress) userState.theoryProgress = {};
+  if (!userState.theoryProgress[cardKey]) {
+    userState.theoryProgress[cardKey] = true;
+    userState.xp += 25;
+    userState.streak = (userState.streak || 0) + 1;
+    saveState();
+    showXPToast(25, 'Concept Mastered! ⚡');
+  }
+
+  if (currentTheoryCardIdx < mod.theory.length - 1) {
+    currentTheoryCardIdx++;
+  } else {
+    currentTheoryCardIdx = mod.theory.length; // Victory screen
+  }
+  renderMainView();
+}
+
+function prevTheoryCard() {
+  if (currentTheoryCardIdx > 0) {
+    currentTheoryCardIdx--;
+    renderMainView();
+  }
+}
+
+function jumpToTheoryCard(idx) {
+  currentTheoryCardIdx = idx;
+  renderMainView();
+}
+
+function toggleMicroCheck(idx) {
+  const ansEl = document.getElementById(`micro_check_answer_${idx}`);
+  if (!ansEl) return;
+  const isHidden = ansEl.style.display === 'none' || ansEl.style.display === '';
+  ansEl.style.display = isHidden ? 'block' : 'none';
+  if (isHidden) {
+    userState.xp += 10;
+    saveState();
+    showXPToast(10, 'Insight Unlocked! 💡');
+  }
+}
+
+function getMicroCheckData(modId, idx, heading) {
+  const h = (heading || '').toLowerCase();
+  if (h.includes('determinacy') || h.includes('stability')) {
+    return {
+      prompt: "Quick Check: A 2D plane frame has 3 members and 3 rigid joints connected to ground. How many equations of static equilibrium govern the entire system?",
+      answer: "3 equations for overall external equilibrium (∑ Fx = 0, ∑ Fy = 0, ∑ M = 0) plus 3 equations of joint equilibrium per unconstrained node."
+    };
+  }
+  if (h.includes('slope-deflection') || h.includes('slope deflection')) {
+    return {
+      prompt: "Sign Rule Check: Why does the EiABC Slope-Deflection formula feature a MINUS sign before 2EK(2θ_i + θ_j - 3Δ/L)?",
+      answer: "EiABC follows the clockwise-positive convention for joint rotations and member chords, but counter-clockwise on the beam element for end moments. The minus sign enforces this rotational equilibrium."
+    };
+  }
+  if (h.includes('hardy') || h.includes('moment distribution') || h.includes('stiffness')) {
+    return {
+      prompt: "Stiffness Rule: If member BC has a pinned far end at C, what modified stiffness K' and carry-over factor (COF) must be used?",
+      answer: "Modified stiffness K' = (3/4)(I/L) = 0.75 K, and Carry-Over Factor COF = 0 (pinned ends cannot carry over or resist moment)."
+    };
+  }
+  if (h.includes('conjugate')) {
+    return {
+      prompt: "Conjugate Rule: What does a fixed support in a real beam transform into in its conjugate beam?",
+      answer: "In the real beam, a fixed support has slope = 0 and deflection = 0. Therefore in the conjugate beam, shear = 0 and moment = 0, which corresponds to a completely FREE end!"
+    };
+  }
+  if (h.includes('three-moment') || h.includes('clapeyron')) {
+    return {
+      prompt: "Settlement Check: If an intermediate support sinks downward, does it increase or relieve the hogging bending moment over that support?",
+      answer: "Downward settlement relieves (reduces) the hogging negative moment over that support, adding a positive relief term into Clapeyron's equation."
+    };
+  }
+  if (h.includes('virtual work')) {
+    return {
+      prompt: "Virtual Work Check: In the unit load equation 1·Δ = ∫ (M·m / EI) dx, where must the fictitious unit load 1 be placed?",
+      answer: "The fictitious unit load 1 must be placed at the EXACT point and in the EXACT direction of the desired deflection Δ."
+    };
+  }
+  return {
+    prompt: "Key Protocol Check: What is the most critical first step before writing any structural equations?",
+    answer: "Identify all boundary constraints, assign a consistent coordinate axis, and state your sign convention (e.g., ∑ M_A = 0 CCW +) explicitly."
+  };
+}
+
+function selectGuidedExample(exIdx) {
+  currentGuidedExIdx = exIdx;
+  currentGuidedStepIdx = 0;
+  renderMainView();
+}
+
+function nextGuidedStep() {
+  const mod = COURSE_MODULES[currentModuleIdx];
+  if (!mod || !mod.guidedExamples) return;
+  const ex = mod.guidedExamples[currentGuidedExIdx];
+  if (!ex || !ex.steps) return;
+
+  if (currentGuidedStepIdx < ex.steps.length - 1) {
+    currentGuidedStepIdx++;
+    userState.xp += 20;
+    saveState();
+    showXPToast(20, 'Step Completed! 📐');
+  } else {
+    // Complete entire example
+    const exKey = `${mod.id}_g${currentGuidedExIdx}`;
+    if (!userState.guidedProgress) userState.guidedProgress = {};
+    if (!userState.guidedProgress[exKey]) {
+      userState.guidedProgress[exKey] = true;
+      userState.xp += 100;
+      userState.streak = (userState.streak || 0) + 1;
+      saveState();
+      showXPToast(100, 'Worked Example Mastered! 🎉');
+    }
+    if (currentGuidedExIdx < mod.guidedExamples.length - 1) {
+      currentGuidedExIdx++;
+      currentGuidedStepIdx = 0;
+    }
+  }
+  renderMainView();
+}
+
+function prevGuidedStep() {
+  if (currentGuidedStepIdx > 0) {
+    currentGuidedStepIdx--;
+    renderMainView();
+  }
+}
+
+// =========================================================================
+// MODULE VIEW RENDERER (PROGRESSIVE GIZMO DECK + SCROLL MODES)
+// =========================================================================
 function renderModuleView(viewport) {
   const mod = COURSE_MODULES[currentModuleIdx];
+  const modProgress = getModuleProgressData(mod.id);
 
   if (currentModuleTab === 'theory') {
+    const isVictory = currentTheoryCardIdx >= mod.theory.length;
+
     viewport.innerHTML = `
-      <div class="card">
-        <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:10px; margin-bottom:8px;">
-          <h2>${mod.icon} ${mod.fullTitle}</h2>
-          <span class="stat-pill" style="font-size:0.8rem;">Module ${currentModuleIdx} of ${COURSE_MODULES.length - 1} (${currentModuleIdx === 0 ? 'Prerequisites' : 'Core Curriculum'})</span>
-        </div>
-        <p style="color:var(--text-muted); margin: 4px 0 14px; font-size:0.9rem;"><strong>Prerequisites:</strong> ${mod.prerequisites}</p>
-        <div class="concept-callout" style="border-left-color:var(--accent); font-size:0.98rem; margin:12px 0 18px;">
-          <strong>💡 First-Principles Intuition:</strong> ${mod.intuition}
-        </div>
-
-        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin: 10px 0 16px; padding: 8px 12px; background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 8px;">
-          <span style="font-size:0.86rem; color:var(--text-muted);">
-            🎥 <strong>Video Masterclasses:</strong> ${mod.videos ? mod.videos.length : 0} curated AAU video lectures available for this chapter
-          </span>
-          <button class="hud-btn" style="padding:4px 10px; font-size:0.8rem; color:var(--accent); border-color:var(--accent);" onclick="switchModuleTab('videos')">
-            ▶ Watch Chapter Videos
-          </button>
-        </div>
-
-        <div style="display:flex; flex-direction:column; gap:12px;">
-          ${mod.theory.map((t, tIdx) => `
-            <div class="collapsible-card ${tIdx === 0 ? 'open' : ''}" id="theory_card_${tIdx}">
-              <div class="collapsible-header" onclick="toggleCollapsible('theory_card_${tIdx}')">
-                <span>${t.heading}</span>
-                <span class="collapsible-toggle-icon">▼</span>
+      <div class="card gizmo-container">
+        <!-- TOP HEADER WITH MODE TOGGLE & GIZMO SEGMENTED PROGRESS -->
+        <div class="gizmo-header">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="font-size:1.4rem;">${mod.icon}</span>
+              <div>
+                <h2 style="margin:0; font-size:1.15rem; color:#fff;">${mod.fullTitle}</h2>
+                <span style="font-size:0.78rem; color:var(--text-muted);">
+                  ${moduleStudyMode === 'deck' ? `Bite-Sized Gizmo Deck &bull; Card ${Math.min(currentTheoryCardIdx + 1, mod.theory.length)} of ${mod.theory.length}` : 'Full Course Reference Scroll'}
+                  &bull; <strong style="color:var(--accent);">${modProgress.pct}% Chapter Progress</strong>
+                </span>
               </div>
-              <div class="collapsible-body">
+            </div>
+            
+            <!-- MODE TOGGLE -->
+            <div class="gizmo-mode-toggle">
+              <button class="gizmo-mode-btn ${moduleStudyMode === 'deck' ? 'active' : ''}" onclick="setModuleStudyMode('deck')">
+                ⚡ Gizmo Cards
+              </button>
+              <button class="gizmo-mode-btn ${moduleStudyMode === 'scroll' ? 'active' : ''}" onclick="setModuleStudyMode('scroll')">
+                📜 Full Scroll
+              </button>
+            </div>
+          </div>
+
+          <!-- GIZMO SEGMENTED PROGRESS BAR -->
+          ${moduleStudyMode === 'deck' ? `
+            <div class="gizmo-segmented-bar">
+              ${mod.theory.map((t, idx) => {
+                const isDone = userState.theoryProgress && userState.theoryProgress[`${mod.id}_t${idx}`];
+                const isActive = idx === currentTheoryCardIdx;
+                return `
+                  <div class="gizmo-segment ${isActive ? 'active' : (isDone ? 'completed' : '')}" 
+                       onclick="jumpToTheoryCard(${idx})" 
+                       title="Card ${idx + 1}: ${escapeHtml(t.heading)}">
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          ` : ''}
+        </div>
+
+        ${moduleStudyMode === 'deck' ? (
+          isVictory ? `
+            <!-- VICTORY SCREEN -->
+            <div class="gizmo-victory-card">
+              <div style="font-size:3.2rem; margin-bottom:12px;">🏆</div>
+              <h2 style="color:#fff; font-size:1.35rem; margin-bottom:6px;">Theory Mastered!</h2>
+              <p style="color:var(--text-muted); font-size:0.9rem; max-width:480px; margin:0 auto 18px;">
+                You conquered all <strong>${mod.theory.length} core concepts</strong> for <em>${mod.shortTitle}</em>.
+              </p>
+              <div class="victory-stats-row">
+                <div class="victory-stat-pill">
+                  <span>Completed</span>
+                  <strong>${mod.theory.length} / ${mod.theory.length} Cards</strong>
+                </div>
+                <div class="victory-stat-pill">
+                  <span>XP Earned</span>
+                  <strong style="color:var(--gold);">+${mod.theory.length * 25} XP</strong>
+                </div>
+              </div>
+              <div style="display:flex; justify-content:center; gap:10px; margin-top:22px; flex-wrap:wrap;">
+                <button class="hud-btn" onclick="jumpToTheoryCard(0)">🔄 Review Deck</button>
+                <button class="btn-primary" onclick="switchModuleTab('guided')">Launch Worked Examples ➔</button>
+              </div>
+            </div>
+          ` : (function() {
+            const t = mod.theory[currentTheoryCardIdx];
+            const isDone = !!(userState.theoryProgress && userState.theoryProgress[`${mod.id}_t${currentTheoryCardIdx}`]);
+            const checkData = getMicroCheckData(mod.id, currentTheoryCardIdx, t.heading);
+
+            return `
+              <div class="gizmo-card-body">
+                <div class="gizmo-card-meta">
+                  <span class="gizmo-card-tag">Concept ${currentTheoryCardIdx + 1} of ${mod.theory.length}</span>
+                  <span class="gizmo-status-tag ${isDone ? 'done' : ''}">
+                    ${isDone ? '✅ Mastered (+25 XP Claimed)' : '⏳ Active Concept'}
+                  </span>
+                </div>
+
+                <h3 class="gizmo-card-title">${t.heading}</h3>
+
+                ${currentTheoryCardIdx === 0 ? `
+                  <div class="concept-callout" style="border-left-color:var(--accent); font-size:0.92rem; margin:8px 0 14px;">
+                    <strong>💡 First-Principles Intuition:</strong> ${mod.intuition}
+                  </div>
+                ` : ''}
+
                 ${t.formula ? `
-                  <div class="formula-banner math-display-card">
+                  <div class="formula-banner math-display-card" style="margin: 12px 0 16px;">
                     <div class="math-card-header">
-                      <span class="math-badge">GOVERNING EQUATION</span>
+                      <span class="math-badge">GOVERNING FORMULA</span>
                       <button class="copy-latex-btn" onclick="copyFormulaLatex('${encodeURIComponent(t.formula)}', this)">📋 Copy LaTeX</button>
                     </div>
                     <div class="math-card-body">${formatFormula(t.formula)}</div>
                   </div>
                 ` : ''}
-                <div>${t.body}</div>
-              </div>
-            </div>
-          `).join('')}
-        </div>
 
-        <div style="margin-top:24px; padding-top:16px; border-top:1px solid var(--border); display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;">
-          <button class="hud-btn" onclick="switchAppView('dashboard')">⬅ Back to Cockpit</button>
-          <div style="display:flex; gap:8px; flex-wrap:wrap;">
-            <button class="hud-btn" onclick="switchModuleTab('videos')">🎥 Video Lectures</button>
-            <button class="btn-primary" onclick="switchModuleTab('guided')">Next: Guided Worked Examples ➔</button>
+                <div class="gizmo-prose-body">
+                  ${t.body}
+                </div>
+
+                <!-- GIZMO INTERACTIVE COMPREHENSION CHECK -->
+                <div class="gizmo-micro-check">
+                  <div class="micro-check-header">
+                    <span>💡 Quick Comprehension Pulse</span>
+                    <span style="font-size:0.75rem; color:var(--gold);">Verify before advancing</span>
+                  </div>
+                  <p style="font-size:0.85rem; margin:6px 0 10px; color:#e2e8f0;">
+                    ${checkData.prompt}
+                  </p>
+                  <div class="micro-check-actions">
+                    <button class="hud-btn" style="font-size:0.8rem; padding:6px 12px;" onclick="toggleMicroCheck(${currentTheoryCardIdx})">
+                      👁️ Reveal Key Insight & Explanation
+                    </button>
+                    <div id="micro_check_answer_${currentTheoryCardIdx}" style="display:none; margin-top:8px; padding:10px; background:rgba(56, 189, 248, 0.1); border-left:3px solid var(--accent); border-radius:4px; font-size:0.84rem; color:#cbd5e1;">
+                      ${checkData.answer}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- STICKY BOTTOM GIZMO NAVIGATION BAR -->
+              <div class="gizmo-bottom-bar">
+                <button class="hud-btn" onclick="prevTheoryCard()" ${currentTheoryCardIdx === 0 ? 'disabled style="opacity:0.4; cursor:not-allowed;"' : ''}>
+                  ⬅ Previous
+                </button>
+                <div class="gizmo-card-dots">
+                  ${mod.theory.map((_, i) => `<span class="gizmo-dot ${i === currentTheoryCardIdx ? 'active' : ''}"></span>`).join('')}
+                </div>
+                <button class="btn-primary gizmo-continue-btn" onclick="nextTheoryCard()">
+                  ${currentTheoryCardIdx === mod.theory.length - 1 ? 'Complete Theory & Celebrate 🎉' : 'Understood! Continue (+25 XP) ➔'}
+                </button>
+              </div>
+            `;
+          })()
+        ) : `
+          <!-- FULL REFERENCE SCROLL MODE -->
+          <div style="display:flex; flex-direction:column; gap:12px;">
+            ${mod.theory.map((t, tIdx) => {
+              const isDone = userState.theoryProgress && userState.theoryProgress[`${mod.id}_t${tIdx}`];
+              return `
+                <div class="collapsible-card ${tIdx === 0 ? 'open' : ''}" id="theory_card_${tIdx}">
+                  <div class="collapsible-header" onclick="toggleCollapsible('theory_card_${tIdx}')">
+                    <span>${t.heading} ${isDone ? '✅' : ''}</span>
+                    <span class="collapsible-toggle-icon">▼</span>
+                  </div>
+                  <div class="collapsible-body">
+                    ${t.formula ? `
+                      <div class="formula-banner math-display-card">
+                        <div class="math-card-header">
+                          <span class="math-badge">GOVERNING EQUATION</span>
+                          <button class="copy-latex-btn" onclick="copyFormulaLatex('${encodeURIComponent(t.formula)}', this)">📋 Copy LaTeX</button>
+                        </div>
+                        <div class="math-card-body">${formatFormula(t.formula)}</div>
+                      </div>
+                    ` : ''}
+                    <div>${t.body}</div>
+                    <div style="margin-top:12px; border-top:1px solid rgba(255,255,255,0.06); padding-top:8px;">
+                      <button class="hud-btn" style="font-size:0.78rem;" onclick="jumpToTheoryCard(${tIdx}); setModuleStudyMode('deck');">
+                        🎯 Study in Gizmo Card Flow ➔
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              `;
+            }).join('')}
           </div>
-        </div>
+
+          <div style="margin-top:24px; padding-top:16px; border-top:1px solid var(--border); display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;">
+            <button class="hud-btn" onclick="switchAppView('dashboard')">⬅ Back to Cockpit</button>
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+              <button class="hud-btn" onclick="switchModuleTab('videos')">🎥 Video Lectures</button>
+              <button class="btn-primary" onclick="switchModuleTab('guided')">Next: Guided Worked Examples ➔</button>
+            </div>
+          </div>
+        `}
       </div>
     `;
   } else if (currentModuleTab === 'guided') {
+    const examples = mod.guidedExamples || [];
+    const ex = examples[currentGuidedExIdx] || examples[0];
+
     viewport.innerHTML = `
-      <div class="card">
-        <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:10px; margin-bottom:8px;">
-          <h2>🔬 Guided Worked Lecture Examples — ${mod.shortTitle}</h2>
-          <button class="hud-btn" style="color:var(--accent); border-color:var(--accent); font-size:0.8rem; padding:4px 10px;" onclick="switchModuleTab('videos')">
-            🎥 Watch Video Walkthroughs (${mod.videos ? mod.videos.length : 0})
-          </button>
-        </div>
-        <p style="color:var(--text-muted); margin-bottom:18px; font-size:0.92rem;">Master each derivation step by step with interactive checkpoints and fading hints.</p>
-
-        ${mod.guidedExamples.map((ex, exIdx) => `
-          <div class="step-box" style="margin-bottom:24px;">
-            <div class="step-header">
-              <span>${ex.title}</span>
+      <div class="card gizmo-container">
+        <!-- TOP HEADER & EXAMPLE SELECTOR -->
+        <div class="gizmo-header">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px;">
+            <div>
+              <h2 style="margin:0; font-size:1.15rem; color:#fff;">🔬 Guided Worked Examples — ${mod.shortTitle}</h2>
+              <span style="font-size:0.78rem; color:var(--text-muted);">Step-by-step master derivations with interactive checkpoints</span>
             </div>
-            <p style="font-size:0.95rem; line-height:1.5;"><strong>Problem Statement:</strong> ${ex.problem}</p>
-            
-            ${ex.svgConfig ? (ex.svgConfig.nodes ? StructureVisuals.renderTruss(ex.svgConfig) : StructureVisuals.renderBeam(ex.svgConfig)) : ''}
-
-            <!-- Fading Hints Accordion -->
-            <div style="margin:14px 0;">
-              ${ex.hints.map((hint, hIdx) => `
-                <div class="hint-pill" id="hint_${exIdx}_${hIdx}" style="display:none; background:rgba(250,204,21,0.1); border:1px dashed var(--gold); color:#fde047; padding:10px 14px; border-radius:6px; margin-bottom:8px; font-size:0.9rem;">
-                  💡 <strong>${hint}</strong>
-                </div>
-              `).join('')}
-              <button class="hud-btn" onclick="revealHint(${exIdx}, ${ex.hints.length})">💡 Reveal Fading Hint</button>
-            </div>
-
-            <!-- Steps Breakdown -->
-            <div style="margin-top:14px;">
-              ${ex.steps.map((st) => `
-                <div style="border-left:2px solid var(--accent); padding-left:14px; margin-bottom:14px;">
-                  <h4 style="color:var(--accent); font-size:0.92rem; margin-bottom:4px;">${st.stepName}</h4>
-                  <div style="color:var(--text-main); font-size:0.9rem;">${st.content}</div>
-                </div>
-              `).join('')}
+            <div class="gizmo-mode-toggle">
+              <button class="gizmo-mode-btn ${moduleStudyMode === 'deck' ? 'active' : ''}" onclick="setModuleStudyMode('deck')">
+                ⚡ Progressive Steps
+              </button>
+              <button class="gizmo-mode-btn ${moduleStudyMode === 'scroll' ? 'active' : ''}" onclick="setModuleStudyMode('scroll')">
+                📜 Full Scroll
+              </button>
             </div>
           </div>
-        `).join('')}
 
-        <div style="margin-top:20px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;">
-          <button class="hud-btn" onclick="switchModuleTab('theory')">⬅ Theory</button>
-          <div style="display:flex; gap:8px; flex-wrap:wrap;">
-            <button class="hud-btn" onclick="switchModuleTab('videos')">🎥 Video Lectures</button>
-            <button class="btn-primary" onclick="switchModuleTab('shortcuts')">Next: Speed Tricks ➔</button>
+          <!-- EXAMPLE CAROUSEL TABS -->
+          <div class="gizmo-ex-tabs">
+            ${examples.map((item, idx) => {
+              const isExDone = userState.guidedProgress && userState.guidedProgress[`${mod.id}_g${idx}`];
+              const isActive = idx === currentGuidedExIdx;
+              return `
+                <button class="gizmo-ex-tab ${isActive ? 'active' : ''} ${isExDone ? 'done' : ''}" onclick="selectGuidedExample(${idx})">
+                  ${isExDone ? '✅' : '🔬'} Example ${idx + 1}: ${escapeHtml(item.title.substring(0, 24))}...
+                </button>
+              `;
+            }).join('')}
           </div>
+
+          <!-- STEP PROGRESS BAR -->
+          ${moduleStudyMode === 'deck' && ex && ex.steps ? `
+            <div class="gizmo-segmented-bar">
+              ${ex.steps.map((s, sIdx) => {
+                const isPast = sIdx < currentGuidedStepIdx;
+                const isCurr = sIdx === currentGuidedStepIdx;
+                return `
+                  <div class="gizmo-step-segment ${isCurr ? 'active' : (isPast ? 'completed' : '')}" 
+                       onclick="currentGuidedStepIdx = ${sIdx}; renderMainView();"
+                       title="Step ${sIdx + 1}: ${escapeHtml(s.stepName)}">
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          ` : ''}
         </div>
+
+        ${!ex ? `<p style="color:var(--text-muted); padding:20px;">No guided examples available for this module yet.</p>` : (
+          moduleStudyMode === 'deck' ? (function() {
+            const currentStep = ex.steps[currentGuidedStepIdx] || ex.steps[0];
+            const isExDone = userState.guidedProgress && userState.guidedProgress[`${mod.id}_g${currentGuidedExIdx}`];
+
+            return `
+              <div class="gizmo-card-body">
+                <div class="gizmo-card-meta">
+                  <span class="gizmo-card-tag">Example ${currentGuidedExIdx + 1} of ${examples.length} &bull; Step ${currentGuidedStepIdx + 1} of ${ex.steps.length}</span>
+                  <span class="gizmo-status-tag ${isExDone ? 'done' : ''}">
+                    ${isExDone ? '✅ Mastered (+100 XP Claimed)' : '⏳ In Progress'}
+                  </span>
+                </div>
+
+                <h3 class="gizmo-card-title">${ex.title}</h3>
+                <p style="font-size:0.9rem; line-height:1.5; color:var(--text-muted); margin-bottom:12px;">
+                  <strong>Problem:</strong> ${ex.problem}
+                </p>
+
+                ${currentGuidedStepIdx === 0 && ex.svgConfig ? (
+                  ex.svgConfig.nodes ? StructureVisuals.renderTruss(ex.svgConfig) : StructureVisuals.renderBeam(ex.svgConfig)
+                ) : ''}
+
+                <!-- Fading Hints -->
+                ${ex.hints && ex.hints.length > 0 ? `
+                  <div style="margin: 10px 0;">
+                    ${ex.hints.map((hint, hIdx) => `
+                      <div class="hint-pill" id="hint_${currentGuidedExIdx}_${hIdx}" style="display:none; background:rgba(250,204,21,0.1); border:1px dashed var(--gold); color:#fde047; padding:8px 12px; border-radius:6px; margin-bottom:6px; font-size:0.84rem;">
+                        💡 <strong>${hint}</strong>
+                      </div>
+                    `).join('')}
+                    <button class="hud-btn" style="font-size:0.78rem; padding:4px 10px;" onclick="revealHint(${currentGuidedExIdx}, ${ex.hints.length})">
+                      💡 Reveal Fading Hint
+                    </button>
+                  </div>
+                ` : ''}
+
+                <!-- Active Step Card -->
+                <div style="background:rgba(9, 14, 29, 0.85); border-left:4px solid var(--accent); border-radius:6px; padding:14px; margin:12px 0;">
+                  <h4 style="color:var(--accent); font-size:0.96rem; margin:0 0 8px 0;">${currentStep.stepName}</h4>
+                  <div style="color:var(--text-main); font-size:0.9rem; line-height:1.6;">${currentStep.content}</div>
+                </div>
+              </div>
+
+              <!-- BOTTOM GIZMO NAVIGATION BAR -->
+              <div class="gizmo-bottom-bar">
+                <button class="hud-btn" onclick="prevGuidedStep()" ${currentGuidedStepIdx === 0 ? 'disabled style="opacity:0.4; cursor:not-allowed;"' : ''}>
+                  ⬅ Previous Step
+                </button>
+                <div class="gizmo-card-dots">
+                  ${ex.steps.map((_, i) => `<span class="gizmo-dot ${i === currentGuidedStepIdx ? 'active' : ''}"></span>`).join('')}
+                </div>
+                <button class="btn-primary gizmo-continue-btn" onclick="nextGuidedStep()">
+                  ${currentGuidedStepIdx === ex.steps.length - 1 ? 'Master Worked Example (+100 XP) 🎉' : 'Next Step (+20 XP) ➔'}
+                </button>
+              </div>
+            `;
+          })() : `
+            <!-- FULL SCROLL MODE -->
+            <div style="display:flex; flex-direction:column; gap:20px;">
+              ${examples.map((item, exIdx) => `
+                <div class="step-box">
+                  <div class="step-header">
+                    <span>${item.title}</span>
+                  </div>
+                  <p style="font-size:0.95rem; line-height:1.5;"><strong>Problem Statement:</strong> ${item.problem}</p>
+                  ${item.svgConfig ? (item.svgConfig.nodes ? StructureVisuals.renderTruss(item.svgConfig) : StructureVisuals.renderBeam(item.svgConfig)) : ''}
+                  
+                  <div style="margin-top:14px;">
+                    ${item.steps.map(st => `
+                      <div style="border-left:2px solid var(--accent); padding-left:14px; margin-bottom:14px;">
+                        <h4 style="color:var(--accent); font-size:0.92rem; margin-bottom:4px;">${st.stepName}</h4>
+                        <div style="color:var(--text-main); font-size:0.9rem;">${st.content}</div>
+                      </div>
+                    `).join('')}
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+
+            <div style="margin-top:20px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;">
+              <button class="hud-btn" onclick="switchModuleTab('theory')">⬅ Theory</button>
+              <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <button class="hud-btn" onclick="switchModuleTab('videos')">🎥 Video Lectures</button>
+                <button class="btn-primary" onclick="switchModuleTab('shortcuts')">Next: Speed Tricks ➔</button>
+              </div>
+            </div>
+          `
+        )}
       </div>
     `;
   } else if (currentModuleTab === 'shortcuts') {
@@ -721,99 +1243,62 @@ function renderModuleView(viewport) {
                 <span>🎯</span> The 1000x Accuracy Master Protocol (Foolproof Problem-Solving Framework)
               </h3>
               <p style="color:var(--text-muted); font-size:0.84rem; margin:3px 0 0;">
-                Follow these 5 non-negotiable phases to eliminate careless sign errors, maintain complete tracking, and conquer any exam question of any difficulty.
+                Follow these 5 non-negotiable phases to eliminate careless arithmetic and sign errors in university exams:
               </p>
             </div>
-            <span class="stat-pill" style="color:var(--accent);">Universal Protocol</span>
+            <span class="protocol-badge">EiABC Exam Standard</span>
           </div>
 
-          <div class="protocol-step-box">
-            <h4><span>1️⃣</span> Phase 1: Kinematic & Statical Triage (Lock the Degree of Indeterminacy D)</h4>
-            <p>
-              • Count supports ($r$), members ($m$), joints ($j$), and releases ($s$).<br/>
-              • Compute $D = (m + r) - 2j$ (Trusses) or $D = (3m + r) - (3j + s)$ (Frames).<br/>
-              • <strong>Stability Audit:</strong> Verify lines of action are NOT parallel (translational instability) and NOT concurrent (rotational instability).
-            </p>
-            <label class="protocol-check-label">
-              <input type="checkbox" />
-              <span>Checkpoint 1: Number of redundants or unknown kinematic rotations locked.</span>
-            </label>
-          </div>
-
-          <div class="protocol-step-box">
-            <h4><span>2️⃣</span> Phase 2: Sign Convention & Coordinate Lock (The Zero-Slip Seal)</h4>
-            <p>
-              • <strong>Slope-Deflection:</strong> Rotation $\theta$ is (+) Clockwise; Member end moment is (+) Counter-Clockwise on the member (MINUS sign in equation: $M = M^F - 2EK(2\theta_i + \theta_j - 3\Delta/L)$).<br/>
-              • <strong>Hardy Cross:</strong> Clockwise moments are (+); Far-end hinged stiffness is $\frac{3}{4} K$ with $COF = 0$.<br/>
-              • <strong>Conjugate Beam:</strong> Sagging moment is (+) UPWARD load; Hogging is (-) DOWNWARD load.
-            </p>
-            <label class="protocol-check-label">
-              <input type="checkbox" />
-              <span>Checkpoint 2: Positive sign directions established before touching any calculation.</span>
-            </label>
-          </div>
-
-          <div class="protocol-step-box">
-            <h4><span>3️⃣</span> Phase 3: Canonical System Formulation (Table or Matrix Setup)</h4>
-            <p>
-              • <strong>Force Method:</strong> Assemble flexibility table columns: Member, $L$, $A$, $N$, $n_1$, $n_2$, $\frac{N n L}{A}$, $\frac{n^2 L}{A}$. Set up $[\delta]\{R\} + \{\Delta_0\} = 0$.<br/>
-              • <strong>Three-Moment:</strong> Write $M_l(L/EI)_l + 2M_c[(L/EI)_l + (L/EI)_r] + M_r(L/EI)_r = \text{Load Terms} + \text{Settlement}$.<br/>
-              • <strong>Slope-Deflection / Cross:</strong> Express end moments in terms of joint rotations and lateral sway $\Delta$.
-            </p>
-            <label class="protocol-check-label">
-              <input type="checkbox" />
-              <span>Checkpoint 3: Governing equations laid out cleanly with variables vertically aligned.</span>
-            </label>
-          </div>
-
-          <div class="protocol-step-box">
-            <h4><span>4️⃣</span> Phase 4: Precision System Solution & Sanity Cross-Checks</h4>
-            <p>
-              • Carry all intermediate calculations to 3 decimal places.<br/>
-              • <strong>Maxwell-Betti Check:</strong> In flexibility matrices, verify that off-diagonal terms are identical: $\delta_{12} \equiv \delta_{21}$.<br/>
-              • <strong>Symmetry Check:</strong> Symmetrical geometry under symmetrical loads must yield identical joint rotations: $\theta_B = -\theta_C$.
-            </p>
-            <label class="protocol-check-label">
-              <input type="checkbox" />
-              <span>Checkpoint 4: Intermediate symmetry and Maxwell-Betti cross-checks verified.</span>
-            </label>
-          </div>
-
-          <div class="protocol-step-box">
-            <h4><span>5️⃣</span> Phase 5: The 3-Point Equilibrium Audit & Diagram Geometry</h4>
-            <p>
-              • <strong>Audit 1 (Joint Balance):</strong> Sum of member end moments at every rigid joint must equal zero: $\sum M_{\text{joint}} = 0$.<br/>
-              • <strong>Audit 2 (Global Balance):</strong> $\sum F_x = 0$ and $\sum F_y = 0$ across the complete structure.<br/>
-              • <strong>Audit 3 (Peak Moments):</strong> Point of zero shear $x_0 = V_{\text{left}} / w \implies M_{\max} = M_{\text{left}} + \frac{1}{2} V_{\text{left}} x_0$. Sketch SFD & BMD with critical ordinate labels.
-            </p>
-            <label class="protocol-check-label">
-              <input type="checkbox" />
-              <span>Checkpoint 5: Statics back-substitution and zero-shear max moment verified.</span>
-            </label>
+          <div class="protocol-steps-grid">
+            <div class="protocol-step-box">
+              <div class="protocol-step-num">PHASE 1</div>
+              <h4>Structural Triage</h4>
+              <p>Identify structure type (beam, truss, frame), count unknowns vs equilibrium equations (DSI, DKI), classify determinacy and stability.</p>
+            </div>
+            <div class="protocol-step-box">
+              <div class="protocol-step-num">PHASE 2</div>
+              <h4>Method Selection</h4>
+              <p>Pick the fastest method for the requested unknowns. Consult the <strong>Method Decider</strong> to avoid tedious redundant equations.</p>
+            </div>
+            <div class="protocol-step-box">
+              <div class="protocol-step-num">PHASE 3</div>
+              <h4>Givens & Sign Anchoring</h4>
+              <p>Extract all $L$, $EI$, $P$, $w$, $\Delta$ values. Write down coordinate system and explicit sign convention before touching any algebra.</p>
+            </div>
+            <div class="protocol-step-box">
+              <div class="protocol-step-num">PHASE 4</div>
+              <h4>Linear Execution Ladder</h4>
+              <p>Work step-by-step: Fixed-End Moments $\implies$ Slope-Deflection equations $\implies$ Joint Equilibrium $\implies$ Boundary Conditions.</p>
+            </div>
+            <div class="protocol-step-box">
+              <div class="protocol-step-num">PHASE 5</div>
+              <h4>Independent Reality Check</h4>
+              <p>Sanity-check reactions ($\sum F_y = 0$), confirm moment signs match physical deflected shape, verify units ($kN \cdot m$, $mm$).</p>
+            </div>
           </div>
         </div>
 
-        <h3>🔥 High-Yield Speed Tricks:</h3>
-        <div style="display:flex; flex-direction:column; gap:10px; margin-top:10px;">
-          ${mod.shortcuts.map(s => `
-            <div class="concept-callout" style="border-left-color:var(--gold); font-size:0.94rem; margin:0;">
-              ${s}
+        <h3 style="margin-top:24px;">🚀 Speed Shortcuts & Mnemonic Rules:</h3>
+        <div style="display:flex; flex-direction:column; gap:14px; margin-top:12px;">
+          ${(mod.shortcuts || []).map((s, sIdx) => `
+            <div class="step-box" style="border-left:3px solid var(--accent);">
+              <div class="step-header">
+                <span>⚡ ${s.title}</span>
+                <span style="font-size:0.75rem; color:var(--gold);">Tested Shortcut</span>
+              </div>
+              <p style="margin:8px 0; font-size:0.92rem;"><strong>Condition:</strong> ${s.trigger}</p>
+              <div class="formula-banner math-display-card" style="margin:8px 0;">
+                <div class="math-card-header"><span class="math-badge">SHORTCUT FORMULA</span></div>
+                <div class="math-card-body">${formatFormula(s.formula)}</div>
+              </div>
+              <p style="font-size:0.88rem; color:var(--text-muted); margin-bottom:4px;">${s.explain}</p>
+              ${s.caution ? `<p style="font-size:0.84rem; color:var(--danger); margin:0;">⚠️ <strong>Caution:</strong> ${s.caution}</p>` : ''}
             </div>
           `).join('')}
         </div>
 
-        <h3>⚠️ Deadly Exam Traps & Pitfalls:</h3>
-        <ul style="padding-left:20px; margin-top:10px;">
-          ${mod.commonTraps.map(trap => `<li style="margin-bottom:8px; color:#fca5a5; font-size:0.92rem;"><strong>Trap:</strong> ${trap}</li>`).join('')}
-        </ul>
-
-        <h3>🧠 Memory Cue & Mnemonic:</h3>
-        <div class="formula-banner math-display-card">
-          <div class="math-card-body" style="font-size:1.05rem;">${mod.mnemonics}</div>
-        </div>
-
         <div style="margin-top:20px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;">
-          <button class="hud-btn" onclick="switchModuleTab('guided')">⬅ Worked Examples</button>
+          <button class="hud-btn" onclick="switchModuleTab('guided')">⬅ Guided Examples</button>
           <button class="btn-primary" onclick="switchModuleTab('arena')">Next: Challenge Gauntlet ➔</button>
         </div>
       </div>
@@ -857,18 +1342,17 @@ function renderModuleView(viewport) {
     viewport.innerHTML = `
       <div class="card">
         <h2>📋 Chapter Formula Quick Sheet — ${mod.shortTitle}</h2>
-        <p style="color:var(--text-muted); margin-bottom:18px; font-size:0.92rem;">High-yield equations, sign conventions, and summary tables for immediate recall before exams.</p>
-        
-        <div class="concept-callout" style="border-left-color:var(--accent); font-size:0.98rem; line-height:1.8;">
-          ${mod.cheatsheet}
+        <p style="color:var(--text-muted); margin-bottom:16px; font-size:0.9rem;">
+          Condensed mathematical handbook for this chapter. Tap any formula card to inspect.
+        </p>
+
+        <div class="concept-callout" style="border-left-color:var(--accent); font-size:0.92rem; line-height:1.7;">
+          ${typeof mod.cheatsheet === 'string' ? mod.cheatsheet : (Array.isArray(mod.cheatsheet) ? mod.cheatsheet.map(item => `<div>${item}</div>`).join('') : '')}
         </div>
 
-        <div style="margin-top:24px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;">
-          <button class="hud-btn" onclick="switchModuleTab('arena')">⬅ Challenge Gauntlet</button>
-          <div style="display:flex; gap:8px; flex-wrap:wrap;">
-            <button class="hud-btn" onclick="switchAppView('atlas'); filterAtlas('${mod.id}')">Explore in Full Atlas ➔</button>
-            <button class="btn-primary" onclick="switchModuleTab('videos')">Next: Video Masterclasses 🎥 ➔</button>
-          </div>
+        <div style="margin-top:20px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;">
+          <button class="hud-btn" onclick="switchModuleTab('arena')">⬅ Gauntlet</button>
+          <button class="hud-btn" onclick="switchAppView('atlas')">Explore in Full Atlas ➔</button>
         </div>
       </div>
     `;
@@ -881,12 +1365,8 @@ function renderModuleView(viewport) {
           <span class="stat-pill" style="font-size:0.8rem;">${videos.length} Curated Lectures</span>
         </div>
         <p style="color:var(--text-muted); margin:4px 0 16px; font-size:0.9rem;">
-          Carefully selected AAU & international structural analysis video lectures. Watch inside the app or launch directly on YouTube. Complete videos to earn <strong>+50 XP</strong> each!
+          Carefully selected AAU & international structural analysis video lectures. Complete videos to earn <strong>+50 XP</strong> each!
         </p>
-
-        <div class="concept-callout" style="border-left-color:var(--primary); font-size:0.88rem; margin-bottom:20px;">
-          <strong>📶 Offline Note:</strong> Video streaming requires an active internet connection. All written theory, step-by-step worked examples, speed tricks, and interactive structural solvers in the other tabs remain <strong>100% offline accessible</strong> anytime.
-        </div>
 
         ${videos.length === 0 ? `
           <p style="color:var(--text-muted); text-align:center; padding:30px;">No video lectures assigned for this module yet.</p>
@@ -900,26 +1380,21 @@ function renderModuleView(viewport) {
 
               return `
                 <div class="video-card ${isWatched ? 'watched' : ''}">
-                  <div class="video-thumb-container" onclick="openVideoModal('${vidId}', '${v.title.replace(/'/g, "\\'")}', '${secureUrl}')">
-                    <img class="video-thumb-img" src="${thumbUrl}" alt="${v.title}" loading="lazy" onerror="this.src='https://placehold.co/480x270/0f172a/38bdf8?text=Theory+of+Structures+Lecture'">
+                  <div class="video-thumb-container" onclick="openVideoModal('${vidId}', '${escapeHtml(v.title)}', '${secureUrl}')">
+                    <img class="video-thumb" src="${thumbUrl}" alt="${escapeHtml(v.title)}" loading="lazy" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'320\' height=\'180\' viewBox=\'0 0 320 180\'><rect width=\'320\' height=\'180\' fill=\'%230f172a\'/><text x=\'50%\' y=\'50%\' fill=\'%2338bdf8\' font-family=\'sans-serif\' font-size=\'14\' text-anchor=\'middle\'>AAU Video Lecture</text></svg>'"/>
                     <div class="video-play-overlay">
-                      <button class="play-badge-btn" title="Play Video">▶</button>
+                      <div class="play-icon-circle">▶</div>
                     </div>
-                    <span class="video-hd-badge">Lecture #${vIdx + 1}</span>
-                    ${isWatched ? '<span class="video-watched-badge">✓ Watched</span>' : ''}
                   </div>
-                  <div class="video-card-content">
-                    <h3 class="video-card-title" title="${v.title}">${v.title}</h3>
-                    <div class="video-card-actions">
-                      <button class="btn-primary" onclick="openVideoModal('${vidId}', '${v.title.replace(/'/g, "\\'")}', '${secureUrl}')" style="flex:1; justify-content:center; padding:7px 12px; font-size:0.82rem;">
-                        ▶ Watch in App
-                      </button>
-                      <a href="${secureUrl}" target="_blank" rel="noopener noreferrer" class="hud-btn" style="text-decoration:none; padding:7px 10px; font-size:0.82rem;" title="Watch directly on YouTube">
-                        ↗ YouTube
-                      </a>
-                      <button class="hud-btn ${isWatched ? 'active' : ''}" onclick="toggleVideoWatched('${vidId}', '${v.title.replace(/'/g, "\\'")}')" style="padding:7px 10px; font-size:0.82rem;" title="${isWatched ? 'Mark as unwatched' : 'Mark as watched (+50 XP)'}">
-                        ${isWatched ? '✓ Done' : '+50 XP'}
-                      </button>
+                  <div class="video-meta">
+                    <div class="video-title" onclick="openVideoModal('${vidId}', '${escapeHtml(v.title)}', '${secureUrl}')">${v.title}</div>
+                    <div class="video-footer">
+                      <span class="video-xp-badge">${isWatched ? '✓ Watched (+50 XP)' : '+50 XP'}</span>
+                      <div style="display:flex; gap:6px;">
+                        <button class="hud-btn" style="padding:4px 8px; font-size:0.75rem;" onclick="openVideoModal('${vidId}', '${escapeHtml(v.title)}', '${secureUrl}')">
+                          ▶ Play
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -927,25 +1402,10 @@ function renderModuleView(viewport) {
             }).join('')}
           </div>
         `}
-
-        <div style="margin-top:24px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;">
-          <button class="hud-btn" onclick="switchModuleTab('cheatsheet')">⬅ Formula Vault</button>
-          <div style="display:flex; gap:8px; flex-wrap:wrap;">
-            <button class="hud-btn" onclick="switchAppView('dashboard')">🏠 Mission Control</button>
-            <button class="btn-primary" onclick="selectModule(${(currentModuleIdx + 1) % COURSE_MODULES.length})">
-              Next Module: ${COURSE_MODULES[(currentModuleIdx + 1) % COURSE_MODULES.length].shortTitle} ➔
-            </button>
-          </div>
-        </div>
       </div>
     `;
   }
 }
-
-// =========================================================================
-// VIDEO MASTERCLASS HUB CONTROLLERS
-// =========================================================================
-let currentModalVideo = { vidId: null, title: '', url: '' };
 
 function extractYouTubeId(url) {
   if (!url) return null;
@@ -1016,7 +1476,7 @@ function toggleVideoWatched(vidId, title) {
     userState.xp += 50;
     saveState();
     triggerConfetti();
-    alert(`🎉 Video Masterclass Completed!\n\n"${title}"\n+50 XP earned! Keep up the momentum!`);
+    showXPToast(50, 'Video Masterclass Completed! 🎥');
   } else {
     delete userState.watchedVideos[vidId];
     userState.xp = Math.max(0, userState.xp - 50);
@@ -1067,6 +1527,7 @@ function checkArenaAnswer(modId, qIdx, optIdx) {
       userState.xp += 150;
       userState.streak += 1;
       saveState();
+      showXPToast(150, 'Gauntlet Challenge Mastered! 🔥');
     }
     feedback.className = 'feedback-banner';
     feedback.style.background = 'rgba(16, 185, 129, 0.2)';
@@ -3832,6 +4293,7 @@ function markProblemSolved(qId) {
     userState.xp += 50;
     userState.streak = (userState.streak || 0) + 1;
     saveState();
+    showXPToast(50, 'Problem Mastered! 🎯');
   }
   renderMainView();
 }
