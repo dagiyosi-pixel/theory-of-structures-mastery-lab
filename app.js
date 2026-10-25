@@ -1,4 +1,478 @@
 
+// =========================================================================
+// PROCEDURAL AUDIO SYNTHESIS ENGINE (100% Offline Web Audio API)
+// =========================================================================
+
+const SoundEngine = {
+  ctx: null,
+  isMuted: typeof localStorage !== 'undefined' ? (localStorage.getItem('structures_sound_muted') === 'true') : false,
+
+  init() {
+    if (!this.ctx && typeof window !== 'undefined') {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (AudioCtx) {
+        this.ctx = new AudioCtx();
+      }
+    }
+    if (this.ctx && this.ctx.state === 'suspended') {
+      this.ctx.resume();
+    }
+  },
+
+  toggleMute() {
+    this.isMuted = !this.isMuted;
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem('structures_sound_muted', this.isMuted);
+    }
+    this.updateUI();
+    if (!this.isMuted) {
+      this.playCorrect();
+    }
+  },
+
+  updateUI() {
+    if (typeof document === 'undefined') return;
+    const btn = document.getElementById('soundToggleBtn');
+    if (btn) {
+      btn.innerHTML = this.isMuted ? '🔇 <span class="hide-mobile">Muted</span>' : '🔊 <span class="hide-mobile">Audio</span>';
+      btn.title = this.isMuted ? 'Unmute Sound Effects' : 'Mute Sound Effects';
+    }
+  },
+
+  playCardAdvance() {
+    if (this.isMuted) return;
+    try {
+      this.init();
+      if (!this.ctx) return;
+      const now = this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(320, now);
+      osc.frequency.exponentialRampToValueAtTime(640, now + 0.04);
+      gain.gain.setValueAtTime(0.08, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.045);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.05);
+    } catch (e) {}
+  },
+
+  playCorrect() {
+    if (this.isMuted) return;
+    try {
+      this.init();
+      if (!this.ctx) return;
+      const now = this.ctx.currentTime;
+      const osc1 = this.ctx.createOscillator();
+      const gain1 = this.ctx.createGain();
+      osc1.type = 'triangle';
+      osc1.frequency.setValueAtTime(523.25, now);
+      gain1.gain.setValueAtTime(0.12, now);
+      gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+      osc1.connect(gain1);
+      gain1.connect(this.ctx.destination);
+      osc1.start(now);
+      osc1.stop(now + 0.18);
+
+      const osc2 = this.ctx.createOscillator();
+      const gain2 = this.ctx.createGain();
+      osc2.type = 'sine';
+      osc2.frequency.setValueAtTime(659.25, now + 0.08);
+      gain2.gain.setValueAtTime(0.15, now + 0.08);
+      gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.32);
+      osc2.connect(gain2);
+      gain2.connect(this.ctx.destination);
+      osc2.start(now + 0.08);
+      osc2.stop(now + 0.32);
+    } catch (e) {}
+  },
+
+  playWrong() {
+    if (this.isMuted) return;
+    try {
+      this.init();
+      if (!this.ctx) return;
+      const now = this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(160, now);
+      osc.frequency.exponentialRampToValueAtTime(90, now + 0.15);
+      gain.gain.setValueAtTime(0.09, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.16);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.16);
+    } catch (e) {}
+  },
+
+  playLevelUp() {
+    if (this.isMuted) return;
+    try {
+      this.init();
+      if (!this.ctx) return;
+      const now = this.ctx.currentTime;
+      const notes = [523.25, 659.25, 783.99, 1046.50];
+      notes.forEach((freq, idx) => {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(freq, now + idx * 0.07);
+        gain.gain.setValueAtTime(0.12, now + idx * 0.07);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.07 + 0.25);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now + idx * 0.07);
+        osc.stop(now + idx * 0.07 + 0.25);
+      });
+    } catch (e) {}
+  }
+};
+
+
+// =========================================================================
+// RAPID RECALL EXAM SPRINT ("CRAM SPRINT" - 60s ACTIVE RECALL)
+// =========================================================================
+
+const SPRINT_QUESTIONS = [
+  {
+    prompt: "In the EiABC Slope-Deflection equation, why is there a MINUS sign before 2EK(2θ_i + θ_j - 3Δ/L)?",
+    options: [
+      { text: "Because clockwise joint rotation is defined as (+), but end moment on member is (+) counter-clockwise.", correct: true },
+      { text: "Because members always hog under positive gravity loads.", correct: false },
+      { text: "Because axial deformations are neglected.", correct: false },
+      { text: "It is an arbitrary notation choice with no equilibrium significance.", correct: false }
+    ],
+    explanation: "EiABC uses clockwise (+) for rotations and chord sway, but counter-clockwise (+) on the beam for end moments. The minus sign preserves rotational balance."
+  },
+  {
+    prompt: "A middle support in a continuous beam sinks downwards by Δ. What happens to the hogging moment over that support?",
+    options: [
+      { text: "It is relieved (becomes less negative / reduced).", correct: true },
+      { text: "It increases significantly in magnitude.", correct: false },
+      { text: "It remains completely unchanged.", correct: false },
+      { text: "It doubles in value regardless of EI.", correct: false }
+    ],
+    explanation: "Downward support sinking relieves hogging moment over that support and increases sagging moment in adjacent spans."
+  },
+  {
+    prompt: "When applying Hardy Cross Moment Distribution to a beam whose far end is PINNED, what is the modified stiffness K'?",
+    options: [
+      { text: "K' = (3/4) * (I/L) with COF = 0", correct: true },
+      { text: "K' = (4/3) * (I/L) with COF = 0.5", correct: false },
+      { text: "K' = (I/L) with COF = 0.5", correct: false },
+      { text: "K' = (1/2) * (I/L) with COF = 0", correct: false }
+    ],
+    explanation: "Modified stiffness K' = 0.75 (I/L), and because a pinned support cannot resist moment, the Carry-Over Factor is 0."
+  },
+  {
+    prompt: "In the Conjugate Beam Method, what does an internal hinge in the real beam become?",
+    options: [
+      { text: "An internal roller or pin support.", correct: true },
+      { text: "A free end.", correct: false },
+      { text: "A fixed support.", correct: false },
+      { text: "An internal hinge remains an internal hinge.", correct: false }
+    ],
+    explanation: "An internal hinge allows discontinuous slope but continuous deflection, which in the conjugate beam corresponds to shear step but continuous moment: an internal support!"
+  },
+  {
+    prompt: "What is the degree of static indeterminacy (DSI) for a 2D pin-jointed truss with m = 11, r = 3, j = 6?",
+    options: [
+      { text: "DSI = (11 + 3) - 2(6) = 2 (Indeterminate to 2nd degree)", correct: true },
+      { text: "DSI = 11 - 2(6) = -1 (Unstable)", correct: false },
+      { text: "DSI = (11 + 3) - 3(6) = -4 (Mechanism)", correct: false },
+      { text: "DSI = 0 (Statically Determinate)", correct: false }
+    ],
+    explanation: "For 2D trusses, DSI = m + r - 2j. Here 11 + 3 - 12 = 2."
+  },
+  {
+    prompt: "In Virtual Work for beam deflections, 1 · Δ = ∫ (M·m / EI) dx. What is 'm'?",
+    options: [
+      { text: "Internal bending moment caused solely by a fictitious unit load applied at the target point.", correct: true },
+      { text: "The actual dead load moment.", correct: false },
+      { text: "The cross-sectional mass of the beam.", correct: false },
+      { text: "The maximum elastic moment capacity of the steel section.", correct: false }
+    ],
+    explanation: "m is the virtual internal bending moment distribution created by a dummy unit load (1 kN or 1 kNm) at the desired degree of freedom."
+  },
+  {
+    prompt: "For a continuous beam on unyielding supports, which method yields the fewest simultaneous equations when DKI < DSI?",
+    options: [
+      { text: "Displacement Method (Slope-Deflection / Moment Distribution)", correct: true },
+      { text: "Force Method (Consistent Deformations)", correct: false },
+      { text: "Three-Moment Equation", correct: false },
+      { text: "Castigliano's First Theorem", correct: false }
+    ],
+    explanation: "When Kinematic Indeterminacy (DKI) is less than Static Indeterminacy (DSI), displacement methods have fewer unknowns."
+  },
+  {
+    prompt: "In Slope-Deflection, if a member has sway Δ perpendicular to its axis, what is the chord rotation ψ?",
+    options: [
+      { text: "ψ = Δ / L (positive clockwise)", correct: true },
+      { text: "ψ = Δ * L", correct: false },
+      { text: "ψ = (3EI/L) * Δ", correct: false },
+      { text: "ψ = 0 for all frames", correct: false }
+    ],
+    explanation: "Chord rotation ψ is the angle through which the member axis rotates, equal to Δ/L."
+  },
+  {
+    prompt: "What is the fixed-end moment FEM at the left support for a fixed-fixed beam of length L carrying UDL w?",
+    options: [
+      { text: "FEM_AB = -wL² / 12 (hogging)", correct: true },
+      { text: "FEM_AB = +wL² / 8", correct: false },
+      { text: "FEM_AB = -wL² / 24", correct: false },
+      { text: "FEM_AB = -wL / 2", correct: false }
+    ],
+    explanation: "For uniform load w across entire span, FEM = -wL²/12 at left and +wL²/12 at right (or wL²/12 hogging at both ends)."
+  },
+  {
+    prompt: "If a structure has r = 3 reactions, but all 3 reaction lines of action are concurrent (pass through a single point), the structure is:",
+    options: [
+      { text: "Geometrically unstable (cannot resist rotation about that point).", correct: true },
+      { text: "Statically determinate and completely stable.", correct: false },
+      { text: "Indeterminate to the 1st degree.", correct: false },
+      { text: "Fully rigid in all directions.", correct: false }
+    ],
+    explanation: "Concurrent reactions have zero moment capacity about their point of intersection, causing rotational instability (mechanism)."
+  }
+];
+
+let sprintIdx = 0;
+let sprintScore = 0;
+let sprintCombo = 0;
+let sprintTimerInterval = null;
+let sprintSeconds = 15;
+let sprintAnswered = false;
+
+function startRapidSprint() {
+  sprintIdx = 0;
+  sprintScore = 0;
+  sprintCombo = 0;
+  sprintAnswered = false;
+  currentAppView = 'sprint';
+  updateTopNavUI();
+  updateMobileNavUI();
+  renderSidebar();
+  renderMainView();
+  startSprintTimer();
+}
+
+function startSprintTimer() {
+  if (sprintTimerInterval) clearInterval(sprintTimerInterval);
+  sprintSeconds = 15;
+  updateSprintTimerDisplay();
+  sprintTimerInterval = setInterval(() => {
+    if (sprintSeconds > 0 && !sprintAnswered) {
+      sprintSeconds--;
+      updateSprintTimerDisplay();
+      if (sprintSeconds === 0) {
+        handleSprintAnswer(-1); // Time out
+      }
+    }
+  }, 1000);
+}
+
+function updateSprintTimerDisplay() {
+  const el = document.getElementById('sprintTimerVal');
+  if (el) {
+    el.innerText = `⏱️ ${sprintSeconds}s`;
+    el.style.color = sprintSeconds <= 5 ? 'var(--danger)' : 'var(--accent)';
+  }
+}
+
+function handleSprintAnswer(optIdx) {
+  if (sprintAnswered) return;
+  sprintAnswered = true;
+  clearInterval(sprintTimerInterval);
+
+  const q = SPRINT_QUESTIONS[sprintIdx];
+  const isCorrect = optIdx >= 0 && q.options[optIdx] && q.options[optIdx].correct;
+
+  if (isCorrect) {
+    sprintScore++;
+    sprintCombo++;
+    const bonus = sprintCombo >= 3 ? 30 : (sprintCombo === 2 ? 20 : 15);
+    userState.xp += bonus;
+    saveState();
+    SoundEngine.playCorrect();
+    showXPToast(bonus, `Correct! ${sprintCombo >= 2 ? '🔥 ' + sprintCombo + 'x Combo!' : ''}`);
+  } else {
+    sprintCombo = 0;
+    SoundEngine.playWrong();
+  }
+
+  // Update button classes
+  const btns = document.querySelectorAll('.sprint-opt-btn');
+  btns.forEach((btn, idx) => {
+    if (q.options[idx].correct) {
+      btn.classList.add('correct');
+    } else if (idx === optIdx) {
+      btn.classList.add('wrong');
+    }
+  });
+
+  const fb = document.getElementById('sprintFeedback');
+  if (fb) {
+    fb.style.display = 'block';
+    fb.innerHTML = `<strong>${isCorrect ? '✅ Spot On!' : '❌ Incorrect / Timed Out'}</strong> ${q.explanation}`;
+    fb.style.borderColor = isCorrect ? 'var(--success)' : 'var(--danger)';
+    fb.style.background = isCorrect ? 'rgba(16, 185, 129, 0.15)' : 'rgba(244, 63, 94, 0.15)';
+  }
+
+  const nextBtn = document.getElementById('sprintNextBtn');
+  if (nextBtn) nextBtn.style.display = 'inline-block';
+}
+
+function advanceSprintQuestion() {
+  sprintAnswered = false;
+  if (sprintIdx < SPRINT_QUESTIONS.length - 1) {
+    sprintIdx++;
+    renderMainView();
+    startSprintTimer();
+  } else {
+    // Sprint Finished
+    clearInterval(sprintTimerInterval);
+    sprintIdx = SPRINT_QUESTIONS.length;
+    userState.xp += 100;
+    saveState();
+    SoundEngine.playLevelUp();
+    renderMainView();
+  }
+}
+
+function renderSprintView(viewport) {
+  const isFinished = sprintIdx >= SPRINT_QUESTIONS.length;
+
+  if (isFinished) {
+    const pct = Math.round((sprintScore / SPRINT_QUESTIONS.length) * 100);
+    const tier = pct >= 90 ? '🏆 AAU Distinction Ready' : (pct >= 70 ? '⚡ Strong Passing Grip' : '⚠️ Conceptual Gaps Detected');
+
+    viewport.innerHTML = `
+      <div class="card" style="text-align:center; padding:36px 16px;">
+        <div style="font-size:3.5rem; margin-bottom:12px;">${pct >= 80 ? '⚡' : '📐'}</div>
+        <h2 style="font-size:1.4rem; color:#fff; margin-bottom:6px;">Rapid Exam Sprint Completed!</h2>
+        <span class="stat-pill" style="font-size:0.88rem; color:var(--gold); margin-bottom:16px; display:inline-block;">
+          ${tier}
+        </span>
+        <p style="color:var(--text-muted); font-size:0.92rem; max-width:440px; margin:0 auto 20px;">
+          You answered <strong>${sprintScore} of ${SPRINT_QUESTIONS.length}</strong> questions correctly (${pct}% Exam Readiness).
+        </p>
+
+        <div class="victory-stats-row" style="margin-bottom:24px;">
+          <div class="victory-stat-pill">
+            <span>Sprint Accuracy</span>
+            <strong style="color:var(--accent);">${pct}%</strong>
+          </div>
+          <div class="victory-stat-pill">
+            <span>XP Claimed</span>
+            <strong style="color:var(--gold);">+100 XP</strong>
+          </div>
+        </div>
+
+        <div style="display:flex; justify-content:center; gap:12px; flex-wrap:wrap;">
+          <button class="btn-primary" onclick="startRapidSprint()">🔄 Sprint Again</button>
+          <button class="hud-btn" onclick="switchAppView('dashboard')">🏠 Mission Control</button>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  const q = SPRINT_QUESTIONS[sprintIdx];
+
+  viewport.innerHTML = `
+    <div class="card gizmo-container">
+      <div class="gizmo-header" style="margin-bottom:16px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+          <div>
+            <h2 style="margin:0; font-size:1.15rem; color:#fff; display:flex; align-items:center; gap:8px;">
+              <span>⚡</span> Rapid Recall Exam Sprint
+            </h2>
+            <span style="font-size:0.78rem; color:var(--text-muted);">
+              Question ${sprintIdx + 1} of ${SPRINT_QUESTIONS.length} &bull; Score: ${sprintScore}/${sprintIdx}
+            </span>
+          </div>
+
+          <div style="display:flex; align-items:center; gap:12px;">
+            ${sprintCombo >= 2 ? `<span style="font-size:0.8rem; font-weight:800; color:var(--gold);" class="combo-badge">🔥 ${sprintCombo}x COMBO!</span>` : ''}
+            <span id="sprintTimerVal" style="font-family:var(--font-mono); font-weight:800; font-size:1.1rem; color:var(--accent);">⏱️ 15s</span>
+            <button class="hud-btn" style="padding:4px 8px; font-size:0.75rem;" onclick="clearInterval(sprintTimerInterval); switchAppView('dashboard');">✕ Exit</button>
+          </div>
+        </div>
+
+        <!-- Segmented Track -->
+        <div class="gizmo-segmented-bar" style="margin-top:12px;">
+          ${SPRINT_QUESTIONS.map((_, i) => `
+            <div class="gizmo-segment ${i === sprintIdx ? 'active' : (i < sprintIdx ? 'completed' : '')}"></div>
+          `).join('')}
+        </div>
+      </div>
+
+      <div class="gizmo-card-body">
+        <h3 style="font-size:1.15rem; color:#fff; margin-bottom:16px; line-height:1.45;">
+          ${q.prompt}
+        </h3>
+
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          ${q.options.map((opt, oIdx) => `
+            <button class="sprint-opt-btn" onclick="handleSprintAnswer(${oIdx})">
+              ${opt.text}
+            </button>
+          `).join('')}
+        </div>
+
+        <div id="sprintFeedback" style="display:none; margin-top:14px; padding:12px; border-radius:6px; font-size:0.86rem; border:1px solid transparent;"></div>
+      </div>
+
+      <div class="gizmo-bottom-bar" style="justify-content:flex-end;">
+        <button id="sprintNextBtn" class="btn-primary" style="display:none;" onclick="advanceSprintQuestion()">
+          ${sprintIdx === SPRINT_QUESTIONS.length - 1 ? 'Finish Sprint ➔' : 'Next Question ➔'}
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+
+// =========================================================================
+// DAILY MASTERY MISSION ENGINE
+// =========================================================================
+
+function getDailyMissionState() {
+  const today = new Date().toDateString();
+  if (!userState.dailyDate || userState.dailyDate !== today) {
+    userState.dailyDate = today;
+    userState.dailyCardsDone = 0;
+    userState.dailyExDone = 0;
+    userState.dailyBankDone = 0;
+    userState.dailyRewardClaimed = false;
+    saveState();
+  }
+  return {
+    cards: userState.dailyCardsDone || 0,
+    examples: userState.dailyExDone || 0,
+    bank: userState.dailyBankDone || 0,
+    claimed: !!userState.dailyRewardClaimed
+  };
+}
+
+function checkDailyMissionComplete() {
+  const state = getDailyMissionState();
+  if (state.cards >= 2 && state.examples >= 1 && state.bank >= 1 && !state.claimed) {
+    userState.dailyRewardClaimed = true;
+    userState.xp += 200;
+    userState.streak += 1;
+    saveState();
+    SoundEngine.playLevelUp();
+    triggerConfetti();
+    showXPToast(200, 'Daily Mission Complete! 🔥 (+200 Bonus XP)');
+  }
+}
+
+
 function escapeHtml(str) {
   if (typeof str !== 'string') return str === null || str === undefined ? '' : String(str);
   return str.replace(/&/g, '&amp;')
@@ -395,6 +869,9 @@ function renderMainView() {
   } else if (currentAppView === 'sources') {
     if (modeTabs) modeTabs.style.display = 'none';
     renderSourcesView(viewport);
+  } else if (currentAppView === 'sprint') {
+    if (modeTabs) modeTabs.style.display = 'none';
+    renderSprintView(viewport);
   } else {
     if (modeTabs) modeTabs.style.display = 'none';
     if (currentAppView === 'solvers') renderSolversView(viewport);
@@ -417,6 +894,7 @@ function renderMainView() {
 // 0. MISSION CONTROL / COCKPIT DASHBOARD VIEW
 // =========================================================================
 function renderDashboardView(viewport) {
+  const mission = getDailyMissionState();
   const rankData = getRankData(userState.xp);
   const nextXP = rankData.next;
   const currentLevelMin = rankData.min;
@@ -488,9 +966,14 @@ function renderDashboardView(viewport) {
           <h2>🚀 Mission Control Cockpit</h2>
           <p>Theory of Structures Mastery Lab • Addis Ababa University (EiABC) COTM 3101</p>
         </div>
-        <button class="btn-primary" onclick="selectModule(${currentModuleIdx})">
-          ▶ Resume Learning (${COURSE_MODULES[currentModuleIdx].shortTitle})
-        </button>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <button class="btn-primary" onclick="selectModule(${currentModuleIdx})">
+            ▶ Resume Learning
+          </button>
+          <button class="btn-primary" style="background:linear-gradient(135deg, #f59e0b, #d97706); border-color:#f59e0b;" onclick="startRapidSprint()">
+            ⚡ 60s Exam Sprint
+          </button>
+        </div>
       </div>
 
       <!-- Rank & Level Progress -->
@@ -514,6 +997,42 @@ function renderDashboardView(viewport) {
       <button class="btn-primary" style="margin-top:0;" onclick="${recAction}">
         ${recBtn}
       </button>
+    </div>
+
+    <!-- TODAY'S DAILY MASTERY TARGET -->
+    <div style="background:rgba(15, 23, 42, 0.85); border:1px solid var(--border-light); border-radius:10px; padding:14px 16px; margin-bottom:16px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="font-size:1.1rem;">🎯</span>
+          <h4 style="margin:0; font-size:0.98rem; color:#fff;">Today's Daily Mastery Target</h4>
+        </div>
+        <span class="stat-pill" style="color:${(mission.cards >= 2 && mission.examples >= 1 && mission.bank >= 1) ? 'var(--success)' : 'var(--gold)'};">
+          ${(mission.cards >= 2 && mission.examples >= 1 && mission.bank >= 1) ? '✓ Mission Complete (+200 XP)' : `${(mission.cards >= 2 ? 1 : 0) + (mission.examples >= 1 ? 1 : 0) + (mission.bank >= 1 ? 1 : 0)} / 3 Objectives`}
+        </span>
+      </div>
+
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:10px;">
+        <div style="background:rgba(9, 14, 29, 0.8); border:1px solid ${mission.cards >= 2 ? 'var(--success)' : 'var(--border)'}; border-radius:6px; padding:8px 12px; display:flex; justify-content:space-between; align-items:center;">
+          <span style="font-size:0.82rem; color:${mission.cards >= 2 ? '#a7f3d0' : 'var(--text-main)'};">
+            ${mission.cards >= 2 ? '✅' : '⏳'} 1. Read 2 Concept Cards
+          </span>
+          <span style="font-size:0.75rem; color:var(--text-muted);">${Math.min(mission.cards, 2)}/2</span>
+        </div>
+
+        <div style="background:rgba(9, 14, 29, 0.8); border:1px solid ${mission.examples >= 1 ? 'var(--success)' : 'var(--border)'}; border-radius:6px; padding:8px 12px; display:flex; justify-content:space-between; align-items:center;">
+          <span style="font-size:0.82rem; color:${mission.examples >= 1 ? '#a7f3d0' : 'var(--text-main)'};">
+            ${mission.examples >= 1 ? '✅' : '⏳'} 2. Finish 1 Worked Example
+          </span>
+          <span style="font-size:0.75rem; color:var(--text-muted);">${Math.min(mission.examples, 1)}/1</span>
+        </div>
+
+        <div style="background:rgba(9, 14, 29, 0.8); border:1px solid ${mission.bank >= 1 ? 'var(--success)' : 'var(--border)'}; border-radius:6px; padding:8px 12px; display:flex; justify-content:space-between; align-items:center;">
+          <span style="font-size:0.82rem; color:${mission.bank >= 1 ? '#a7f3d0' : 'var(--text-main)'};">
+            ${mission.bank >= 1 ? '✅' : '⏳'} 3. Solve 1 Bank Problem
+          </span>
+          <span style="font-size:0.75rem; color:var(--text-muted);">${Math.min(mission.bank, 1)}/1</span>
+        </div>
+      </div>
     </div>
 
     
@@ -767,7 +1286,7 @@ function nextTheoryCard() {
     userState.xp += 25;
     userState.streak = (userState.streak || 0) + 1;
     saveState();
-    showXPToast(25, 'Concept Mastered! ⚡');
+    showXPToast(25, 'Concept Mastered! ⚡'); SoundEngine.playCorrect(); if (typeof userState !== "undefined") { userState.dailyCardsDone = (userState.dailyCardsDone || 0) + 1; checkDailyMissionComplete(); }
   }
 
   if (currentTheoryCardIdx < mod.theory.length - 1) {
@@ -778,7 +1297,7 @@ function nextTheoryCard() {
   renderMainView();
 }
 
-function prevTheoryCard() {
+function prevTheoryCard() { SoundEngine.playCardAdvance();
   if (currentTheoryCardIdx > 0) {
     currentTheoryCardIdx--;
     renderMainView();
@@ -862,7 +1381,7 @@ function nextGuidedStep() {
     currentGuidedStepIdx++;
     userState.xp += 20;
     saveState();
-    showXPToast(20, 'Step Completed! 📐');
+    showXPToast(20, 'Step Completed! 📐'); SoundEngine.playCardAdvance();
   } else {
     // Complete entire example
     const exKey = `${mod.id}_g${currentGuidedExIdx}`;
@@ -872,7 +1391,7 @@ function nextGuidedStep() {
       userState.xp += 100;
       userState.streak = (userState.streak || 0) + 1;
       saveState();
-      showXPToast(100, 'Worked Example Mastered! 🎉');
+      showXPToast(100, 'Worked Example Mastered! 🎉'); SoundEngine.playCorrect(); if (typeof userState !== "undefined") { userState.dailyExDone = (userState.dailyExDone || 0) + 1; checkDailyMissionComplete(); }
     }
     if (currentGuidedExIdx < mod.guidedExamples.length - 1) {
       currentGuidedExIdx++;
@@ -4293,7 +4812,7 @@ function markProblemSolved(qId) {
     userState.xp += 50;
     userState.streak = (userState.streak || 0) + 1;
     saveState();
-    showXPToast(50, 'Problem Mastered! 🎯');
+    showXPToast(50, 'Problem Mastered! 🎯'); SoundEngine.playCorrect(); if (typeof userState !== "undefined") { userState.dailyBankDone = (userState.dailyBankDone || 0) + 1; checkDailyMissionComplete(); }
   }
   renderMainView();
 }
