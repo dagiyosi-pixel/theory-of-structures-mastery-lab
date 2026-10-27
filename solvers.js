@@ -481,8 +481,17 @@ const StructureSolvers = {
       term2 = (P2 * a2 * (Math.pow(L2, 2) - Math.pow(a2, 2))) / L2;
     }
 
+    // Support settlement terms (delta in mm, converted to meters, E in kN/m2)
+    const E = parseFloat(params.E) || 200000000; // default 200 GPa = 200,000,000 kN/m2
+    const deltaA = (parseFloat(params.deltaA) || 0) / 1000.0;
+    const deltaB = (parseFloat(params.deltaB) || 0) / 1000.0;
+    const deltaC = (parseFloat(params.deltaC) || 0) / 1000.0;
+
+    // Settlement term: +6E * [ (deltaA - deltaB)/L1 + (deltaC - deltaB)/L2 ]
+    const settlementTerm = 6 * E * (((deltaA - deltaB) / L1) + ((deltaC - deltaB) / L2));
+
     const coeff_MB = 2 * ((L1 / I1) + (L2 / I2));
-    const RHS = -((term1 / I1) + (term2 / I2));
+    const RHS = -((term1 / I1) + (term2 / I2)) + (params.includeSettlement ? settlementTerm : 0);
     const M_B = RHS / coeff_MB;
 
     // Reactions by isolating spans

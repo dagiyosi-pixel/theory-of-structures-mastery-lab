@@ -3938,6 +3938,89 @@ html, body {
   }
 }
 
+
+/* =========================================================================
+   MOBILE RESPONSIVENESS & ZERO-CUTOFF AIRTIGHT FIXES
+   ========================================================================= */
+
+/* Ensure all buttons and text break cleanly without pushing the viewport */
+.option-btn,
+.sprint-opt-btn,
+.method-option-card,
+.solver-step-card,
+.step-box,
+.collapsible-card,
+.concept-callout,
+.gizmo-card-body,
+.blueprint-diagram {
+  word-break: break-word;
+  overflow-wrap: break-word;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* Fix mobile dual diagram squishing */
+@media (max-width: 768px) {
+  .dual-diagram-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .brand-info p {
+    display: none !important;
+  }
+}
+
+/* Fix sticky bottom action bar getting covered by fixed mobile bottom navigation */
+@media (max-width: 960px) {
+  .gizmo-bottom-bar {
+    position: sticky !important;
+    bottom: calc(var(--bottom-nav-height) + env(safe-area-inset-bottom, 0px)) !important;
+    z-index: 100 !important;
+    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.6) !important;
+    background: rgba(10, 15, 30, 0.98) !important;
+  }
+
+  .workspace {
+    padding-bottom: calc(var(--bottom-nav-height) + 36px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  .main-panel {
+    padding-bottom: calc(var(--bottom-nav-height) + 36px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+}
+
+/* Header optimization on small phones (prevents horizontal scroll and cutoffs) */
+@media (max-width: 600px) {
+  .pill-rank,
+  #masteryBadge,
+  button[onclick="toggleFocusSprint()"],
+  button[onclick="toggleScratchpad()"],
+  a[title*="GitHub"] {
+    display: none !important;
+  }
+
+  .hud-stats {
+    gap: 5px !important;
+  }
+
+  .hud-header {
+    padding: 6px 10px !important;
+  }
+
+  .brand-info h1 {
+    font-size: 0.88rem !important;
+  }
+
+  .mob-nav-btn {
+    padding: 6px 2px !important;
+    font-size: 0.64rem !important;
+    white-space: nowrap !important;
+  }
+
+  .mob-icon {
+    font-size: 1.15rem !important;
+  }
+}
+
 </style>
   
 </head>
@@ -5102,8 +5185,17 @@ const StructureSolvers = {
       term2 = (P2 * a2 * (Math.pow(L2, 2) - Math.pow(a2, 2))) / L2;
     }
 
+    // Support settlement terms (delta in mm, converted to meters, E in kN/m2)
+    const E = parseFloat(params.E) || 200000000; // default 200 GPa = 200,000,000 kN/m2
+    const deltaA = (parseFloat(params.deltaA) || 0) / 1000.0;
+    const deltaB = (parseFloat(params.deltaB) || 0) / 1000.0;
+    const deltaC = (parseFloat(params.deltaC) || 0) / 1000.0;
+
+    // Settlement term: +6E * [ (deltaA - deltaB)/L1 + (deltaC - deltaB)/L2 ]
+    const settlementTerm = 6 * E * (((deltaA - deltaB) / L1) + ((deltaC - deltaB) / L2));
+
     const coeff_MB = 2 * ((L1 / I1) + (L2 / I2));
-    const RHS = -((term1 / I1) + (term2 / I2));
+    const RHS = -((term1 / I1) + (term2 / I2)) + (params.includeSettlement ? settlementTerm : 0);
     const M_B = RHS / coeff_MB;
 
     // Reactions by isolating spans

@@ -1,7 +1,7 @@
 // COTM 3101: Theory of Structures Mastery Lab - Service Worker (v12)
 // Mobile-First, Network-First for instant live updates with 100% offline fallback.
 
-const CACHE_NAME = 'structures-mastery-v12';
+const CACHE_NAME = 'structures-mastery-v13';
 
 const ASSETS = [
   './',
