@@ -2580,10 +2580,10 @@ const FORMULA_ATLAS = [
     "moduleId": "mod2",
     "moduleTitle": "Conjugate Beam",
     "name": "Conjugate Beam Duality Theorems",
-    "formula": "θ(x) = V*(x)   |   v(x) = M*(x)",
+    "formula": "\\theta(x) = V^*(x), \\quad v(x) = M^*(x)",
     "symbols": [
       {
-        "symbol": "θ(x)",
+        "symbol": "\\theta(x)",
         "meaning": "Slope of real beam at coordinate x",
         "unit": "rad"
       },
@@ -2593,12 +2593,12 @@ const FORMULA_ATLAS = [
         "unit": "m"
       },
       {
-        "symbol": "V*(x)",
+        "symbol": "V^*(x)",
         "meaning": "Shear force in conjugate beam loaded with M/EI",
         "unit": "rad"
       },
       {
-        "symbol": "M*(x)",
+        "symbol": "M^*(x)",
         "meaning": "Bending moment in conjugate beam loaded with M/EI",
         "unit": "m"
       }
@@ -2618,7 +2618,7 @@ const FORMULA_ATLAS = [
     "moduleId": "mod2",
     "moduleTitle": "Conjugate Beam",
     "name": "Cantilever Tip Load Deflection & Slope",
-    "formula": "θ_tip = PL² / (2EI)   |   v_tip = PL³ / (3EI)",
+    "formula": "\\theta_{\\text{tip}} = \\frac{P L^2}{2EI}, \\quad v_{\\text{tip}} = \\frac{P L^3}{3EI}",
     "symbols": [
       {
         "symbol": "P",
@@ -2651,7 +2651,7 @@ const FORMULA_ATLAS = [
     "moduleId": "mod2",
     "moduleTitle": "Conjugate Beam",
     "name": "Simple Beam UDL Deflection & End Slope",
-    "formula": "θ_end = wL³ / (24EI)   |   v_mid = 5wL⁴ / (384EI)",
+    "formula": "\\theta_{\\text{end}} = \\frac{w L^3}{24EI}, \\quad v_{\\text{mid}} = \\frac{5 w L^4}{384EI}",
     "symbols": [
       {
         "symbol": "w",
@@ -2684,10 +2684,10 @@ const FORMULA_ATLAS = [
     "moduleId": "mod3",
     "moduleTitle": "Virtual Work",
     "name": "Master Virtual Work Equation (Trusses)",
-    "formula": "1.0 · Δ = Σ [n · N · L / (EA)] + Σ [n · α · ΔT · L] + Σ [n · ΔL_fab]",
+    "formula": "1.0 \\cdot \\Delta = \\sum \\frac{n N L}{EA} + \\sum n \\alpha \\Delta T L + \\sum n \\Delta L_{\\text{fab}}",
     "symbols": [
       {
-        "symbol": "Δ",
+        "symbol": "\\Delta",
         "meaning": "Real deflection at target joint in direction of unit load",
         "unit": "m"
       },
@@ -2712,12 +2712,12 @@ const FORMULA_ATLAS = [
         "unit": "kN"
       },
       {
-        "symbol": "α",
+        "symbol": "\\alpha",
         "meaning": "Coefficient of thermal expansion",
         "unit": "1/°C"
       },
       {
-        "symbol": "ΔT",
+        "symbol": "\\Delta T",
         "meaning": "Temperature change (positive for rise, negative for drop)",
         "unit": "°C"
       }
@@ -2737,10 +2737,10 @@ const FORMULA_ATLAS = [
     "moduleId": "mod3",
     "moduleTitle": "Virtual Work",
     "name": "Vereshchagin's Graphical Multiplication Rule",
-    "formula": "∫₀ᴸ m · (M / EI) dx = (Area_M / EI) · m_c",
+    "formula": "\\int_0^L m \\left(\\frac{M}{EI}\\right) dx = \\left(\\frac{\\text{Area}_M}{EI}\\right) \\cdot m_c",
     "symbols": [
       {
-        "symbol": "Area_M",
+        "symbol": "\\text{Area}_M",
         "meaning": "Area of the real bending moment diagram",
         "unit": "kN·m²"
       },
@@ -2770,20 +2770,20 @@ const FORMULA_ATLAS = [
     "moduleId": "mod3",
     "moduleTitle": "Virtual Work",
     "name": "Support Settlement in Determinate Structures",
-    "formula": "1.0 · Δ_target = - Σ (R_virtual · Δ_settlement)",
+    "formula": "1.0 \\cdot \\Delta_{\\text{target}} = -\\sum \\left( R_{\\text{virtual}} \\cdot \\Delta_{\\text{settlement}} \\right)",
     "symbols": [
       {
-        "symbol": "Δ_target",
+        "symbol": "\\Delta_{\\text{target}}",
         "meaning": "Resulting displacement at target coordinate",
         "unit": "m"
       },
       {
-        "symbol": "R_virtual",
+        "symbol": "R_{\\text{virtual}}",
         "meaning": "Support reaction due to unit virtual load",
         "unit": "kN/kN"
       },
       {
-        "symbol": "Δ_settlement",
+        "symbol": "\\Delta_{\\text{settlement}}",
         "meaning": "Prescribed support displacement/settlement",
         "unit": "m"
       }
@@ -2803,20 +2803,20 @@ const FORMULA_ATLAS = [
     "moduleId": "mod4",
     "moduleTitle": "Consistent Deformation",
     "name": "Single Redundant Compatibility Equation",
-    "formula": "Δ₁₀ + X₁ · δ₁₁ = 0   ➔   X₁ = - Δ₁₀ / δ₁₁",
+    "formula": "\\Delta_{10} + X_1 \\delta_{11} = 0 \\implies X_1 = -\\frac{\\Delta_{10}}{\\delta_{11}}",
     "symbols": [
       {
-        "symbol": "X₁",
+        "symbol": "X_1",
         "meaning": "Redundant force or reaction component",
         "unit": "kN or kN·m"
       },
       {
-        "symbol": "Δ₁₀",
+        "symbol": "\\Delta_{10}",
         "meaning": "Free deflection of primary base structure under real loads",
         "unit": "m or rad"
       },
       {
-        "symbol": "δ₁₁",
+        "symbol": "\\delta_{11}",
         "meaning": "Flexibility coefficient (deflection per unit redundant force)",
         "unit": "m/kN or rad/kN·m"
       }
@@ -2836,15 +2836,15 @@ const FORMULA_ATLAS = [
     "moduleId": "mod4",
     "moduleTitle": "Consistent Deformation",
     "name": "Maxwell-Betti Reciprocal Deflection Theorem",
-    "formula": "δ_ij = δ_ji",
+    "formula": "\\delta_{ij} = \\delta_{ji} \\quad (\\text{Maxwell-Betti Reciprocal Theorem})",
     "symbols": [
       {
-        "symbol": "δ_ij",
+        "symbol": "\\delta_{ij}",
         "meaning": "Deflection at coordinate i due to unit load at coordinate j",
         "unit": "m/kN"
       },
       {
-        "symbol": "δ_ji",
+        "symbol": "\\delta_{ji}",
         "meaning": "Deflection at coordinate j due to unit load at coordinate i",
         "unit": "m/kN"
       }
@@ -2864,7 +2864,7 @@ const FORMULA_ATLAS = [
     "moduleId": "mod5",
     "moduleTitle": "Three-Moment Equation",
     "name": "Clapeyron's Three-Moment Equation",
-    "formula": "M_L · L_L + 2 M_C (L_L + L_R) + M_R · L_R = - [6A_L x_L / L_L + 6A_R x_R / L_R]",
+    "formula": "M_L L_L + 2 M_C (L_L + L_R) + M_R L_R = -\\left[ \\frac{6 A_L \\bar{x}_L}{L_L} + \\frac{6 A_R \\bar{x}_R}{L_R} \\right]",
     "symbols": [
       {
         "symbol": "M_L, M_C, M_R",
@@ -2882,7 +2882,7 @@ const FORMULA_ATLAS = [
         "unit": "kN·m²"
       },
       {
-        "symbol": "x_L, x_R",
+        "symbol": "\\bar{x}_L, \\bar{x}_R",
         "meaning": "Centroid distances of free moment areas measured from OUTER supports",
         "unit": "m"
       }
@@ -2902,7 +2902,7 @@ const FORMULA_ATLAS = [
     "moduleId": "mod5",
     "moduleTitle": "Three-Moment Equation",
     "name": "Standard Load Terms (6Ax/L)",
-    "formula": "UDL: 6Ax/L = wL³ / 4   |   Point Load: 6Ax/L = P a (L² - a²) / L",
+    "formula": "\\text{UDL: } \\frac{6 A \\bar{x}}{L} = \\frac{w L^3}{4}, \\quad \\text{Point Load: } \\frac{6 A \\bar{x}}{L} = \\frac{P a (L^2 - a^2)}{L}",
     "symbols": [
       {
         "symbol": "w",
@@ -2940,15 +2940,15 @@ const FORMULA_ATLAS = [
     "moduleId": "mod5",
     "moduleTitle": "Three-Moment Equation",
     "name": "Imaginary Zero-Span Clamped Wall Trick",
-    "formula": "L₀ = 0   |   EI₀ = ∞   ➔   L₀ / EI₀ = 0",
+    "formula": "L_0 = 0, \\quad EI_0 = \\infty \\implies \\frac{L_0}{EI_0} = 0",
     "symbols": [
       {
-        "symbol": "L₀",
+        "symbol": "L_0",
         "meaning": "Length of imaginary span to left of fixed wall",
         "unit": "m"
       },
       {
-        "symbol": "EI₀",
+        "symbol": "EI_0",
         "meaning": "Flexural rigidity of imaginary span",
         "unit": "kN·m²"
       }
@@ -2968,16 +2968,16 @@ const FORMULA_ATLAS = [
     "moduleId": "mod6",
     "moduleTitle": "Slope-Deflection",
     "name": "Slope-Deflection Governing Equation (AAU Convention)",
-    "formula": "M_AB = M^F_AB - 2EK ( 2θ_A + θ_B - 3Δ/L )",
+    "formula": "M_{ij} = M^F_{ij} - 2EK \\left( 2\\theta_i + \\theta_j - \\frac{3\\Delta}{L} \\right)",
     "symbols": [
       {
-        "symbol": "M_AB",
-        "meaning": "Member end moment at near end A",
+        "symbol": "M_{ij}",
+        "meaning": "Member end moment at near end i",
         "unit": "kN·m"
       },
       {
-        "symbol": "M^F_AB",
-        "meaning": "Fixed-end moment at near end A",
+        "symbol": "M^F_{ij}",
+        "meaning": "Fixed-end moment at near end i",
         "unit": "kN·m"
       },
       {
@@ -2986,18 +2986,18 @@ const FORMULA_ATLAS = [
         "unit": "m³"
       },
       {
-        "symbol": "θ_A",
-        "meaning": "Rotation of near joint A",
+        "symbol": "\\theta_i",
+        "meaning": "Rotation of near joint i",
         "unit": "rad"
       },
       {
-        "symbol": "θ_B",
-        "meaning": "Rotation of far joint B",
+        "symbol": "\\theta_j",
+        "meaning": "Rotation of far joint j",
         "unit": "rad"
       },
       {
-        "symbol": "Δ/L",
-        "meaning": "Chord rotation / sidesway angle (ψ)",
+        "symbol": "\\Delta/L",
+        "meaning": "Chord rotation / sidesway angle (\\psi)",
         "unit": "rad"
       }
     ],
@@ -3016,7 +3016,7 @@ const FORMULA_ATLAS = [
     "moduleId": "mod6",
     "moduleTitle": "Slope-Deflection",
     "name": "Fixed-End Moments (AAU Sign Convention)",
-    "formula": "UDL: M^F_AB = + wL² / 12,  M^F_BA = - wL² / 12",
+    "formula": "\\text{UDL: } M^F_{AB} = +\\frac{w L^2}{12}, \\quad M^F_{BA} = -\\frac{w L^2}{12}",
     "symbols": [
       {
         "symbol": "w",
@@ -3044,7 +3044,7 @@ const FORMULA_ATLAS = [
     "moduleId": "mod7",
     "moduleTitle": "Moment Distribution",
     "name": "Joint Distribution Factor (DF)",
-    "formula": "DF_i = K_i / Σ K   |   DF_fixed = 0   |   DF_hinge = 1.0",
+    "formula": "DF_i = \\frac{K_i}{\\sum K}, \\quad DF_{\\text{fixed}} = 0, \\quad DF_{\\text{hinge}} = 1.0",
     "symbols": [
       {
         "symbol": "DF_i",
@@ -3057,7 +3057,7 @@ const FORMULA_ATLAS = [
         "unit": "m³"
       },
       {
-        "symbol": "Σ K",
+        "symbol": "\\sum K",
         "meaning": "Total flexural stiffness of all members framing into the joint",
         "unit": "m³"
       }
@@ -3078,10 +3078,10 @@ const FORMULA_ATLAS = [
     "moduleId": "mod7",
     "moduleTitle": "Moment Distribution",
     "name": "Modified 3/4 Stiffness for Hinged Far Ends",
-    "formula": "K_modified = (3/4) · (I / L)   |   COF to hinge = 0",
+    "formula": "K' = \\frac{3}{4}\\left(\\frac{I}{L}\\right) = \\frac{3}{4}K, \\quad \\text{COF} = 0",
     "symbols": [
       {
-        "symbol": "K_modified",
+        "symbol": "K'",
         "meaning": "Reduced member stiffness for hinged far end",
         "unit": "m³"
       },

@@ -1,27 +1,48 @@
 // Single-file HTML Bundler for Theory of Structures Mastery Lab
-// Inlines all CSS, JS, KaTeX engines, and course data into standalone.html.
+// Inlines all CSS, JS, KaTeX engines, fonts, and course data into standalone.html.
 
 const fs = require('fs');
 const path = require('path');
 
-console.log('Bundling standalone.html...');
+console.log('Bundling standalone.html with embedded offline KaTeX fonts...');
 
-let html = fs.readFileSync('index.html', 'utf8');
-let css = fs.readFileSync('styles.css', 'utf8');
-let katexCss = fs.readFileSync('katex.min.css', 'utf8');
+const baseDir = __dirname;
+const resolve = (f) => path.join(baseDir, f);
 
-// Update KaTeX font paths in standalone.html to CDN fallback so fonts load if online,
-// while falling back to system serif (Times New Roman / Cambria Math) when offline.
+let html = fs.readFileSync(resolve('index.html'), 'utf8');
+let css = fs.readFileSync(resolve('styles.css'), 'utf8');
+let katexCss = fs.readFileSync(resolve('katex.min.css'), 'utf8');
+
+// Inline core WOFF2 fonts as Base64 data URIs for 100% offline standalone usage on mobile
+const coreFonts = [
+  'KaTeX_Main-Regular.woff2',
+  'KaTeX_Math-Italic.woff2',
+  'KaTeX_Main-Bold.woff2',
+  'KaTeX_Size1-Regular.woff2',
+  'KaTeX_Size2-Regular.woff2',
+  'KaTeX_AMS-Regular.woff2'
+];
+
+coreFonts.forEach(fontName => {
+  const fontPath = resolve(path.join('fonts', fontName));
+  if (fs.existsSync(fontPath)) {
+    const b64 = fs.readFileSync(fontPath).toString('base64');
+    const regex = new RegExp(`url\\(fonts\\/${fontName}\\)`, 'g');
+    katexCss = katexCss.replace(regex, `url('data:font/woff2;base64,${b64}')`);
+  }
+});
+
+// CDN fallback for non-inlined secondary fonts
 katexCss = katexCss.replace(/url\(fonts\//g, 'url(https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/fonts/');
 
-let katexJs = fs.readFileSync('katex.min.js', 'utf8');
-let autoRenderJs = fs.readFileSync('auto-render.min.js', 'utf8');
-let mathEngineJs = fs.readFileSync('math_engine.js', 'utf8');
-let visualsJs = fs.readFileSync('visuals.js', 'utf8');
-let solversJs = fs.readFileSync('solvers.js', 'utf8');
-let dataJs = fs.readFileSync('data.js', 'utf8');
-let qbJs = fs.readFileSync('question_bank.js', 'utf8');
-let appJs = fs.readFileSync('app.js', 'utf8');
+let katexJs = fs.readFileSync(resolve('katex.min.js'), 'utf8');
+let autoRenderJs = fs.readFileSync(resolve('auto-render.min.js'), 'utf8');
+let mathEngineJs = fs.readFileSync(resolve('math_engine.js'), 'utf8');
+let visualsJs = fs.readFileSync(resolve('visuals.js'), 'utf8');
+let solversJs = fs.readFileSync(resolve('solvers.js'), 'utf8');
+let dataJs = fs.readFileSync(resolve('data.js'), 'utf8');
+let qbJs = fs.readFileSync(resolve('question_bank.js'), 'utf8');
+let appJs = fs.readFileSync(resolve('app.js'), 'utf8');
 
 // Replace CSS links with inlined style
 const combinedCss = `<style>\n${katexCss}\n\n${css}\n</style>`;
@@ -63,6 +84,7 @@ html = html.replace(
   () => combinedScripts
 );
 
-fs.writeFileSync('standalone.html', html, 'utf8');
-const stats = fs.statSync('standalone.html');
+const outPath = resolve('standalone.html');
+fs.writeFileSync(outPath, html, 'utf8');
+const stats = fs.statSync(outPath);
 console.log(`Successfully generated standalone.html! (${(stats.size / 1024 / 1024).toFixed(2)} MB)`);

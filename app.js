@@ -134,109 +134,109 @@ const SoundEngine = {
 
 
 // =========================================================================
-// RAPID RECALL EXAM SPRINT ("CRAM SPRINT" - 60s ACTIVE RECALL)
+// RAPID RECALL EXAM SPRINT ("CRAM SPRINT" - ACTIVE RECALL ENGINE)
 // =========================================================================
 
 const SPRINT_QUESTIONS = [
   {
-    prompt: "In the EiABC Slope-Deflection equation, why is there a MINUS sign before 2EK(2θ_i + θ_j - 3Δ/L)?",
+    prompt: "In the EiABC Slope-Deflection equation, why is there a MINUS sign before $2EK\\left(2\\theta_i + \\theta_j - \\frac{3\\Delta}{L}\\right)$?",
     options: [
       { text: "Because clockwise joint rotation is defined as (+), but end moment on member is (+) counter-clockwise.", correct: true },
       { text: "Because members always hog under positive gravity loads.", correct: false },
-      { text: "Because axial deformations are neglected.", correct: false },
+      { text: "Because axial deformations are neglected in small-deflection theory.", correct: false },
       { text: "It is an arbitrary notation choice with no equilibrium significance.", correct: false }
     ],
-    explanation: "EiABC uses clockwise (+) for rotations and chord sway, but counter-clockwise (+) on the beam for end moments. The minus sign preserves rotational balance."
+    explanation: "EiABC defines clockwise (+) for rotations $(\\theta)$ and chord sway $(\\psi = \\frac{\\Delta}{L})$, but counter-clockwise (+) on the member for end moments. The minus sign preserves rotational balance: $M_{ij} = M^F_{ij} - 2EK\\left(2\\theta_i + \\theta_j - \\frac{3\\Delta}{L}\\right)$."
   },
   {
-    prompt: "A middle support in a continuous beam sinks downwards by Δ. What happens to the hogging moment over that support?",
+    prompt: "A middle support in a continuous beam sinks downwards by settlement $\\Delta$. What happens to the hogging moment over that support?",
     options: [
-      { text: "It is relieved (becomes less negative / reduced).", correct: true },
+      { text: "It is relieved (becomes less negative / reduced in magnitude).", correct: true },
       { text: "It increases significantly in magnitude.", correct: false },
       { text: "It remains completely unchanged.", correct: false },
-      { text: "It doubles in value regardless of EI.", correct: false }
+      { text: "It doubles in value regardless of flexural rigidity $EI$.", correct: false }
     ],
-    explanation: "Downward support sinking relieves hogging moment over that support and increases sagging moment in adjacent spans."
+    explanation: "Downward support settlement $\\Delta$ induces concave (sagging) curvature over the sinking support, which relieves (reduces) the negative hogging moment over that support and sheds positive moment into adjacent spans."
   },
   {
-    prompt: "When applying Hardy Cross Moment Distribution to a beam whose far end is PINNED, what is the modified stiffness K'?",
+    prompt: "When applying Hardy Cross Moment Distribution to a beam span whose far end is PINNED, what is the modified rotational stiffness $K'$?",
     options: [
-      { text: "K' = (3/4) * (I/L) with COF = 0", correct: true },
-      { text: "K' = (4/3) * (I/L) with COF = 0.5", correct: false },
-      { text: "K' = (I/L) with COF = 0.5", correct: false },
-      { text: "K' = (1/2) * (I/L) with COF = 0", correct: false }
+      { text: "$K' = \\frac{3}{4}\\left(\\frac{I}{L}\\right) = \\frac{3}{4}K$ with $\\text{COF} = 0$", correct: true },
+      { text: "$K' = \\frac{4}{3}\\left(\\frac{I}{L}\\right)$ with $\\text{COF} = 0.5$", correct: false },
+      { text: "$K' = \\frac{I}{L}$ with $\\text{COF} = 0.5$", correct: false },
+      { text: "$K' = \\frac{1}{2}\\left(\\frac{I}{L}\\right)$ with $\\text{COF} = 0$", correct: false }
     ],
-    explanation: "Modified stiffness K' = 0.75 (I/L), and because a pinned support cannot resist moment, the Carry-Over Factor is 0."
+    explanation: "A pinned or roller far end cannot develop bending moment ($M = 0$). Hence, rotational stiffness is reduced by 25% ($K' = 0.75K$), and no moment carries over across it ($\\text{COF} = 0$)."
   },
   {
-    prompt: "In the Conjugate Beam Method, what does an internal hinge in the real beam become?",
+    prompt: "In the Conjugate Beam Method, what boundary condition does an internal hinge in the real beam transform into?",
     options: [
       { text: "An internal roller or pin support.", correct: true },
-      { text: "A free end.", correct: false },
-      { text: "A fixed support.", correct: false },
+      { text: "A free unsupported cantilever tip.", correct: false },
+      { text: "A rigid built-in fixed support.", correct: false },
       { text: "An internal hinge remains an internal hinge.", correct: false }
     ],
-    explanation: "An internal hinge allows discontinuous slope but continuous deflection, which in the conjugate beam corresponds to shear step but continuous moment: an internal support!"
+    explanation: "An internal hinge allows discontinuous slope (shear step $\\Delta V^*$ in the conjugate beam) while deflection is continuous (continuous moment $M^*$). This corresponds to an internal roller or pin support in the conjugate beam!"
   },
   {
-    prompt: "What is the degree of static indeterminacy (DSI) for a 2D pin-jointed truss with m = 11, r = 3, j = 6?",
+    prompt: "What is the degree of static indeterminacy ($\\text{DSI}$) for a 2D pin-jointed truss with $m = 11$ bars, $r = 3$ reactions, and $j = 6$ joints?",
     options: [
-      { text: "DSI = (11 + 3) - 2(6) = 2 (Indeterminate to 2nd degree)", correct: true },
-      { text: "DSI = 11 - 2(6) = -1 (Unstable)", correct: false },
-      { text: "DSI = (11 + 3) - 3(6) = -4 (Mechanism)", correct: false },
-      { text: "DSI = 0 (Statically Determinate)", correct: false }
+      { text: "$\\text{DSI} = (m + r) - 2j = (11 + 3) - 2(6) = 2$ (Indeterminate to 2nd degree)", correct: true },
+      { text: "$\\text{DSI} = m - 2j = 11 - 12 = -1$ (Unstable mechanism)", correct: false },
+      { text: "$\\text{DSI} = (m + r) - 3j = 14 - 18 = -4$ (Mechanism)", correct: false },
+      { text: "$\\text{DSI} = 0$ (Statically Determinate)", correct: false }
     ],
-    explanation: "For 2D trusses, DSI = m + r - 2j. Here 11 + 3 - 12 = 2."
+    explanation: "For plane trusses, $\\text{DSI} = (m + r) - 2j$. Substituting: $(11 + 3) - 2(6) = 14 - 12 = 2$."
   },
   {
-    prompt: "In Virtual Work for beam deflections, 1 · Δ = ∫ (M·m / EI) dx. What is 'm'?",
+    prompt: "In the Virtual Work principle for beam deflections: $1.0 \\cdot \\Delta = \\int_0^L \\frac{M \\cdot m}{EI}\\,dx$. What does '$m$' represent?",
     options: [
-      { text: "Internal bending moment caused solely by a fictitious unit load applied at the target point.", correct: true },
-      { text: "The actual dead load moment.", correct: false },
-      { text: "The cross-sectional mass of the beam.", correct: false },
-      { text: "The maximum elastic moment capacity of the steel section.", correct: false }
+      { text: "Internal bending moment caused solely by a fictitious unit dummy load applied at the target degree of freedom.", correct: true },
+      { text: "The actual dead load bending moment.", correct: false },
+      { text: "The cross-sectional mass of the member.", correct: false },
+      { text: "The ultimate plastic moment capacity $M_p$ of the section.", correct: false }
     ],
-    explanation: "m is the virtual internal bending moment distribution created by a dummy unit load (1 kN or 1 kNm) at the desired degree of freedom."
+    explanation: "$m(x)$ is the virtual internal bending moment distribution created across the beam when a unit dummy load ($1\\text{ kN}$ or $1\\text{ kN}\\cdot\\text{m}$) is applied at the target point and direction of deflection."
   },
   {
-    prompt: "For a continuous beam on unyielding supports, which method yields the fewest simultaneous equations when DKI < DSI?",
+    prompt: "For a continuous beam on unyielding supports, which formulation yields fewer simultaneous equations when $\\text{DKI} < \\text{DSI}$?",
     options: [
-      { text: "Displacement Method (Slope-Deflection / Moment Distribution)", correct: true },
-      { text: "Force Method (Consistent Deformations)", correct: false },
-      { text: "Three-Moment Equation", correct: false },
-      { text: "Castigliano's First Theorem", correct: false }
+      { text: "Displacement Methods (Slope-Deflection or Moment Distribution).", correct: true },
+      { text: "Force Method (Method of Consistent Deformations).", correct: false },
+      { text: "Three-Moment Equation (Clapeyron's Equation).", correct: false },
+      { text: "Castigliano's First Theorem.", correct: false }
     ],
-    explanation: "When Kinematic Indeterminacy (DKI) is less than Static Indeterminacy (DSI), displacement methods have fewer unknowns."
+    explanation: "When Kinematic Indeterminacy ($\\text{DKI}$) is less than Static Indeterminacy ($\\text{DSI}$), displacement methods solve for fewer unknowns (joint rotations) than force methods (redundant forces)."
   },
   {
-    prompt: "In Slope-Deflection, if a member has sway Δ perpendicular to its axis, what is the chord rotation ψ?",
+    prompt: "In Slope-Deflection, if a member of span $L$ experiences a lateral joint translation $\\Delta$ perpendicular to its axis, what is chord rotation $\\psi$?",
     options: [
-      { text: "ψ = Δ / L (positive clockwise)", correct: true },
-      { text: "ψ = Δ * L", correct: false },
-      { text: "ψ = (3EI/L) * Δ", correct: false },
-      { text: "ψ = 0 for all frames", correct: false }
+      { text: "$\\psi = \\frac{\\Delta}{L}$ (positive clockwise in EiABC convention)", correct: true },
+      { text: "$\\psi = \\Delta \\cdot L$", correct: false },
+      { text: "$\\psi = \\frac{3EI}{L^2} \\cdot \\Delta$", correct: false },
+      { text: "$\\psi = 0$ for all frames", correct: false }
     ],
-    explanation: "Chord rotation ψ is the angle through which the member axis rotates, equal to Δ/L."
+    explanation: "Chord rotation $\\psi = \\frac{\\Delta}{L}$ is the rigid-body rotation angle of the member's chord between its two joints."
   },
   {
-    prompt: "What is the fixed-end moment FEM at the left support for a fixed-fixed beam of length L carrying UDL w?",
+    prompt: "What is the Fixed-End Moment ($\\text{FEM}_{AB}$) at the left support for a fixed-fixed beam of length $L$ under full UDL $w$?",
     options: [
-      { text: "FEM_AB = -wL² / 12 (hogging)", correct: true },
-      { text: "FEM_AB = +wL² / 8", correct: false },
-      { text: "FEM_AB = -wL² / 24", correct: false },
-      { text: "FEM_AB = -wL / 2", correct: false }
+      { text: "$\\text{FEM}_{AB} = -\\frac{wL^2}{12}$ (hogging / counter-clockwise on beam)", correct: true },
+      { text: "$\\text{FEM}_{AB} = +\\frac{wL^2}{8}$", correct: false },
+      { text: "$\\text{FEM}_{AB} = -\\frac{wL^2}{24}$", correct: false },
+      { text: "$\\text{FEM}_{AB} = -\\frac{wL}{2}$", correct: false }
     ],
-    explanation: "For uniform load w across entire span, FEM = -wL²/12 at left and +wL²/12 at right (or wL²/12 hogging at both ends)."
+    explanation: "For a uniform load $w$ across span $L$, $\\text{FEM}_{AB} = -\\frac{wL^2}{12}$ at left and $\\text{FEM}_{BA} = +\\frac{wL^2}{12}$ at right in standard notation."
   },
   {
-    prompt: "If a structure has r = 3 reactions, but all 3 reaction lines of action are concurrent (pass through a single point), the structure is:",
+    prompt: "If a 2D planar structure has $r = 3$ reaction lines of action that all intersect at a single concurrent point, the structure is:",
     options: [
-      { text: "Geometrically unstable (cannot resist rotation about that point).", correct: true },
+      { text: "Geometrically unstable (cannot resist moments about that concurrency point).", correct: true },
       { text: "Statically determinate and completely stable.", correct: false },
       { text: "Indeterminate to the 1st degree.", correct: false },
       { text: "Fully rigid in all directions.", correct: false }
     ],
-    explanation: "Concurrent reactions have zero moment capacity about their point of intersection, causing rotational instability (mechanism)."
+    explanation: "Because all reaction lines pass through the exact same point, $\\sum M_{\\text{pt}} = 0$ provides zero restoring resistance against applied external moments, creating an unstable rotational mechanism."
   }
 ];
 
@@ -244,14 +244,18 @@ let sprintIdx = 0;
 let sprintScore = 0;
 let sprintCombo = 0;
 let sprintTimerInterval = null;
-let sprintSeconds = 15;
+let sprintSeconds = 35;
+let sprintIsPaused = false;
 let sprintAnswered = false;
+let sprintHistory = [];
 
 function startRapidSprint() {
   sprintIdx = 0;
   sprintScore = 0;
   sprintCombo = 0;
   sprintAnswered = false;
+  sprintIsPaused = false;
+  sprintHistory = [];
   currentAppView = 'sprint';
   updateTopNavUI();
   updateMobileNavUI();
@@ -262,10 +266,11 @@ function startRapidSprint() {
 
 function startSprintTimer() {
   if (sprintTimerInterval) clearInterval(sprintTimerInterval);
-  sprintSeconds = 15;
+  sprintSeconds = 35;
+  sprintIsPaused = false;
   updateSprintTimerDisplay();
   sprintTimerInterval = setInterval(() => {
-    if (sprintSeconds > 0 && !sprintAnswered) {
+    if (sprintSeconds > 0 && !sprintAnswered && !sprintIsPaused) {
       sprintSeconds--;
       updateSprintTimerDisplay();
       if (sprintSeconds === 0) {
@@ -275,11 +280,26 @@ function startSprintTimer() {
   }, 1000);
 }
 
+function toggleSprintPause() {
+  sprintIsPaused = !sprintIsPaused;
+  const btn = document.getElementById('sprintPauseBtn');
+  if (btn) {
+    btn.innerHTML = sprintIsPaused ? '▶️ Resume' : '⏸️ Pause';
+    btn.classList.toggle('active', sprintIsPaused);
+  }
+  const timer = document.getElementById('sprintTimerVal');
+  if (timer && sprintIsPaused) {
+    timer.style.opacity = '0.5';
+  } else if (timer) {
+    timer.style.opacity = '1';
+  }
+}
+
 function updateSprintTimerDisplay() {
   const el = document.getElementById('sprintTimerVal');
   if (el) {
     el.innerText = `⏱️ ${sprintSeconds}s`;
-    el.style.color = sprintSeconds <= 5 ? 'var(--danger)' : 'var(--accent)';
+    el.style.color = sprintSeconds <= 8 ? 'var(--danger)' : 'var(--accent)';
   }
 }
 
@@ -290,6 +310,7 @@ function handleSprintAnswer(optIdx) {
 
   const q = SPRINT_QUESTIONS[sprintIdx];
   const isCorrect = optIdx >= 0 && q.options[optIdx] && q.options[optIdx].correct;
+  sprintHistory[sprintIdx] = isCorrect ? 'correct' : 'wrong';
 
   if (isCorrect) {
     sprintScore++;
@@ -304,30 +325,50 @@ function handleSprintAnswer(optIdx) {
     SoundEngine.playWrong();
   }
 
-  // Update button classes
+  // Update button classes and badges
   const btns = document.querySelectorAll('.sprint-opt-btn');
   btns.forEach((btn, idx) => {
+    const badge = btn.querySelector('.sprint-opt-badge');
     if (q.options[idx].correct) {
       btn.classList.add('correct');
+      if (badge) badge.innerText = '✓';
     } else if (idx === optIdx) {
       btn.classList.add('wrong');
+      if (badge) badge.innerText = '✕';
     }
   });
 
   const fb = document.getElementById('sprintFeedback');
   if (fb) {
     fb.style.display = 'block';
-    fb.innerHTML = `<strong>${isCorrect ? '✅ Spot On!' : '❌ Incorrect / Timed Out'}</strong> ${q.explanation}`;
+    fb.innerHTML = `
+      <div style="display:flex; align-items:flex-start; gap:12px;">
+        <span style="font-size:1.6rem; line-height:1;">${isCorrect ? '✅' : '❌'}</span>
+        <div style="flex:1;">
+          <strong style="color:${isCorrect ? '#34d399' : '#f87171'}; font-size:1rem; display:block; margin-bottom:4px;">
+            ${isCorrect ? 'Spot On! Correct Answer' : 'Conceptual Misalignment / Time Out'}
+          </strong>
+          <div style="color:#f1f5f9; line-height:1.55; font-size:0.92rem;">
+            ${q.explanation}
+          </div>
+        </div>
+      </div>
+    `;
     fb.style.borderColor = isCorrect ? 'var(--success)' : 'var(--danger)';
-    fb.style.background = isCorrect ? 'rgba(16, 185, 129, 0.15)' : 'rgba(244, 63, 94, 0.15)';
+    fb.style.background = isCorrect ? 'rgba(16, 185, 129, 0.16)' : 'rgba(244, 63, 94, 0.16)';
+    renderMathInDOM(fb);
   }
 
   const nextBtn = document.getElementById('sprintNextBtn');
-  if (nextBtn) nextBtn.style.display = 'inline-block';
+  if (nextBtn) {
+    nextBtn.style.display = 'inline-flex';
+    nextBtn.focus();
+  }
 }
 
 function advanceSprintQuestion() {
   sprintAnswered = false;
+  sprintIsPaused = false;
   if (sprintIdx < SPRINT_QUESTIONS.length - 1) {
     sprintIdx++;
     renderMainView();
@@ -382,9 +423,10 @@ function renderSprintView(viewport) {
   }
 
   const q = SPRINT_QUESTIONS[sprintIdx];
+  const optionLetters = ['A', 'B', 'C', 'D'];
 
   viewport.innerHTML = `
-    <div class="card gizmo-container">
+    <div class="card gizmo-container" style="max-width:760px; margin:0 auto;">
       <div class="gizmo-header" style="margin-bottom:16px;">
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
           <div>
@@ -396,44 +438,62 @@ function renderSprintView(viewport) {
             </span>
           </div>
 
-          <div style="display:flex; align-items:center; gap:12px;">
+          <div style="display:flex; align-items:center; gap:10px;">
             ${sprintCombo >= 2 ? `<span style="font-size:0.8rem; font-weight:800; color:var(--gold);" class="combo-badge">🔥 ${sprintCombo}x COMBO!</span>` : ''}
-            <span id="sprintTimerVal" style="font-family:var(--font-mono); font-weight:800; font-size:1.1rem; color:var(--accent);">⏱️ 15s</span>
+            <span id="sprintTimerVal" style="font-family:var(--font-mono); font-weight:800; font-size:1.1rem; color:var(--accent);">⏱️ 35s</span>
+            <button class="hud-btn" id="sprintPauseBtn" style="padding:4px 8px; font-size:0.75rem;" onclick="toggleSprintPause()" title="Pause countdown timer">⏸️ Pause</button>
             <button class="hud-btn" style="padding:4px 8px; font-size:0.75rem;" onclick="clearInterval(sprintTimerInterval); switchAppView('dashboard');">✕ Exit</button>
           </div>
         </div>
 
-        <!-- Segmented Track -->
+        <!-- Segmented Track with Pass/Fail color coding -->
         <div class="gizmo-segmented-bar" style="margin-top:12px;">
-          ${SPRINT_QUESTIONS.map((_, i) => `
-            <div class="gizmo-segment ${i === sprintIdx ? 'active' : (i < sprintIdx ? 'completed' : '')}"></div>
-          `).join('')}
+          ${SPRINT_QUESTIONS.map((_, i) => {
+            let cls = '';
+            if (i === sprintIdx) cls = 'active';
+            else if (sprintHistory[i] === 'correct') cls = 'completed-correct';
+            else if (sprintHistory[i] === 'wrong') cls = 'completed-wrong';
+            return `<div class="gizmo-segment ${cls}"></div>`;
+          }).join('')}
         </div>
       </div>
 
       <div class="gizmo-card-body">
-        <h3 style="font-size:1.15rem; color:#fff; margin-bottom:16px; line-height:1.45;">
-          ${q.prompt}
-        </h3>
+        <div class="sprint-question-box" style="margin-bottom:18px;">
+          <div style="display:inline-block; font-size:0.72rem; font-weight:700; text-transform:uppercase; color:var(--accent); background:rgba(56, 189, 248, 0.12); padding:3px 8px; border-radius:4px; margin-bottom:8px; border:1px solid rgba(56, 189, 248, 0.25);">
+            EiABC Exam Rapid Drill • Problem ${sprintIdx + 1}
+          </div>
+          <h3 style="font-size:1.15rem; color:#fff; line-height:1.55; margin:0;">
+            ${q.prompt}
+          </h3>
+        </div>
 
         <div style="display:flex; flex-direction:column; gap:10px;">
           ${q.options.map((opt, oIdx) => `
-            <button class="sprint-opt-btn" onclick="handleSprintAnswer(${oIdx})">
-              ${opt.text}
+            <button class="sprint-opt-btn" onclick="handleSprintAnswer(${oIdx})" aria-label="Option ${optionLetters[oIdx]}: ${opt.text.replace(/[$]/g, '')}">
+              <span class="sprint-opt-badge">${optionLetters[oIdx]}</span>
+              <span class="sprint-opt-text">${opt.text}</span>
             </button>
           `).join('')}
         </div>
 
-        <div id="sprintFeedback" style="display:none; margin-top:14px; padding:12px; border-radius:6px; font-size:0.86rem; border:1px solid transparent;"></div>
+        <div id="sprintFeedback" style="display:none; margin-top:16px; padding:14px; border-radius:8px; font-size:0.9rem; border:1px solid transparent; box-shadow:0 4px 12px rgba(0,0,0,0.3);"></div>
       </div>
 
-      <div class="gizmo-bottom-bar" style="justify-content:flex-end;">
-        <button id="sprintNextBtn" class="btn-primary" style="display:none;" onclick="advanceSprintQuestion()">
-          ${sprintIdx === SPRINT_QUESTIONS.length - 1 ? 'Finish Sprint ➔' : 'Next Question ➔'}
+      <div class="gizmo-bottom-bar" style="justify-content:space-between; align-items:center; margin-top:16px; padding-top:12px; border-top:1px solid rgba(255,255,255,0.06);">
+        <span style="font-size:0.76rem; color:var(--text-muted); display:flex; align-items:center; gap:6px;">
+          💡 Tip: Tap option or press 1-4
+        </span>
+        <button id="sprintNextBtn" class="btn-primary" style="display:none; padding:8px 20px; font-weight:700;" onclick="advanceSprintQuestion()">
+          ${sprintIdx === SPRINT_QUESTIONS.length - 1 ? 'Finish Sprint 🏆' : 'Next Question ➔'}
         </button>
       </div>
     </div>
   `;
+
+  setTimeout(() => {
+    renderMathInDOM(viewport);
+  }, 10);
 }
 
 
@@ -4256,6 +4316,26 @@ window.addEventListener('keydown', (e) => {
   } else if (e.altKey && (e.key === 'f' || e.key === 'F')) {
     e.preventDefault();
     toggleFocusSprint();
+  } else if (currentAppView === 'sprint') {
+    if (['1', 'a', 'A'].includes(e.key)) {
+      e.preventDefault();
+      handleSprintAnswer(0);
+    } else if (['2', 'b', 'B'].includes(e.key)) {
+      e.preventDefault();
+      handleSprintAnswer(1);
+    } else if (['3', 'c', 'C'].includes(e.key)) {
+      e.preventDefault();
+      handleSprintAnswer(2);
+    } else if (['4', 'd', 'D'].includes(e.key)) {
+      e.preventDefault();
+      handleSprintAnswer(3);
+    } else if ((e.key === 'Enter' || e.key === ' ') && sprintAnswered) {
+      e.preventDefault();
+      advanceSprintQuestion();
+    } else if (e.key === 'p' || e.key === 'P') {
+      e.preventDefault();
+      toggleSprintPause();
+    }
   } else if (e.key >= '1' && e.key <= '6' && currentAppView === 'module') {
     const tabs = ['theory', 'guided', 'shortcuts', 'arena', 'cheatsheet', 'videos'];
     switchModuleTab(tabs[parseInt(e.key) - 1]);
@@ -4698,7 +4778,7 @@ function renderProblemWorkspaceView(viewport) {
               <span style="font-size:0.72rem; color:var(--accent);">✓ Verified Step</span>
             </div>
             <div class="solver-step-body" id="step_body_${sIdx}">
-              ${escapeHtml(stepText)}
+              ${formatStepFormulaText(escapeHtml(stepText))}
             </div>
           </div>
         `).join('')}

@@ -981,48 +981,63 @@ html, body {
   scrollbar-width: thin;
 }
 
-/* KaTeX custom theme override */
+/* KaTeX publication-grade custom theme override */
 .katex {
-  font-size: 1.05em !important;
-  color: #f1f5f9 !important;
+  font-size: 1.1em !important;
+  color: #f8fafc !important;
   text-rendering: optimizeLegibility;
   max-width: 100%;
+  letter-spacing: normal;
 }
 
 .katex-html {
   max-width: 100%;
   overflow-x: auto;
   overflow-y: hidden;
-  scrollbar-width: none;
+  scrollbar-width: thin;
 }
 .katex-html::-webkit-scrollbar {
-  display: none;
+  height: 3px;
+}
+.katex-html::-webkit-scrollbar-thumb {
+  background: rgba(56, 189, 248, 0.3);
+  border-radius: 2px;
 }
 
 .katex-display {
-  margin: 0.4em 0 !important;
+  margin: 0.6em 0 !important;
   overflow-x: auto;
   overflow-y: hidden;
-  padding: 4px 0;
+  padding: 8px 12px;
   max-width: 100%;
   -webkit-overflow-scrolling: touch;
+  background: rgba(15, 23, 42, 0.75);
+  border: 1px solid rgba(56, 189, 248, 0.22);
+  border-radius: 8px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
 }
 
 .katex-display > .katex {
   white-space: normal;
   text-align: center;
+  font-size: 1.18em !important;
 }
 
 .katex .mord.mathnormal {
-  color: #7dd3fc;
+  color: #38bdf8 !important; /* Vibrant high-contrast sky blue for variables */
+  font-weight: 500;
 }
 
 .katex .mop, .katex .minner {
-  color: #f8fafc;
+  color: #f8fafc !important;
+}
+
+.katex .mbin, .katex .mrel {
+  color: #fde047 !important; /* Soft gold for relations (=, +, -, ->) */
 }
 
 .katex .mfrac .frac-line {
-  border-bottom-width: 1.5px !important;
+  border-bottom-width: 2px !important;
   border-bottom-color: #38bdf8 !important;
 }
 
@@ -1441,11 +1456,9 @@ html, body {
     border-radius: 8px;
   }
   .brand-info h1 {
-    font-size: 0.88rem;
-    max-width: 160px;
+    font-size: 0.95rem;
+    max-width: none;
     white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
   }
   .brand-info p {
     display: none;
@@ -1551,7 +1564,7 @@ html, body {
     padding: 4px 0;
   }
   .katex {
-    font-size: 0.95em !important;
+    font-size: 1.05em !important;
   }
 
   .sim-control-panel {
@@ -1630,8 +1643,9 @@ html, body {
     padding: 6px 8px;
   }
   .brand-info h1 {
-    max-width: 110px;
-    font-size: 0.82rem;
+    max-width: none;
+    font-size: 0.88rem;
+    white-space: nowrap;
   }
   #masteryBadge {
     display: none !important;
@@ -3788,40 +3802,107 @@ html, body {
    ========================================================================= */
 
 .sprint-opt-btn {
-  background: rgba(15, 23, 42, 0.85);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 12px 16px;
-  color: #fff;
-  font-size: 0.92rem;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(15, 23, 42, 0.88);
+  border: 1.5px solid rgba(56, 189, 248, 0.2);
+  border-radius: 10px;
+  padding: 12px 14px;
+  color: #f8fafc;
+  font-size: 0.94rem;
   text-align: left;
   cursor: pointer;
-  transition: all 0.2s ease;
-  line-height: 1.4;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  line-height: 1.45;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .sprint-opt-btn:hover {
   border-color: var(--accent);
-  background: rgba(56, 189, 248, 0.12);
+  background: rgba(56, 189, 248, 0.14);
   transform: translateY(-1px);
 }
 
 .sprint-opt-btn:active {
-  transform: scale(0.98);
+  transform: scale(0.99);
+}
+
+.sprint-opt-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 0.82rem;
+  font-family: var(--font-mono);
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.sprint-opt-text {
+  flex: 1;
 }
 
 .sprint-opt-btn.correct {
-  background: rgba(16, 185, 129, 0.2) !important;
-  border-color: var(--success) !important;
-  color: #a7f3d0 !important;
-  box-shadow: 0 0 12px rgba(16, 185, 129, 0.4);
+  background: rgba(16, 185, 129, 0.22) !important;
+  border-color: #10b981 !important;
+  color: #d1fae5 !important;
+  box-shadow: 0 0 16px rgba(16, 185, 129, 0.35);
+}
+
+.sprint-opt-btn.correct .sprint-opt-badge {
+  background: #10b981 !important;
+  border-color: #10b981 !important;
+  color: #022c22 !important;
 }
 
 .sprint-opt-btn.wrong {
   background: rgba(244, 63, 94, 0.2) !important;
-  border-color: var(--danger) !important;
-  color: #fecdd3 !important;
+  border-color: #f43f5e !important;
+  color: #ffe4e6 !important;
+}
+
+.sprint-opt-btn.wrong .sprint-opt-badge {
+  background: #f43f5e !important;
+  border-color: #f43f5e !important;
+  color: #fff !important;
+}
+
+.gizmo-segmented-bar {
+  display: flex;
+  gap: 6px;
+  width: 100%;
+}
+
+.gizmo-segment {
+  flex: 1;
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.15);
+  transition: all 0.3s ease;
+}
+
+.gizmo-segment.active {
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--accent);
+}
+
+.gizmo-segment.completed-correct {
+  background: #10b981;
+  box-shadow: 0 0 6px rgba(16, 185, 129, 0.6);
+}
+
+.gizmo-segment.completed-wrong {
+  background: #f43f5e;
 }
 
 .combo-badge {

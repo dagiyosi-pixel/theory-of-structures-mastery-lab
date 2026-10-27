@@ -1,9 +1,20 @@
 // COTM 3101: Theory of Structures - Mathematical Rendering & KaTeX Engine
 // Provides high-contrast, publication-grade math rendering with graceful offline fallbacks.
 
+function cleanLatexFormula(raw) {
+  if (!raw) return '';
+  let s = String(raw).trim();
+  if (s.startsWith('$$') && s.endsWith('$$')) {
+    s = s.slice(2, -2).trim();
+  } else if (s.startsWith('$') && s.endsWith('$')) {
+    s = s.slice(1, -1).trim();
+  }
+  return s;
+}
+
 function formatFormula(latex, isDisplay = true) {
   if (!latex) return '';
-  const clean = latex.trim();
+  const clean = cleanLatexFormula(latex);
   if (typeof katex !== 'undefined') {
     try {
       return katex.renderToString(clean, {
@@ -66,8 +77,27 @@ function renderFallbackMath(latex, isDisplay = false) {
   return s;
 }
 
+function formatStepFormulaText(text) {
+  if (!text) return '';
+  let str = String(text);
+  // If string already has LaTeX delimiters, return as-is
+  if (str.includes('$') || str.includes('\\(')) return str;
+
+  // Enhance math characters for readability if math symbols exist
+  str = str.replace(/∑\s*M_([A-Za-z0-9]+)/g, '$\\sum M_{$1}$')
+           .replace(/∑\s*F_([xyz])/g, '$\\sum F_{$1}$')
+           .replace(/R_([A-Za-z0-9]+)/g, '$R_{$1}$')
+           .replace(/M_([A-Za-z0-9]{2})/g, '$M_{$1}$')
+           .replace(/⟹/g, '&nbsp;$\\implies$&nbsp;')
+           .replace(/·/g, ' $\\cdot$ ')
+           .replace(/θ_([A-Za-z0-9]+)/g, '$\\theta_{$1}$')
+           .replace(/Δ_([A-Za-z0-9]+)/g, '$\\Delta_{$1}$');
+  return str;
+}
+
 function renderMathInDOM(root) {
   const container = root || document.getElementById('viewport') || document.body;
+  if (!container) return;
   if (typeof renderMathInElement !== 'undefined') {
     try {
       renderMathInElement(container, {
@@ -77,7 +107,7 @@ function renderMathInDOM(root) {
           { left: '\\[', right: '\\]', display: true },
           { left: '\\(', right: '\\)', display: false }
         ],
-        ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+        ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
         throwOnError: false
       });
     } catch (e) {
